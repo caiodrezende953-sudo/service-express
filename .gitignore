@@ -1,0 +1,40 @@
+# Segredos locais. O exemplo de configuração pode ser versionado.
+.env
+.env.*
+!.env.example
+
+# Dependências
+node_modules/
+
+# Logs e arquivos temporários
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# Backups, compactados e exportações de dados
+*.bak
+*.backup
+*~
+*.zip
+*.tar
+*.gz
+*.tgz
+*.7z
+*.rar
+backups/
+exports/
+export/
+
+# Bancos locais, uploads e credenciais
+*.sqlite
+*.sqlite3
+*.db
+uploads/
+credentials.json
+credentials/
+*.pem
+*.key
+*.p12
+*.pfx
