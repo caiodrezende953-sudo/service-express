@@ -94,8 +94,65 @@
     const { data, error } = await client.from('profiles').select('full_name, phone, district, account_type, status').eq('id', session.user.id).single();
     if (error) return modal(`<h2>Minha conta</h2><p class="auth-message">${esc(authMessage(error))}</p><button class="secondary" id="logoutButton">Sair</button>`);
     const labels = { client: 'Cliente', provider: 'Prestador', both: 'Cliente e prestador' };
-    modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl><p class="hint">Edição do perfil e cadastro profissional entram na próxima etapa.</p><button class="secondary" id="logoutButton">Sair</button>`);
+    modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}<p class="hint">Pedidos, pagamentos e avaliações da demonstração ainda não usam esta conta.</p><button class="secondary" id="logoutButton">Sair</button>`);
+    if (data.account_type !== 'client') $('#realProviderButton').onclick = providerView;
     $('#logoutButton').onclick = async () => { await client.auth.signOut(); $('#modal').close(); };
+  }
+
+  async function providerView(message = '') {
+    if (!session) return loginView();
+    const id = session.user.id;
+    const [{ data: profile, error: profileError }, { data: areas, error: areasError }, { data: services, error: servicesError }] = await Promise.all([
+      client.from('provider_profiles').select('display_name, bio, approval_status').eq('id', id).maybeSingle(),
+      client.from('provider_service_areas').select('district').eq('provider_id', id).order('district'),
+      client.from('provider_services').select('id, category, subcategory, title, description, pricing_type, starting_price').eq('provider_id', id).order('id')
+    ]);
+    if (profileError || areasError || servicesError) return modal(`<h2>Cadastro profissional</h2><p class="auth-message">${esc(authMessage(profileError || areasError || servicesError))}</p>`);
+    const selected = new Set((areas || []).map(area => area.district));
+    const status = { pending: 'Aguardando análise', approved: 'Aprovado', rejected: 'Recusado', suspended: 'Suspenso' };
+    modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">O cadastro não aparece para clientes antes da aprovação. A vitrine atual ainda é demonstrativa.</p><form id="realProviderForm" class="auth-form"><label>Nome profissional<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>Bairros atendidos</legend><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>Meus serviços reais</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
+    $('#backAccount').onclick = accountView;
+    if (profile) $('#realAddService').onclick = serviceView;
+    $('#realProviderForm').onsubmit = async event => {
+      event.preventDefault();
+      const form = event.target, data = new FormData(form), chosen = data.getAll('district');
+      if (!chosen.length) return providerView('Selecione ao menos um bairro.');
+      const button = event.submitter;
+      button.disabled = true;
+      const payload = { id, display_name: clean(data.get('display_name')), bio: clean(data.get('bio')) };
+      const { error } = profile
+        ? await client.from('provider_profiles').update({ display_name: payload.display_name, bio: payload.bio }).eq('id', id)
+        : await client.from('provider_profiles').insert(payload);
+      if (error) return providerView(authMessage(error));
+      const old = [...selected];
+      const add = chosen.filter(district => !selected.has(district));
+      const remove = old.filter(district => !chosen.includes(district));
+      if (add.length) {
+        const result = await client.from('provider_service_areas').insert(add.map(district => ({ provider_id: id, district })));
+        if (result.error) return providerView('Perfil salvo, mas alguns bairros não foram adicionados: ' + authMessage(result.error));
+      }
+      if (remove.length) {
+        const result = await client.from('provider_service_areas').delete().eq('provider_id', id).in('district', remove);
+        if (result.error) return providerView('Perfil salvo, mas alguns bairros não foram removidos: ' + authMessage(result.error));
+      }
+      providerView('Cadastro salvo. A aprovação continua sob análise da equipe.');
+    };
+  }
+
+  function serviceView(message = '') {
+    if (!session) return loginView();
+    modal(`<span class="eyebrow">SERVIÇO REAL</span><h2>Adicionar serviço</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="realServiceForm" class="auth-form"><label>Categoria<input name="category" required minlength="2" maxlength="80"></label><label>Subserviço<input name="subcategory" required minlength="2" maxlength="100"></label><label>Nome da oferta<input name="title" required minlength="3" maxlength="120"></label><label>Descrição<textarea name="description" maxlength="1000"></textarea></label><label>Como cobrar?<select name="pricing_type"><option value="quote">Sob orçamento</option><option value="fixed">Preço inicial</option></select></label><label>Preço inicial em reais<input name="starting_price" type="number" min="0" step="0.01" placeholder="Somente para preço inicial"></label><button class="primary">Salvar serviço</button></form><button class="link-button" id="backProvider">Voltar</button>`);
+    $('#backProvider').onclick = () => providerView();
+    $('#realServiceForm').onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(event.target), type = clean(data.get('pricing_type'));
+      const price = type === 'fixed' ? Number(data.get('starting_price')) : null;
+      if (type === 'fixed' && (!clean(data.get('starting_price')) || !Number.isFinite(price) || price < 0)) return serviceView('Informe um preço inicial válido.');
+      event.submitter.disabled = true;
+      const { error } = await client.from('provider_services').insert({ provider_id: session.user.id, category: clean(data.get('category')), subcategory: clean(data.get('subcategory')), title: clean(data.get('title')), description: clean(data.get('description')), pricing_type: type, starting_price: price });
+      if (error) return serviceView(authMessage(error));
+      providerView('Serviço salvo. Ele só ficará público após a aprovação do perfil.');
+    };
   }
 
   function applySession(nextSession) {
