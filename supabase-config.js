@@ -4,6 +4,6 @@
  * possuem RLS. Nunca coloque service_role, senhas ou segredos neste arquivo.
  */
 window.AJURA_SUPABASE = {
-  url: '',
-  anonKey: ''
+  url: 'https://wmgungulnwingtcwebuy.supabase.co',
+  anonKey: 'sb_publishable_4WmkHcgoSYAqY96bDd2LmA_ApfJK0KM'
 };
