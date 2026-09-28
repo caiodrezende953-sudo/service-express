@@ -56,3 +56,7 @@ Validação: `node tests/catalogo.cjs` verifica quantidade mínima, duplicidades
 A aba Pagamentos no modo Cliente mostra o valor do profissional, a taxa ilustrativa e o total. É possível registrar localmente uma simulação de Pix ou cartão, sem QR Code e sem solicitar dados financeiros. No modo Prestador, a mesma aba aparece como Recebimentos e mostra o valor previsto e o estado demonstrativo do repasse.
 
 Os registros usam `sx-payments-v1`. Não existe cobrança, retenção, estorno ou repasse real.
+
+## Catálogo recolhido
+
+A tela principal mostra apenas os 12 grupos. A lista extensa de categorias e subserviços fica no botão `••• Todos os serviços` e também abre ao selecionar um grupo. O painel permite pesquisar no catálogo e escolher diretamente o subserviço, evitando a faixa fixa com dezenas de opções.
