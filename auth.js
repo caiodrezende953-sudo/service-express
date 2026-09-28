@@ -25,8 +25,8 @@
   function loginView(message = '') {
     if (!client) return setupRequired();
     modal(`<span class="eyebrow">ACESSO AJURA</span><h2>Entrar</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="loginForm" class="auth-form"><label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Senha<input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="72"></label><button class="primary" type="submit">Entrar</button></form><div class="auth-actions"><button class="secondary" type="button" id="openSignup">Criar conta</button><button class="link-button" type="button" id="openRecovery">Esqueci minha senha</button></div>`);
-    $('#openSignup').onclick = signupView;
-    $('#openRecovery').onclick = recoveryView;
+    $('#openSignup').onclick = () => signupView();
+    $('#openRecovery').onclick = () => recoveryView();
     $('#loginForm').onsubmit = async event => {
       event.preventDefault();
       const button = event.submitter;
