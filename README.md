@@ -50,3 +50,9 @@ O filtro “Tipo de serviço” distingue essenciais e urgentes, outros serviço
 Serviços sem profissional disponível permanecem visíveis. O cliente pode registrar interesse, mas isso não promete atendimento. O catálogo fica centralizado em `catalogo.js` e pode crescer sem misturar a taxonomia com os dados fictícios dos profissionais.
 
 Validação: `node tests/catalogo.cjs` verifica quantidade mínima, duplicidades, grupos, serviços preservados e ordem de carregamento. A interface ainda deve ser conferida no Chrome em desktop e celular.
+
+## Pagamentos e recebimentos
+
+A aba Pagamentos no modo Cliente mostra o valor do profissional, a taxa ilustrativa e o total. É possível registrar localmente uma simulação de Pix ou cartão, sem QR Code e sem solicitar dados financeiros. No modo Prestador, a mesma aba aparece como Recebimentos e mostra o valor previsto e o estado demonstrativo do repasse.
+
+Os registros usam `sx-payments-v1`. Não existe cobrança, retenção, estorno ou repasse real.

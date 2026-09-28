@@ -3,3 +3,5 @@ header{min-height:92px;height:auto;max-width:1240px}nav button{min-height:42px;b
 
 
 .unavailable-card{border-style:dashed;background:#fffdf8}.unavailable-card .primary{margin-top:10px}.catalog-note{grid-column:1/-1;text-align:center;color:#736e80;font-size:12px}
+
+.payment-item{border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}.payment-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.payment-breakdown span{background:#f5f2fa;border-radius:8px;padding:10px;font-size:12px}.payment-breakdown b{display:block;font-size:15px;margin-top:4px}@media(max-width:600px){.payment-breakdown{grid-template-columns:1fr}#paymentsButton{font-size:11px}}
