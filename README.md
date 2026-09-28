@@ -1,6 +1,8 @@
-# Service Express
+# AJURA
 
 Protótipo local para encontrar profissionais de serviço em Manaus. Não há servidor, instalação nem cobrança real.
+
+AJURA é a identidade provisória do projeto. A inspiração regional vem da ideia amazônica de cooperação e ajuda coletiva. O uso comercial definitivo depende de pesquisa formal de disponibilidade da marca.
 
 ## Como abrir
 
