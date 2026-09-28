@@ -1,0 +1,18 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+const root=path.join(__dirname,'..');const read=f=>fs.readFileSync(path.join(root,f),'utf8');const ui=read('ui.js'),v2=read('v2.js'),app=read('app.js');
+const ctx=vm.createContext({assert,console});
+vm.runInContext(app.slice(0,app.indexOf('const $=')),ctx);
+vm.runInContext(v2.slice(0,v2.indexOf('function readLocal')),ctx);
+vm.runInContext(`const nodes={};const $=s=>nodes[s]??=( {value:'',innerHTML:'',textContent:''});let category='Todos',sub='',selectedGroup='';const reviews=[];const normalize=s=>s.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');const total=n=>Math.round(n*110)/100;const money=n=>n.toFixed(2);const categoryTabs=()=>{};const chips=()=>{};const atendeBairro=(areas,b)=>areas.some(a=>a===b||(a==='Parque 10'&&b==='Parque 10 de Novembro'));const cobreManaus=()=>false;professionals.forEach(p=>{p.baseRating=p.rating;p.baseReviews=p.reviews;});`,ctx);
+for(const name of ['reputacao','textoReputacao'])vm.runInContext(v2.split('\n').find(l=>l.startsWith('function '+name+'(')),ctx);
+vm.runInContext(ui.slice(ui.indexOf('const serviceGroups='),ui.indexOf("let selectedGroup=")),ctx);
+vm.runInContext(ui.split('\n').find(l=>l.startsWith('function relevantServices')),ctx);
+vm.runInContext(ui.split('\n').find(l=>l.startsWith('render=function')),ctx);
+vm.runInContext(`$('#rating').value='0';$('#sort').value='recommended';$('#query').value='luminária';render();assert.match($('#cards').innerHTML,/132.00/);assert.doesNotMatch($('#cards').innerHTML,/93.50/);assert.match($('#count').textContent,/1 serviços/);
+$('#query').value='';category='Climatização';sub='Limpeza de split';$('#district').value='Parque 10 de Novembro';render();assert.match($('#cards').innerHTML,/Bruno Martins/);assert.match($('#cards').innerHTML,/198.00/);assert.doesNotMatch($('#cards').innerHTML,/99.00/);
+sub='Instalação';render();assert.match($('#cards').innerHTML,/Nenhum serviço/);
+category='Todos';sub='';selectedGroup='Tecnologia';$('#district').value='';render();assert.doesNotMatch($('#cards').innerHTML,/Rafael Lima/);assert.match($('#cards').innerHTML,/Conecta/);
+selectedGroup='';$('#modality').value='On-line';render();assert.match($('#count').textContent,/1 serviços/);assert.match($('#cards').innerHTML,/Rede Fácil/);
+$('#modality').value='';$('#query').value='panela';render();assert.match($('#cards').innerHTML,/Sob orçamento/);assert.doesNotMatch($('#cards').innerHTML,/0.00/);
+$('#query').value='Rafael';reviews.push({pid:1,score:1},{pid:1,score:5});$('#rating').value='4.8';render();assert.match($('#count').textContent,/2 serviços/);$('#rating').value='4.83';render();assert.match($('#count').textContent,/0 serviços/);`,ctx);
+assert(!ui.includes('localStorage.setItem'));assert(!ui.includes('localStorage.clear'));for(const s of ['bairros.js','app.js','v2.js','ui.js'])assert(read('index.html').includes(`src="${s}"`));console.log('PASS: preço da oferta, filtros cumulativos, alias de bairro, grupo, modalidade, orçamento e reputação sem arredondamento. Camada UI sem gravações no storage.');
