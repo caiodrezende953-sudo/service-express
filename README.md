@@ -39,3 +39,14 @@ A camada ui.js/ui.css não migra nem grava dados locais. Os formulários de cont
 ### Validação
 
 Execute `node tests/interface.cjs` para verificar a lógica de filtros, preço por oferta e reputação. Sintaxe dos scripts validada com `node --check`. A inspeção visual e o fluxo completo no navegador ainda estão pendentes: a instalação do Chromium falhou no ambiente de desenvolvimento. Abra index.html no Chrome e confira desktop, celular, troca de perfil, abas de pedidos e avaliação após conclusão.
+
+
+## Catálogo ampliado
+
+O catálogo demonstrativo reúne 63 categorias e 325 subserviços em 12 grupos: casa e manutenção, tecnologia, limpeza e cuidados, automotivo, pequenos consertos, beleza e bem-estar, pets, educação, mídia e criatividade, eventos, empresas e serviços especializados.
+
+O filtro “Tipo de serviço” distingue essenciais e urgentes, outros serviços e atividades reguladas ou especializadas. Essa classificação serve para organizar a descoberta; não substitui definição legal. Saúde, engenharia, arquitetura, direito, contabilidade, gás, energia solar, veterinária e segurança do trabalho exigirão verificação de habilitação na versão real.
+
+Serviços sem profissional disponível permanecem visíveis. O cliente pode registrar interesse, mas isso não promete atendimento. O catálogo fica centralizado em `catalogo.js` e pode crescer sem misturar a taxonomia com os dados fictícios dos profissionais.
+
+Validação: `node tests/catalogo.cjs` verifica quantidade mínima, duplicidades, grupos, serviços preservados e ordem de carregamento. A interface ainda deve ser conferida no Chrome em desktop e celular.

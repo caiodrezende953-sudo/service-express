@@ -1,17 +1,4 @@
 /* Protótipo v0.2: dados locais demonstrativos, sem autenticação. */
-const taxonomy={
-'Elétrica':['Tomadas e interruptores','Iluminação','Ventiladores','Diagnóstico elétrico','Quadros'],
-'Internet e redes':['Roteadores e Wi-Fi','Rede mesh','Cabeamento e pontos de rede'],
-'Hidráulica':['Torneiras','Vazamentos','Vasos e descargas','Caixas-d’água'],
-'Climatização':['Limpeza de split','Instalação','Diagnóstico de ar-condicionado'],
-'Limpeza':['Residencial','Comercial','Pós-obra','Estofados'],
-'Montagem':['Móveis','Prateleiras e suportes','Cortinas e varais'],
-'Automotivo':['Lavagem de carro','Higienização interna','Diagnóstico automotivo'],
-'Casa e utensílios':['Alças e cabos de panela','Afiação','Tampas e utensílios'],
-'Celulares e eletrônicos':['Celulares e tablets','Computadores e notebooks','TVs e monitores','Videogames e controles','Áudio e eletrônicos','Pequenos eletrodomésticos'],
-'Costura e acessórios':['Ajustes e bainhas','Zíperes','Calçados e bolsas'],
-'Pintura e reparos':['Pintura','Portas e ferragens','Vedação'],
-'Engenharia especializada':['Projetos','Inspeções e laudos','Subestações']};
 const maps={1:['Tomadas e interruptores','Iluminação'],2:['Residencial'],3:['Limpeza de split','Diagnóstico de ar-condicionado'],4:['Torneiras'],5:['Móveis'],6:['Diagnóstico elétrico']};
 professionals.forEach(p=>{p.services.forEach((s,i)=>s[3]=maps[p.id][i]);p.modes=['No endereço do cliente'];});
 professionals.push(
@@ -58,3 +45,4 @@ function suggestionForm(){modal(`<span class="eyebrow">AJUDE A CONSTRUIR A SERVI
  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.rate){e.preventDefault();e.stopImmediatePropagation();abrirAvaliacao(Number(b.dataset.rate));return;}if(b.dataset.confirm){const o=orders.find(o=>o.id===Number(b.dataset.confirm));if(mode!=='prestador'||o?.pid!==providerId){e.stopImmediatePropagation();return;}}if(b.hasAttribute('data-cat2')){category=b.dataset.cat2;sub='';render();}if(b.hasAttribute('data-sub2')){sub=b.dataset.sub2;render();}if(b.dataset.mode2){setMode(b.dataset.mode2);$('#modal').close();}if(b.dataset.suggest2)suggestionForm();if(b.dataset.cancel2){const o=orders.find(o=>o.id===Number(b.dataset.cancel2));if(o&&['Aguardando orçamento','Solicitado','Confirmado'].includes(o.status)&&(mode==='cliente'||o.pid===providerId)){o.status='Cancelado';persist();showOrders();if(mode==='prestador')dashboard();}}},true);
 document.addEventListener('submit',e=>{if(e.target.dataset.transition){const o=orders.find(o=>o.id===Number(e.target.dataset.transition));if(mode!=='prestador'||o?.pid!==providerId){e.preventDefault();e.stopImmediatePropagation();return;}setTimeout(()=>{if(mode==='prestador')dashboard();},0);}},true);
 ['query','district','rating','sort'].forEach(id=>{const el=$('#'+id),novo=el.cloneNode(true);el.replaceWith(novo);novo.addEventListener(id==='query'?'input':'change',()=>render());});$('#modality').onchange=render;$('#reset').onclick=()=>{$('#query').value='';$('#district').value='';$('#rating').value='0';$('#sort').value='recommended';$('#modality').value='';category='Todos';sub='';render();};$('#accountButton').onclick=account;$('#suggestionsButton').onclick=suggestionForm;$('#ordersButton').onclick=()=>showOrders();$('#explore').onclick=()=>{setMode('cliente');$('#catalog').scrollIntoView({behavior:'smooth'});};$('footer span').textContent='Manaus • Protótipo local v0.2';render();
+
