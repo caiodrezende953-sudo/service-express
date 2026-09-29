@@ -112,7 +112,7 @@
     const status = { pending: 'Aguardando análise', approved: 'Aprovado', rejected: 'Recusado', suspended: 'Suspenso' };
     modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">O cadastro não aparece para clientes antes da aprovação. A vitrine atual ainda é demonstrativa.</p><form id="realProviderForm" class="auth-form"><label>Nome profissional<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>Bairros atendidos</legend><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>Meus serviços reais</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
     $('#backAccount').onclick = accountView;
-    if (profile) $('#realAddService').onclick = () => serviceView();
+    if (profile) $('#realAddService').onclick = () => multiServiceView(services || []);
     $('#realProviderForm').onsubmit = async event => {
       event.preventDefault();
       const form = event.target, data = new FormData(form), chosen = data.getAll('district');
@@ -139,44 +139,84 @@
     };
   }
 
-  function serviceView(message = '') {
+  function multiServiceView(existingServices = []) {
     if (!session) return loginView();
     const catalog = typeof SERVICE_CATALOG !== 'undefined' ? SERVICE_CATALOG : [];
-    if (!catalog.length) return modal('<h2>Adicionar serviço</h2><p class="auth-message">O catálogo não carregou. Atualize a página e tente novamente.</p>');
+    if (!catalog.length) return modal('<h2>Adicionar serviços</h2><p class="auth-message">O catálogo não carregou. Atualize a página.</p>');
     const groups = [...new Set(catalog.map(item => item.group))];
-    modal(`<span class="eyebrow">SERVIÇO REAL</span><h2>Adicionar serviço</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p class="hint">Selecione um serviço da lista para que ele apareça nas buscas. Descreva apenas o escopo do seu atendimento no campo abaixo.</p><form id="realServiceForm" class="auth-form"><label>Área de serviços<select name="group" id="realGroup" required><option value="">Selecione uma área</option>${groups.map(group => `<option value="${esc(group)}">${esc(group)}</option>`).join('')}</select></label><label>Categoria<select name="category" id="realCategory" required><option value="">Selecione uma categoria</option>${catalog.map(item => `<option value="${esc(item.category)}">${esc(item.category)}</option>`).join('')}</select></label><label>Serviço<select name="subcategory" id="realSubcategory" required><option value="">Selecione um serviço</option>${catalog.flatMap(item => item.subs.map(name => `<option value="${esc(name)}">${esc(item.category)} · ${esc(name)}</option>`)).join('')}</select></label><label>O que está incluído<textarea name="description" required minlength="10" maxlength="1000" placeholder="Ex.: avaliação no endereço do cliente; materiais cobrados à parte."></textarea></label><label>Como cobrar?<select name="pricing_type" id="realPricing"><option value="quote">Sob orçamento</option><option value="fixed">Preço inicial</option></select></label><label>Preço inicial em reais<input name="starting_price" id="realPrice" type="number" min="0" step="0.01" placeholder="Somente para preço inicial" disabled></label><button class="primary">Salvar serviço</button></form><button class="link-button" id="backProvider">Voltar</button>`);
-    const group = $('#realGroup'), category = $('#realCategory'), subcategory = $('#realSubcategory'), priceInput = $('#realPrice');
+    const saved = new Set(existingServices.map(service => `${service.category}\u0000${service.subcategory}`));
+    const selected = new Map();
+    modal(`<span class="eyebrow">CADASTRO REAL</span><h2>Adicionar vários serviços</h2><p class="hint">Marque os serviços de uma categoria, depois escolha outra categoria. A seleção fica guardada até você salvar.</p><form id="realMultiServiceForm" class="auth-form"><label>Área de serviços<select id="multiGroup"><option value="">Todas as áreas</option>${groups.map(group => `<option value="${esc(group)}">${esc(group)}</option>`).join('')}</select></label><label>Categoria<select id="multiCategory"><option value="">Selecione uma categoria</option>${catalog.map(item => `<option value="${esc(item.category)}">${esc(item.category)}</option>`).join('')}</select></label><fieldset><legend>Serviços da categoria</legend><div id="multiChoices" class="area-list"><p class="hint">Escolha uma categoria.</p></div></fieldset><h3 id="multiCount">Nenhum serviço selecionado</h3><div id="multiCards"></div><p id="multiError" class="auth-message" hidden></p><button class="primary" type="submit">Salvar serviços selecionados</button></form><button class="link-button" id="multiBack" type="button">Voltar</button>`);
+    const group = $('#multiGroup'), category = $('#multiCategory'), choices = $('#multiChoices'), cards = $('#multiCards');
+    const showChoices = () => {
+      const index = catalog.findIndex(item => item.category === category.value);
+      const item = catalog[index];
+      choices.innerHTML = item ? item.subs.map((name, subIndex) => {
+        const key = `${index}:${subIndex}`;
+        const exists = saved.has(`${item.category}\u0000${name}`);
+        return `<label class="check"><input type="checkbox" data-choice="${key}" ${selected.has(key) ? 'checked' : ''} ${exists ? 'disabled' : ''}>${esc(name)}${exists ? ' · já cadastrado' : ''}</label>`;
+      }).join('') : '<p class="hint">Escolha uma categoria.</p>';
+    };
+    const showSelected = () => {
+      $('#multiCount').textContent = `${selected.size} ${selected.size === 1 ? 'serviço selecionado' : 'serviços selecionados'}`;
+      cards.innerHTML = [...selected].map(([key, value]) => `<article class="service" data-selected="${key}"><b>${esc(value.category)} · ${esc(value.subcategory)}</b><button type="button" class="link-button" data-remove="${key}">Remover</button><label>O que está incluído<textarea data-field="description" required minlength="10" maxlength="1000" placeholder="Descreva este serviço especificamente">${esc(value.description)}</textarea></label><label>Como cobrar?<select data-field="pricing_type"><option value="quote" ${value.pricing_type === 'quote' ? 'selected' : ''}>Sob orçamento</option><option value="fixed" ${value.pricing_type === 'fixed' ? 'selected' : ''}>Preço inicial</option></select></label><label>Preço inicial em reais<input data-field="starting_price" type="number" min="0" step="0.01" value="${esc(value.starting_price)}" ${value.pricing_type === 'fixed' ? 'required' : 'disabled'}></label></article>`).join('');
+    };
     group.onchange = () => {
-      const categories = catalog.filter(item => item.group === group.value);
-      category.innerHTML = '<option value="">Selecione uma categoria</option>' + categories.map(item => `<option value="${esc(item.category)}">${esc(item.category)}</option>`).join('');
-      subcategory.innerHTML = '<option value="">Selecione uma categoria</option>';
+      category.innerHTML = '<option value="">Selecione uma categoria</option>' + catalog.filter(item => !group.value || item.group === group.value).map(item => `<option value="${esc(item.category)}">${esc(item.category)}</option>`).join('');
+      showChoices();
     };
-    category.onchange = () => {
-      const item = catalog.find(item => item.group === group.value && item.category === category.value);
-      subcategory.innerHTML = '<option value="">Selecione um serviço</option>' + (item?.subs || []).map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
-    };
+    category.onchange = showChoices;
     group.addEventListener('input', group.onchange);
-    category.addEventListener('input', category.onchange);
-    $('#realPricing').onchange = event => {
-      priceInput.disabled = event.target.value !== 'fixed';
-      priceInput.required = event.target.value === 'fixed';
-      if (priceInput.disabled) priceInput.value = '';
+    category.addEventListener('input', showChoices);
+    choices.onchange = event => {
+      const key = event.target.dataset.choice;
+      if (!key) return;
+      const [i, j] = key.split(':').map(Number), item = catalog[i], name = item?.subs[j];
+      if (!name || saved.has(`${item.category}\u0000${name}`)) return;
+      if (event.target.checked) selected.set(key, { category: item.category, subcategory: name, description: '', pricing_type: 'quote', starting_price: '' });
+      else selected.delete(key);
+      showSelected();
     };
-    $('#backProvider').onclick = () => providerView();
-    $('#realServiceForm').onsubmit = async event => {
+    const saveField = event => {
+      const key = event.target.closest('[data-selected]')?.dataset.selected;
+      const field = event.target.dataset.field;
+      if (!key || !field || !selected.has(key)) return;
+      const item = selected.get(key);
+      item[field] = event.target.value;
+      if (field === 'pricing_type') {
+        const price = event.target.closest('[data-selected]').querySelector('[data-field="starting_price"]');
+        price.disabled = item.pricing_type !== 'fixed';
+        price.required = item.pricing_type === 'fixed';
+        if (price.disabled) { price.value = ''; item.starting_price = ''; }
+      }
+    };
+    cards.addEventListener('input', saveField);
+    cards.addEventListener('change', saveField);
+    cards.onclick = event => {
+      const key = event.target.closest('[data-remove]')?.dataset.remove;
+      if (!key) return;
+      selected.delete(key);
+      const checkbox = choices.querySelector(`[data-choice="${key}"]`);
+      if (checkbox) checkbox.checked = false;
+      showSelected();
+    };
+    $('#multiBack').onclick = () => providerView();
+    $('#realMultiServiceForm').onsubmit = async event => {
       event.preventDefault();
-      const data = new FormData(event.target), type = clean(data.get('pricing_type'));
-      const item = catalog.find(entry => entry.group === data.get('group') && entry.category === data.get('category'));
-      const selectedService = clean(data.get('subcategory'));
-      if (!item || !item.subs.includes(selectedService)) return serviceView('Selecione um serviço válido do catálogo.');
-      const price = type === 'fixed' ? Number(data.get('starting_price')) : null;
-      if (type === 'fixed' && (!clean(data.get('starting_price')) || !Number.isFinite(price) || price < 0)) return serviceView('Informe um preço inicial válido.');
-      event.submitter.disabled = true;
-      const { error } = await client.from('provider_services').insert({ provider_id: session.user.id, category: item.category, subcategory: selectedService, title: selectedService.length >= 3 ? selectedService : `Serviço de ${selectedService}`, description: clean(data.get('description')), pricing_type: type, starting_price: price });
-      if (error) return serviceView(authMessage(error));
-      providerView('Serviço salvo. Ele só ficará público após a aprovação do perfil.');
+      const errorBox = $('#multiError');
+      if (!selected.size) { errorBox.textContent = 'Selecione pelo menos um serviço.'; errorBox.hidden = false; return; }
+      const values = [...selected.values()];
+      const invalid = values.some(value => !catalog.some(item => item.category === value.category && item.subs.includes(value.subcategory)) || clean(value.description).length < 10 || (value.pricing_type === 'fixed' && (!clean(value.starting_price) || !Number.isFinite(Number(value.starting_price)) || Number(value.starting_price) < 0)));
+      if (invalid) { errorBox.textContent = 'Confira a descrição e o preço de cada serviço.'; errorBox.hidden = false; return; }
+      const payload = values.map(value => ({ provider_id: session.user.id, category: value.category, subcategory: value.subcategory, title: value.subcategory.length >= 3 ? value.subcategory : `Serviço de ${value.subcategory}`, description: clean(value.description), pricing_type: value.pricing_type, starting_price: value.pricing_type === 'fixed' ? Number(value.starting_price) : null }));
+      const button = event.submitter;
+      button.disabled = true;
+      const { error } = await client.from('provider_services').insert(payload);
+      if (error) { button.disabled = false; errorBox.textContent = authMessage(error); errorBox.hidden = false; return; }
+      providerView(`${payload.length} ${payload.length === 1 ? 'serviço salvo' : 'serviços salvos'}. O cadastro continua sujeito à análise.`);
     };
   }
+
 
   function applySession(nextSession) {
     session = nextSession;
