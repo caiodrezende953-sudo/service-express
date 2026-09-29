@@ -88,6 +88,23 @@
     };
   }
 
+  function newPasswordView(message = '') {
+    if (!client) return setupRequired();
+    modal(`<span class="eyebrow">RECUPERAR ACESSO</span><h2>Crie uma nova senha</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="newPasswordForm" class="auth-form"><label>Nova senha<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label><label>Confirme a nova senha<input name="confirmation" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label><button class="primary" type="submit">Salvar nova senha</button></form>`);
+    $('#newPasswordForm').onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(event.target);
+      const password = String(data.get('password') || '');
+      if (password !== String(data.get('confirmation') || '')) return newPasswordView('As senhas não coincidem.');
+      const button = event.submitter;
+      button.disabled = true;
+      const { error } = await client.auth.updateUser({ password });
+      if (error) return newPasswordView(authMessage(error));
+      await client.auth.signOut();
+      loginView('Senha alterada. Entre com a nova senha.');
+    };
+  }
+
   async function accountView() {
     if (!client) return setupRequired();
     if (!session) return loginView();
@@ -305,7 +322,10 @@
   }
   if (client) {
     client.auth.getSession().then(({ data }) => applySession(data.session));
-    client.auth.onAuthStateChange((_event, nextSession) => applySession(nextSession));
+    client.auth.onAuthStateChange((event, nextSession) => {
+      applySession(nextSession);
+      if (event === 'PASSWORD_RECOVERY') setTimeout(() => newPasswordView(), 0);
+    });
   }
   window.AJURA_AUTH = { client, configured };
   if (client) {
