@@ -105,7 +105,7 @@
     const [{ data: profile, error: profileError }, { data: areas, error: areasError }, { data: services, error: servicesError }] = await Promise.all([
       client.from('provider_profiles').select('display_name, bio, approval_status').eq('id', id).maybeSingle(),
       client.from('provider_service_areas').select('district').eq('provider_id', id).order('district'),
-      client.from('provider_services').select('id, category, subcategory, title, description, pricing_type, starting_price').eq('provider_id', id).order('id')
+      client.from('provider_services').select('id, category, subcategory, title, description, pricing_type, starting_price, active').eq('provider_id', id).order('id')
     ]);
     if (profileError || areasError || servicesError) return modal(`<h2>Cadastro profissional</h2><p class="auth-message">${esc(authMessage(profileError || areasError || servicesError))}</p>`);
     const selected = new Set((areas || []).map(area => area.district));
@@ -113,6 +113,32 @@
     modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">O cadastro não aparece para clientes antes da aprovação. A vitrine atual ainda é demonstrativa.</p><form id="realProviderForm" class="auth-form"><label>Nome profissional<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>Bairros atendidos</legend><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>Meus serviços reais</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
     $('#backAccount').onclick = accountView;
     if (profile) $('#realAddService').onclick = () => multiServiceView(services || []);
+    $('#modalBody').querySelectorAll('article.service').forEach((article, index) => {
+      const service = services[index];
+      if (!service) return;
+      const actions = document.createElement('div');
+      actions.className = 'provider-service-actions';
+      const status = document.createElement('p');
+      status.className = 'hint';
+      status.textContent = service.active ? 'Oferta ativa' : 'Oferta desativada — não aparece na busca';
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'secondary';
+      edit.textContent = 'Editar escopo e preço';
+      edit.onclick = () => editRealService(service);
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'secondary';
+      toggle.textContent = service.active ? 'Desativar' : 'Reativar';
+      toggle.onclick = async () => {
+        toggle.disabled = true;
+        const { error } = await client.from('provider_services').update({ active: !service.active }).eq('id', service.id).eq('provider_id', id);
+        if (error) return providerView(authMessage(error));
+        providerView(service.active ? 'Serviço desativado.' : 'Serviço reativado.');
+      };
+      actions.append(status, edit, toggle);
+      article.append(actions);
+    });
     $('#realProviderForm').onsubmit = async event => {
       event.preventDefault();
       const form = event.target, data = new FormData(form), chosen = data.getAll('district');
@@ -136,6 +162,32 @@
         if (result.error) return providerView('Perfil salvo, mas alguns bairros não foram removidos: ' + authMessage(result.error));
       }
       providerView('Cadastro salvo. A aprovação continua sob análise da equipe.');
+    };
+  }
+
+  function editRealService(service, message = '') {
+    if (!session) return loginView();
+    modal(`<span class="eyebrow">SERVIÇO REAL</span><h2>Editar ${esc(service.subcategory)}</h2><p>${esc(service.category)} · ${esc(service.title)}</p>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p class="hint">Mudanças em serviço aprovado devolvem o perfil para análise.</p><form id="editRealServiceForm" class="auth-form"><label>O que está incluído<textarea name="description" required minlength="10" maxlength="1000">${esc(service.description)}</textarea></label><label>Como cobrar?<select name="pricing_type" id="editPricing"><option value="quote" ${service.pricing_type === 'quote' ? 'selected' : ''}>Sob orçamento</option><option value="fixed" ${service.pricing_type === 'fixed' ? 'selected' : ''}>Preço inicial</option></select></label><label>Preço inicial em reais<input name="starting_price" id="editPrice" type="number" min="0" step="0.01" value="${service.starting_price == null ? '' : esc(service.starting_price)}" ${service.pricing_type === 'fixed' ? 'required' : 'disabled'}></label><button class="primary">Salvar alterações</button></form><button type="button" class="link-button" id="backProvider">Voltar</button>`);
+    const pricing = $('#editPricing'), priceInput = $('#editPrice');
+    pricing.onchange = () => {
+      priceInput.disabled = pricing.value !== 'fixed';
+      priceInput.required = pricing.value === 'fixed';
+      if (priceInput.disabled) priceInput.value = '';
+    };
+    $('#backProvider').onclick = () => providerView();
+    $('#editRealServiceForm').onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(event.target);
+      const description = clean(data.get('description'));
+      const type = clean(data.get('pricing_type'));
+      const rawPrice = clean(data.get('starting_price'));
+      const price = type === 'fixed' ? Number(rawPrice) : null;
+      if (description.length < 10 || (type === 'fixed' && (!rawPrice || !Number.isFinite(price) || price < 0))) return editRealService(service, 'Confira a descrição e o preço.');
+      const button = event.submitter;
+      button.disabled = true;
+      const { error } = await client.from('provider_services').update({ description, pricing_type: type, starting_price: price }).eq('id', service.id).eq('provider_id', session.user.id);
+      if (error) return editRealService(service, authMessage(error));
+      providerView('Serviço atualizado. Confira a situação da aprovação.');
     };
   }
 
