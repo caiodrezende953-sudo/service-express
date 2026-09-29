@@ -67,6 +67,17 @@ select
 
 O esperado é `false` e `true`, respectivamente.
 
+## 7. Ativar o cadastro completo do cliente
+
+Execute uma vez `supabase/client-profile.sql`. Ele adiciona rua, número,
+complemento e referência ao perfil, mantém RLS e cria o histórico de aceite
+de Termos e Política por versão. O formulário do site libera a edição desses
+dados; o endereço completo não entra na vitrine pública.
+
+Os documentos ainda precisam ser publicados antes de registrar um aceite real.
+Quando houver texto aprovado, use versões como `termos-1.0` e `privacidade-1.0`
+no formulário de aceite da próxima entrega.
+
 Para concluir o teste de recuperação, em **Authentication > URL Configuration**
 inclua `https://caiodrezende953-sudo.github.io/service-express/index.html`
 nas URLs de redirecionamento permitidas. O link de recuperação enviado pelo

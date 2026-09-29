@@ -108,14 +108,31 @@
   async function accountView() {
     if (!client) return setupRequired();
     if (!session) return loginView();
-    const { data, error } = await client.from('profiles').select('full_name, phone, district, account_type, status').eq('id', session.user.id).single();
+    const { data, error } = await client.from('profiles').select('full_name, phone, district, address_line, address_number, address_complement, address_reference, account_type, status').eq('id', session.user.id).single();
     if (error) return modal(`<h2>Minha conta</h2><p class="auth-message">${esc(authMessage(error))}</p><button class="secondary" id="logoutButton">Sair</button>`);
     const { data: isAdmin } = await client.rpc('admin_is_current_user');
     const labels = { client: 'Cliente', provider: 'Prestador', both: 'Cliente e prestador' };
-    modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}${isAdmin === true ? '<button class="secondary" id="adminReviewButton">Analisar prestadores</button>' : ''}<p class="hint">Pedidos, pagamentos e avaliações da demonstração ainda não usam esta conta.</p><button class="secondary" id="logoutButton">Sair</button>`);
+    modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Endereço</dt><dd>${esc(data.address_line || 'Ainda não informado')}${data.address_number ? `, ${esc(data.address_number)}` : ''}${data.address_complement ? ` · ${esc(data.address_complement)}` : ''}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl><button class="primary" id="editClientButton">Editar meus dados</button>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}${isAdmin === true ? '<button class="secondary" id="adminReviewButton">Analisar prestadores</button>' : ''}<p class="hint">O endereço completo fica protegido e será usado em um pedido somente após a contratação.</p><button class="secondary" id="logoutButton">Sair</button>`);
+    $('#editClientButton').onclick = () => editClientView(data);
     if (data.account_type !== 'client') $('#realProviderButton').onclick = providerView;
     if (isAdmin === true) $('#adminReviewButton').onclick = () => window.AJURA_ADMIN?.open();
     $('#logoutButton').onclick = async () => { await client.auth.signOut(); $('#modal').close(); };
+  }
+
+  function editClientView(data, message = '') {
+    modal(`<span class="eyebrow">CADASTRO DO CLIENTE</span><h2>Meus dados</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="clientProfileForm" class="auth-form"><label>Nome completo<input name="full_name" required minlength="3" maxlength="100" value="${esc(data.full_name)}"></label><label>Celular com DDD<input name="phone" type="tel" required maxlength="20" value="${esc(data.phone)}"></label><label>Bairro<select name="district" required><option value="">Selecione</option>${districts().replace(`value=\"${esc(data.district)}\"`, `value=\"${esc(data.district)}\" selected`)}</select></label><label>Rua ou avenida<input name="address_line" required minlength="3" maxlength="160" value="${esc(data.address_line || '')}"></label><label>Número<input name="address_number" required maxlength="20" value="${esc(data.address_number || '')}"></label><label>Complemento <span class="hint">(opcional)</span><input name="address_complement" maxlength="100" value="${esc(data.address_complement || '')}"></label><label>Ponto de referência <span class="hint">(opcional)</span><textarea name="address_reference" maxlength="300">${esc(data.address_reference || '')}</textarea></label><p class="hint">O endereço completo não aparece na vitrine. Ele será liberado ao prestador somente quando existir um pedido contratado.</p><button class="primary">Salvar meus dados</button></form><button class="link-button" id="backAccount">Voltar</button>`);
+    $('#backAccount').onclick = accountView;
+    $('#clientProfileForm').onsubmit = async event => {
+      event.preventDefault();
+      const form = event.target, values = new FormData(form), phone = clean(values.get('phone')).replace(/\D/g, '');
+      if (phone.length < 10 || phone.length > 11) return editClientView(data, 'Informe um celular válido com DDD.');
+      const button = event.submitter;
+      button.disabled = true;
+      const payload = { full_name: clean(values.get('full_name')), phone, district: clean(values.get('district')), address_line: clean(values.get('address_line')), address_number: clean(values.get('address_number')), address_complement: clean(values.get('address_complement')), address_reference: clean(values.get('address_reference')) };
+      const { error } = await client.from('profiles').update(payload).eq('id', session.user.id);
+      if (error) return editClientView(data, authMessage(error));
+      accountView();
+    };
   }
 
   async function providerView(message = '') {
