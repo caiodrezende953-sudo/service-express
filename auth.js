@@ -144,20 +144,19 @@
     const catalog = typeof SERVICE_CATALOG !== 'undefined' ? SERVICE_CATALOG : [];
     if (!catalog.length) return modal('<h2>Adicionar serviço</h2><p class="auth-message">O catálogo não carregou. Atualize a página e tente novamente.</p>');
     const groups = [...new Set(catalog.map(item => item.group))];
-    modal(`<span class="eyebrow">SERVIÇO REAL</span><h2>Adicionar serviço</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p class="hint">Selecione um serviço da lista para que ele apareça nas buscas. Descreva apenas o escopo do seu atendimento no campo abaixo.</p><form id="realServiceForm" class="auth-form"><label>Área de serviços<select name="group" id="realGroup" required><option value="">Selecione uma área</option>${groups.map(group => `<option value="${esc(group)}">${esc(group)}</option>`).join('')}</select></label><label>Categoria<select name="category" id="realCategory" required disabled><option value="">Selecione uma área primeiro</option></select></label><label>Serviço<select name="subcategory" id="realSubcategory" required disabled><option value="">Selecione uma categoria primeiro</option></select></label><label>O que está incluído<textarea name="description" required minlength="10" maxlength="1000" placeholder="Ex.: avaliação no endereço do cliente; materiais cobrados à parte."></textarea></label><label>Como cobrar?<select name="pricing_type" id="realPricing"><option value="quote">Sob orçamento</option><option value="fixed">Preço inicial</option></select></label><label>Preço inicial em reais<input name="starting_price" id="realPrice" type="number" min="0" step="0.01" placeholder="Somente para preço inicial" disabled></label><button class="primary">Salvar serviço</button></form><button class="link-button" id="backProvider">Voltar</button>`);
+    modal(`<span class="eyebrow">SERVIÇO REAL</span><h2>Adicionar serviço</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p class="hint">Selecione um serviço da lista para que ele apareça nas buscas. Descreva apenas o escopo do seu atendimento no campo abaixo.</p><form id="realServiceForm" class="auth-form"><label>Área de serviços<select name="group" id="realGroup" required><option value="">Selecione uma área</option>${groups.map(group => `<option value="${esc(group)}">${esc(group)}</option>`).join('')}</select></label><label>Categoria<select name="category" id="realCategory" required><option value="">Selecione uma categoria</option>${catalog.map(item => `<option value="${esc(item.category)}">${esc(item.category)}</option>`).join('')}</select></label><label>Serviço<select name="subcategory" id="realSubcategory" required><option value="">Selecione um serviço</option>${catalog.flatMap(item => item.subs.map(name => `<option value="${esc(name)}">${esc(item.category)} · ${esc(name)}</option>`)).join('')}</select></label><label>O que está incluído<textarea name="description" required minlength="10" maxlength="1000" placeholder="Ex.: avaliação no endereço do cliente; materiais cobrados à parte."></textarea></label><label>Como cobrar?<select name="pricing_type" id="realPricing"><option value="quote">Sob orçamento</option><option value="fixed">Preço inicial</option></select></label><label>Preço inicial em reais<input name="starting_price" id="realPrice" type="number" min="0" step="0.01" placeholder="Somente para preço inicial" disabled></label><button class="primary">Salvar serviço</button></form><button class="link-button" id="backProvider">Voltar</button>`);
     const group = $('#realGroup'), category = $('#realCategory'), subcategory = $('#realSubcategory'), priceInput = $('#realPrice');
     group.onchange = () => {
       const categories = catalog.filter(item => item.group === group.value);
       category.innerHTML = '<option value="">Selecione uma categoria</option>' + categories.map(item => `<option value="${esc(item.category)}">${esc(item.category)}</option>`).join('');
-      category.disabled = !categories.length;
-      subcategory.innerHTML = '<option value="">Selecione uma categoria primeiro</option>';
-      subcategory.disabled = true;
+      subcategory.innerHTML = '<option value="">Selecione uma categoria</option>';
     };
     category.onchange = () => {
       const item = catalog.find(item => item.group === group.value && item.category === category.value);
       subcategory.innerHTML = '<option value="">Selecione um serviço</option>' + (item?.subs || []).map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
-      subcategory.disabled = !item;
     };
+    group.addEventListener('input', group.onchange);
+    category.addEventListener('input', category.onchange);
     $('#realPricing').onchange = event => {
       priceInput.disabled = event.target.value !== 'fixed';
       priceInput.required = event.target.value === 'fixed';
