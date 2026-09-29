@@ -173,4 +173,9 @@
     client.auth.onAuthStateChange((_event, nextSession) => applySession(nextSession));
   }
   window.AJURA_AUTH = { client, configured };
+  if (client) {
+    const script = document.createElement('script');
+    script.src = 'real-catalog.js';
+    document.body.append(script);
+  }
 })();
