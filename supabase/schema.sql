@@ -51,4 +51,4 @@ create trigger on_auth_user_created
 revoke all on table public.profiles from anon;
 revoke all on table public.profiles from authenticated;
 grant select on table public.profiles to authenticated;
-grant update (full_name, phone, district, account_type, updated_at) on table public.profiles to authenticated;
+grant update (full_name, phone, district, updated_at) on table public.profiles to authenticated;
