@@ -49,3 +49,27 @@ Mantenha a confirmação de e-mail habilitada. Não abra o cadastro ao público 
 4. No Table Editor, confirme que existe exatamente um perfil para o usuário.
 5. Saia, recupere a senha e confirme que o link retorna ao endereço publicado.
 6. Entre com outra conta e confirme que ela não consegue consultar nem alterar o primeiro perfil.
+
+## 6. Trave a escolha do tipo de conta depois do cadastro
+
+Em projetos criados com a versão anterior de `schema.sql`, execute uma vez
+`supabase/lock-profile-role.sql` no SQL Editor. O cadastro continua aceitando
+cliente, prestador ou ambos, mas a pessoa não pode mudar `account_type` depois
+diretamente pelo navegador. O SQL interrompe a transação se esse bloqueio falhar.
+
+Confira depois:
+
+```sql
+select
+  has_column_privilege('authenticated', 'public.profiles', 'account_type', 'UPDATE') as pode_mudar_tipo,
+  has_column_privilege('authenticated', 'public.profiles', 'phone', 'UPDATE') as pode_atualizar_telefone;
+```
+
+O esperado é `false` e `true`, respectivamente.
+
+Para concluir o teste de recuperação, em **Authentication > URL Configuration**
+inclua `https://caiodrezende953-sudo.github.io/service-express/index.html`
+nas URLs de redirecionamento permitidas. O link de recuperação enviado pelo
+site usa esse endereço exato. Depois teste **Esqueci minha senha**, abra o link
+no e-mail, altere a senha e entre novamente com ela. Não envie o link, código
+ou senha a ninguém.
