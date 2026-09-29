@@ -18,4 +18,7 @@ header{min-height:92px;height:auto;max-width:1240px}nav button{min-height:42px;b
 .real-catalog .section-head{margin-bottom:12px}
 .real-catalog .filters{margin:18px 0}
 .real-catalog .hint{color:#365c55}
+.provider-service-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.provider-service-actions p{width:100%;margin:0}
+.provider-service-actions .secondary{margin:0}
 @media(max-width:600px){.real-catalog{padding:18px;margin:25px 0}}
