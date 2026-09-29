@@ -93,9 +93,11 @@
     if (!session) return loginView();
     const { data, error } = await client.from('profiles').select('full_name, phone, district, account_type, status').eq('id', session.user.id).single();
     if (error) return modal(`<h2>Minha conta</h2><p class="auth-message">${esc(authMessage(error))}</p><button class="secondary" id="logoutButton">Sair</button>`);
+    const { data: isAdmin } = await client.rpc('admin_is_current_user');
     const labels = { client: 'Cliente', provider: 'Prestador', both: 'Cliente e prestador' };
-    modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}<p class="hint">Pedidos, pagamentos e avaliações da demonstração ainda não usam esta conta.</p><button class="secondary" id="logoutButton">Sair</button>`);
+    modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}${isAdmin === true ? '<button class="secondary" id="adminReviewButton">Analisar prestadores</button>' : ''}<p class="hint">Pedidos, pagamentos e avaliações da demonstração ainda não usam esta conta.</p><button class="secondary" id="logoutButton">Sair</button>`);
     if (data.account_type !== 'client') $('#realProviderButton').onclick = providerView;
+    if (isAdmin === true) $('#adminReviewButton').onclick = () => window.AJURA_ADMIN?.open();
     $('#logoutButton').onclick = async () => { await client.auth.signOut(); $('#modal').close(); };
   }
 
@@ -113,6 +115,24 @@
     modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">O cadastro não aparece para clientes antes da aprovação. A vitrine atual ainda é demonstrativa.</p><form id="realProviderForm" class="auth-form"><label>Nome profissional<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>Bairros atendidos</legend><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>Meus serviços reais</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
     $('#backAccount').onclick = accountView;
     if (profile) $('#realAddService').onclick = () => multiServiceView(services || []);
+    if (profile?.approval_status === 'rejected') {
+      const { data: review } = await client.from('provider_profiles').select('review_note').eq('id', id).single();
+      const notice = document.createElement('div');
+      notice.className = 'auth-message';
+      const explanation = document.createElement('p');
+      explanation.textContent = `Motivo da recusa: ${review?.review_note || 'Entre em contato com a equipe.'}`;
+      const resubmit = document.createElement('button');
+      resubmit.type = 'button';
+      resubmit.className = 'secondary';
+      resubmit.textContent = 'Reenviar para análise';
+      resubmit.onclick = async () => {
+        resubmit.disabled = true;
+        const { error } = await client.rpc('provider_resubmit');
+        providerView(error ? authMessage(error) : 'Cadastro reenviado para análise.');
+      };
+      notice.append(explanation, resubmit);
+      $('#realProviderForm').before(notice);
+    }
     $('#modalBody').querySelectorAll('article.service').forEach((article, index) => {
       const service = services[index];
       if (!service) return;
@@ -292,5 +312,8 @@
     const script = document.createElement('script');
     script.src = 'real-catalog.js';
     document.body.append(script);
+    const adminScript = document.createElement('script');
+    adminScript.src = 'admin.js';
+    document.body.append(adminScript);
   }
 })();
