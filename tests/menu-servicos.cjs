@@ -1,0 +1,3 @@
+const fs=require('node:fs'),assert=require('node:assert/strict'),path=require('node:path');const root=path.join(__dirname,'..'),ui=fs.readFileSync(path.join(root,'ui.js'),'utf8'),css=fs.readFileSync(path.join(root,'ui.css'),'utf8');
+for(const token of ['allServicesMenu','openServiceMenu','menuSearch','data-menu-group','data-menu-sub'])assert(ui.includes(token),token);assert(css.includes('#categories,#subs{display:none}'));assert(css.includes('.service-menu-category'));assert(ui.includes("$('#allServicesMenu').onclick"));
+console.log('PASS: lista fixa oculta, menu de três pontos, navegação por grupo, pesquisa e seleção de subserviço.');
