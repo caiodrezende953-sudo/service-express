@@ -84,3 +84,9 @@ nas URLs de redirecionamento permitidas. O link de recuperação enviado pelo
 site usa esse endereço exato. Depois teste **Esqueci minha senha**, abra o link
 no e-mail, altere a senha e entre novamente com ela. Não envie o link, código
 ou senha a ninguém.
+
+
+## Etapa 3 — identificação privada do prestador
+Executar `supabase/provider-onboarding.sql` sobre a base existente. A aprovação usada pela aplicação é `provider_profiles.approval_status`; os campos extras em `profiles` criados anteriormente não são usados como aprovação. Não executar novamente schema.sql.
+CPF/CNPJ e razão social são salvos em provider_private_details, acessível apenas ao próprio usuário pela API. Conferência administrativa de documentos e upload de fotos/documentos ainda pendentes. O formato numérico é validado; isso não comprova autenticidade do documento.
+Testar com conta provider/both: identificação, bairros, múltiplos serviços, recarga e ausência de pendentes na vitrine real.

@@ -144,9 +144,20 @@
       client.from('provider_services').select('id, category, subcategory, title, description, pricing_type, starting_price, active').eq('provider_id', id).order('id')
     ]);
     if (profileError || areasError || servicesError) return modal(`<h2>Cadastro profissional</h2><p class="auth-message">${esc(authMessage(profileError || areasError || servicesError))}</p>`);
+    const { data: identity, error: identityError } = await client.from('provider_private_details').select('document_number, business_name').eq('provider_id', id).maybeSingle();
+    if (identityError) return modal('<h2>Cadastro profissional</h2><p>Execute a atualização provider-onboarding.sql no Supabase antes de cadastrar documentos.</p>');
     const selected = new Set((areas || []).map(area => area.district));
     const status = { pending: 'Aguardando análise', approved: 'Aprovado', rejected: 'Recusado', suspended: 'Suspenso' };
-    modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">O cadastro não aparece para clientes antes da aprovação. A vitrine atual ainda é demonstrativa.</p><form id="realProviderForm" class="auth-form"><label>Nome profissional<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>Bairros atendidos</legend><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>Meus serviços reais</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
+    modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">Seu perfil aparece na busca real após aprovação. Complete os dados, os bairros e pelo menos um serviço.</p><form id="realProviderForm" class="auth-form"><fieldset><legend>1. Identificação profissional</legend><label>CPF ou CNPJ<input name="document_number" inputmode="numeric" required maxlength="18" value="${esc(identity?.document_number || '')}" placeholder="Somente números"></label><label>Razão social ou nome completo<input name="business_name" required minlength="3" maxlength="160" value="${esc(identity?.business_name || '')}"></label><p class="hint">Documento e razão social ficam protegidos e não aparecem na busca.</p></fieldset><label>Nome exibido aos clientes<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>2. Onde você atende?</legend><label>Encontrar bairro<input id="providerAreaSearch" type="search" placeholder="Digite o bairro"></label><p id="providerAreaCount" class="hint"></p><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>3. Serviços que ofereço</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
+    const updateAreaCount = () => { $('#providerAreaCount').textContent = `${$('#realProviderForm').querySelectorAll('input[name="district"]:checked').length} bairros selecionados`; };
+    updateAreaCount();
+    $('#providerAreaSearch').oninput = event => {
+      const query = event.target.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      $('#realProviderForm').querySelectorAll('.area-list label').forEach(label => {
+        label.hidden = !label.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(query);
+      });
+    };
+    $('#realProviderForm').querySelectorAll('input[name="district"]').forEach(input => input.onchange = updateAreaCount);
     $('#backAccount').onclick = accountView;
     if (profile) $('#realAddService').onclick = () => multiServiceView(services || []);
     if (profile?.approval_status === 'rejected') {
@@ -197,6 +208,13 @@
       event.preventDefault();
       const form = event.target, data = new FormData(form), chosen = data.getAll('district');
       if (!chosen.length) return providerView('Selecione ao menos um bairro.');
+      const documentNumber = clean(data.get('document_number')).replace(/\D/g, '');
+      if (![11, 14].includes(documentNumber.length) || /^(\d)\1+$/.test(documentNumber)) {
+        form.querySelector('input[name="document_number"]').setCustomValidity('Informe um CPF com 11 ou CNPJ com 14 números.');
+        form.reportValidity();
+        form.querySelector('input[name="document_number"]').oninput = event => event.target.setCustomValidity('');
+        return;
+      }
       const button = event.submitter;
       button.disabled = true;
       const payload = { id, display_name: clean(data.get('display_name')), bio: clean(data.get('bio')) };
@@ -204,6 +222,8 @@
         ? await client.from('provider_profiles').update({ display_name: payload.display_name, bio: payload.bio }).eq('id', id)
         : await client.from('provider_profiles').insert(payload);
       if (error) return providerView(authMessage(error));
+      const { error: privateError } = await client.from('provider_private_details').upsert({ provider_id: id, document_number: documentNumber, business_name: clean(data.get('business_name')), updated_at: new Date().toISOString() });
+      if (privateError) return providerView('Perfil salvo, mas a identificação não foi salva: ' + authMessage(privateError));
       const old = [...selected];
       const add = chosen.filter(district => !selected.has(district));
       const remove = old.filter(district => !chosen.includes(district));
