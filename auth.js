@@ -136,6 +136,7 @@
   }
 
   async function providerView(message = '') {
+    document.dispatchEvent(new Event('ajura:professional'));
     if (!session) return loginView();
     const id = session.user.id;
     const [{ data: profile, error: profileError }, { data: areas, error: areasError }, { data: services, error: servicesError }] = await Promise.all([
@@ -364,7 +365,7 @@
       if (event === 'PASSWORD_RECOVERY') setTimeout(() => newPasswordView(), 0);
     });
   }
-  window.AJURA_AUTH = { client, configured };
+  window.AJURA_AUTH = { client, configured, openProvider: providerView };
   if (client) {
     const script = document.createElement('script');
     script.src = 'real-catalog.js';

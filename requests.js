@@ -35,6 +35,7 @@
    await conversation(data);
   };
  }
+ window.AJURA_REQUESTS = { inbox, conversation };
  async function inbox() {
   const id = await actor(); if (!id) return $('#accountButton').click();
   const { data, error } = await client.from('service_requests').select('*').order('created_at', { ascending: false }).limit(100);
