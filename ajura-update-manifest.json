@@ -1,54 +1,54 @@
 {
-    "version":  "2026.10.05.2",
+    "version":  "2026.10.05.3",
     "files":  [
                   {
-                      "path":  "index.html",
+                      "path":  "admin.js",
                       "accepted_sha256":  [
-                                              "7448AC6CEC210D295C4C474E2EF32D717B030A7975020D03039023ECB16BD4DF"
+                                              "428C720959C49C0B8A6478DB7DA2AC15AD4C1590FF7213D23DCCD552DDAAD727"
                                           ],
-                      "new_sha256":  "5B9CEDC4A1C92F1D6DCD460D99DC672CA290446A6A3548D605C830C34E3DBFC5"
+                      "new_sha256":  "CD2F1AFB330BD685BB1BB0F97AA3FADA06BB695F0A4447F39C20110B516BBEF8"
                   },
                   {
                       "path":  "auth.js",
                       "accepted_sha256":  [
-                                              "BA2F09710CDBD2FB9A6578EBDDA3DB7BE6D754EFDDB7554B2CADC5FF136120F5"
+                                              "AD351D4FEB961BF57C5C19E6BAB6CB7334E1D88961CE4D611311784A1E04D502"
                                           ],
-                      "new_sha256":  "AD351D4FEB961BF57C5C19E6BAB6CB7334E1D88961CE4D611311784A1E04D502"
+                      "new_sha256":  "ED6C1FF4BFDA26D9C10E156260DA2CA622AA2D0E222DC82D516B7F5EE7E15CEB"
                   },
                   {
-                      "path":  "real-catalog.js",
+                      "path":  "core.js",
                       "accepted_sha256":  [
-                                              "7DF1ACCE10554E35A7B6DB78504B7E821563286769312A93AD5798036C44B7D3"
+                                              "7A931FBFD1BCC85A313CAF0637DBA19E2DEF42BFA7A3AB32B983A2DECAC593A6"
                                           ],
-                      "new_sha256":  "F428E5DC5EEB9791DFEA4AC0FA2ED89602BE54B057764356F2FB347961D5B997"
+                      "new_sha256":  "D35FFA99C8BC163DC92C1A1DA3E9AB82D16DB94C59AF0390929837784C457DD6"
                   },
                   {
-                      "path":  "workspace.js",
+                      "path":  "docs/ETAPA3-VALIDACAO.md",
                       "accepted_sha256":  [
-                                              "61B433FFA0C8DB18AA040159A2A855CD9CC287E30EC0947D4C87143956BB2546"
+
                                           ],
-                      "new_sha256":  "5301781366505B953B52BF3506E3E440E12FA47197585F8FCDEBAEA7A1451414"
+                      "new_sha256":  "D0173E202634F6CABCD6CA48867F9FD9D03DDB8C0FCD53C8E0D59D0382775ADC"
                   },
                   {
-                      "path":  "workspace.css",
+                      "path":  "index.html",
                       "accepted_sha256":  [
-                                              "5A107EA01716A7D1A3304D3623AAF373C9735EBA811DDA5BB9F4768FEE131359"
+                                              "5B9CEDC4A1C92F1D6DCD460D99DC672CA290446A6A3548D605C830C34E3DBFC5"
                                           ],
-                      "new_sha256":  "5F5F2852DEE964CE337EF533F91D77DF580EC6B7285A06C2647BAC069147AE74"
+                      "new_sha256":  "AD031D03187A9F9A13FE5902AD9FA696621F01FDEFC42CA29F49AA7C8CA7FB89"
                   },
                   {
-                      "path":  "professional-dashboard.js",
+                      "path":  "supabase/provider-validation.sql",
                       "accepted_sha256":  [
-                                              "CBA659DC159C288706B3CE5BE7FB7B79286873CDA7F33021D7102AC24B9A4CE6"
+
                                           ],
-                      "new_sha256":  "E797CDFA9815017AC664A3A2B9D62069B2816C45235792CA5397E69261E26439"
+                      "new_sha256":  "A14C16FE7A5D6E5F331F66A230F8FB289D4EC1D252D755295A525C0A80CF66F4"
                   },
                   {
-                      "path":  "tests/dom.test.cjs",
+                      "path":  "tests/document.test.cjs",
                       "accepted_sha256":  [
-                                              "97BFE5DC29FA4640A90C2E1AD9D088D94873C413B22950D85C8479FDE5EA73F8"
+
                                           ],
-                      "new_sha256":  "31FD8BC7604CCC8EAA25CF4A2125F2827A8052761238B3578B8D069C628E1DBF"
+                      "new_sha256":  "D20F105F83660726C3AA1BC65E5993EF096BF9F90128CA1FFC243EE3547E95F5"
                   }
               ]
 }

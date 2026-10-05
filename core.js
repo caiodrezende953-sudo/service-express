@@ -48,3 +48,30 @@
  }
  window.AJURA_CORE=Object.freeze({safe,today,date,time,money,statuses,missingProfile,activeConnection,debounce,handleForm,counter,allRows,version:'2026.10.05.1'});
 })();
+
+/* Dígitos verificadores: não substitui conferência de identidade. */
+(() => {
+  const normalize = value => String(value ?? '').trim().toUpperCase().replace(/[.\/\-\s]/g, '');
+  function valid(value) {
+    const doc = normalize(value);
+    if (/^([0-9])\1+$/.test(doc)) return false;
+    if (/^[0-9]{11}$/.test(doc)) {
+      for (let size = 9; size <= 10; size++) {
+        let sum = 0;
+        for (let i = 0; i < size; i++) sum += Number(doc[i]) * (size + 1 - i);
+        const digit = (sum * 10 % 11) % 10;
+        if (digit !== Number(doc[size])) return false;
+      }
+      return true;
+    }
+    if (!/^[A-Z0-9]{12}[0-9]{2}$/.test(doc)) return false;
+    for (let size = 12; size <= 13; size++) {
+      let sum = 0;
+      for (let i = 0; i < size; i++) sum += (doc.charCodeAt(i) - 48) * ((size - 1 - i) % 8 + 2);
+      const remainder = sum % 11;
+      if ((remainder < 2 ? 0 : 11 - remainder) !== Number(doc[size])) return false;
+    }
+    return true;
+  }
+  window.AJURA_DOCUMENT = Object.freeze({ normalize, valid });
+})();
