@@ -38,3 +38,10 @@ credentials/
 *.key
 *.p12
 *.pfx
+
+*.mp-backup
+*.pro-dashboard-backup
+*.open-dashboard-backup
+/ajura-update-backups/
+/ajura-organizacao-v1/
+/ajura-stage2-files-new/

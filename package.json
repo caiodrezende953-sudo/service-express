@@ -1,0 +1,12 @@
+{
+  "name": "ajura-piloto",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Verificações locais do frontend AJURA; não executam pagamentos.",
+  "scripts": {
+    "test": "node tests/core.test.cjs && node tests/structure.test.cjs && node tests/dom.test.cjs",
+    "check": "node --check core.js && node --check auth.js && node --check real-catalog.js && node --check requests.js && node --check quotes.js && node --check mp-connect.js && node --check professional-dashboard.js && node --check workspace.js"
+  },
+  "devDependencies": {"linkedom": "0.18.13"},
+  "engines": {"node": ">=20"}
+}

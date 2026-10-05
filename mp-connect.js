@@ -16,6 +16,11 @@
         const { data, error } = await client.rpc('mp_my_test_connection');
         if (error) throw new Error('Não foi possível consultar a conexão. Confira se executou o SQL desta etapa.');
         if (!section.isConnected) return;
+        if (data?.length && !window.AJURA_CORE.activeConnection(data)) {
+          status.textContent = 'A conexão de teste expirou. A renovação pelo servidor ainda precisa ser implementada.';
+          button.textContent = 'Conexão expirada';
+          return;
+        }
         if (data?.length) {
           status.textContent = 'Conta de teste conectada. Pagamentos ainda não estão ativos.';
           button.textContent = 'Conta conectada';

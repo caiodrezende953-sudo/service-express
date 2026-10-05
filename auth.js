@@ -109,7 +109,11 @@
     if (!client) return setupRequired();
     if (!session) return loginView();
     const { data, error } = await client.from('profiles').select('full_name, phone, district, address_line, address_number, address_complement, address_reference, account_type, status').eq('id', session.user.id).single();
-    if (error) return modal(`<h2>Minha conta</h2><p class="auth-message">${esc(authMessage(error))}</p><button class="secondary" id="logoutButton">Sair</button>`);
+    if (error) {
+      modal(`<h2>Minha conta</h2><p class="auth-message">${esc(authMessage(error))}</p><button class="secondary" id="logoutButton">Sair</button>`);
+      $('#logoutButton').onclick = async () => { const { error: exitError } = await client.auth.signOut(); if (exitError) return toast(authMessage(exitError)); $('#modal').close(); };
+      return;
+    }
     const { data: isAdmin } = await client.rpc('admin_is_current_user');
     const labels = { client: 'Cliente', provider: 'Prestador', both: 'Cliente e prestador' };
     modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Endereço</dt><dd>${esc(data.address_line || 'Ainda não informado')}${data.address_number ? `, ${esc(data.address_number)}` : ''}${data.address_complement ? ` · ${esc(data.address_complement)}` : ''}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl><button class="primary" id="editClientButton">Editar meus dados</button>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}${isAdmin === true ? '<button class="secondary" id="adminReviewButton">Analisar prestadores</button>' : ''}<p class="hint">O endereço completo fica protegido e será usado em um pedido somente após a contratação.</p><button class="secondary" id="logoutButton">Sair</button>`);
@@ -119,7 +123,7 @@
       document.dispatchEvent(new Event('ajura:professional'));
     };
     if (isAdmin === true) $('#adminReviewButton').onclick = () => window.AJURA_ADMIN?.open();
-    $('#logoutButton').onclick = async () => { await client.auth.signOut(); $('#modal').close(); };
+    $('#logoutButton').onclick = async () => { const { error } = await client.auth.signOut(); if (error) return toast(authMessage(error)); $('#modal').close(); };
   }
 
   function editClientView(data, message = '') {
@@ -133,12 +137,14 @@
       button.disabled = true;
       const payload = { full_name: clean(values.get('full_name')), phone, district: clean(values.get('district')), address_line: clean(values.get('address_line')), address_number: clean(values.get('address_number')), address_complement: clean(values.get('address_complement')), address_reference: clean(values.get('address_reference')) };
       const { error } = await client.from('profiles').update(payload).eq('id', session.user.id);
-      if (error) return editClientView(data, authMessage(error));
-      accountView();
+      if (error) return editClientView({ ...data, ...payload }, authMessage(error));
+      await accountView();
+      document.dispatchEvent(new Event('ajura:profile-saved'));
     };
   }
 
   async function providerView(message = '') {
+    if (typeof message !== 'string') message = '';
     document.dispatchEvent(new Event('ajura:professional'));
     if (!session) return loginView();
     const id = session.user.id;
@@ -370,11 +376,6 @@
   }
   window.AJURA_AUTH = { client, configured, openProvider: providerView };
   if (client) {
-    const script = document.createElement('script');
-    script.src = 'real-catalog.js';
-    document.body.append(script);
-    const adminScript = document.createElement('script');
-    adminScript.src = 'admin.js';
-    document.body.append(adminScript);
+    // Módulos carregados uma única vez em index.html.
   }
 })();

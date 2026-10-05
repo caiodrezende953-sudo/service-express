@@ -1,0 +1,31 @@
+/* AJURA: layout de áreas reais, compartilhado por cliente e profissional. */
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid #5030cd;outline-offset:3px}
+button,input,select,textarea{max-width:100%}
+button:disabled{cursor:default;opacity:.6}
+.request-description,.ajura-pro-request p{white-space:pre-wrap;overflow-wrap:anywhere}
+.request-toolbar,.ajura-pro-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}
+.request-toolbar label{display:grid;gap:6px}
+.request-toolbar select{min-height:44px;padding:8px;border:1px solid #ded9e8;border-radius:8px;background:white}
+.ajura-pro-hero{padding:32px;border-radius:24px;background:#fff0e9;margin:24px 0}
+.ajura-pro-hero h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:12px 0}
+.ajura-pro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px;margin:20px 0}
+.ajura-pro-card{border:1px solid #e4ded9;border-radius:18px;padding:22px;background:white;min-width:0}
+.ajura-pro-card strong{display:block;font-size:24px;margin:10px 0;overflow-wrap:anywhere}
+.ajura-pro-request{border:1px solid #e4ded9;border-radius:16px;padding:18px;margin:12px 0;background:white}
+body.ajura-professional main>:not(#ajuraProfessionalDashboard){display:none!important}
+body.ajura-professional header nav>:not(#accountButton):not(#ajuraModeToggle){display:none!important}
+/* O código demonstrativo permanece compatível, mas os fluxos públicos usam dados reais. */
+#catalog,#providerPanel,#ordersButton,#paymentsButton,#suggestionsButton,.hero-foot,.how,.search-panel,.catalog-toolbar,.discovery{display:none!important}
+.skip-link{position:absolute;left:16px;top:-100px;z-index:100;background:white;padding:12px;border-radius:8px}
+.skip-link:focus{top:12px}
+#networkStatus{padding:12px;border:1px solid #e9c96a;border-radius:10px;background:#fff8df;margin:12px auto;max-width:1184px}
+.field-counter{display:block;text-align:right}
+#realCatalog .filters{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:12px}
+#realCatalog .section-head{flex-wrap:wrap;gap:12px}
+#realCatalog .empty{grid-column:1/-1}
+header nav{flex-wrap:wrap;gap:8px}
+header nav button{min-height:44px}
+@media(max-width:760px){header{flex-wrap:wrap;gap:12px}header nav{width:100%;justify-content:flex-start}#realCatalog .filters{grid-template-columns:1fr 1fr}#realCatalog .filters .search{grid-column:1/-1}.ajura-pro-hero{padding:22px}.ajura-pro-actions button{width:100%}dialog{max-width:calc(100vw - 24px)}.request-toolbar label{flex:1 1 160px}}
+@media(max-width:420px){#realCatalog .filters{grid-template-columns:1fr}#realCatalog .filters .search{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}

@@ -1,0 +1,146 @@
+{
+    "version":  "2026.10.05.1",
+    "files":  [
+                  {
+                      "path":  "index.html",
+                      "accepted_sha256":  [
+                                              "C43060E5B61B7C37572FF4C8340FB5B5D5C8DA4067D2CE25C6891865E2CB64B9"
+                                          ],
+                      "new_sha256":  "7448AC6CEC210D295C4C474E2EF32D717B030A7975020D03039023ECB16BD4DF"
+                  },
+                  {
+                      "path":  "auth.js",
+                      "accepted_sha256":  [
+                                              "F32589223445CD0A5F9712E9F3DC3BD65F12AD8A32CD61D23DAE8564EE15C0B8",
+                                              "838970FA7A60D63EBE9661900FBD4A1F40CA6FF3DCCBFC6F68714B133BC58535"
+                                          ],
+                      "new_sha256":  "BA2F09710CDBD2FB9A6578EBDDA3DB7BE6D754EFDDB7554B2CADC5FF136120F5"
+                  },
+                  {
+                      "path":  "requests.js",
+                      "accepted_sha256":  [
+                                              "B81EECE1E04213564B3BB210C3F18C9EA0999AED5028F307004001CF333DEF5B"
+                                          ],
+                      "new_sha256":  "41B29FB7E2277575B36D72F6D6BDECAB257279F15978ED26D227C3B3266C0DA6"
+                  },
+                  {
+                      "path":  "quotes.js",
+                      "accepted_sha256":  [
+                                              "E51F44B3FD17B1FA832503A09248D44BD14CA82608308C1510450131B9F5C960"
+                                          ],
+                      "new_sha256":  "B0C1B5860F53B1E4D83F7C882B4344BF57A3388789694798E7F7EC972C378AD7"
+                  },
+                  {
+                      "path":  "professional-dashboard.js",
+                      "accepted_sha256":  [
+                                              "5237D7F624A3AA4268C9AEDB22B74655782A260474A902B2835CF1AD603009F3"
+                                          ],
+                      "new_sha256":  "CBA659DC159C288706B3CE5BE7FB7B79286873CDA7F33021D7102AC24B9A4CE6"
+                  },
+                  {
+                      "path":  "real-catalog.js",
+                      "accepted_sha256":  [
+                                              "ADDF325DCDF30C5FA529B1D6A5171F1D9CAEE18F3A07679FD6D4B493DBCCD399"
+                                          ],
+                      "new_sha256":  "7DF1ACCE10554E35A7B6DB78504B7E821563286769312A93AD5798036C44B7D3"
+                  },
+                  {
+                      "path":  "mp-connect.js",
+                      "accepted_sha256":  [
+                                              "78DAFAD7AD99EF3B7148AFFBDE03EED153517A2FCE64711F37AAAE091732FA89"
+                                          ],
+                      "new_sha256":  "38BB2A18C84A512B546B551076FB61D09CB30B3D567FC0EFDFAE4BEE2A88B205"
+                  },
+                  {
+                      "path":  "core.js",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "7A931FBFD1BCC85A313CAF0637DBA19E2DEF42BFA7A3AB32B983A2DECAC593A6"
+                  },
+                  {
+                      "path":  "workspace.js",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "61B433FFA0C8DB18AA040159A2A855CD9CC287E30EC0947D4C87143956BB2546"
+                  },
+                  {
+                      "path":  "workspace.css",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "5A107EA01716A7D1A3304D3623AAF373C9735EBA811DDA5BB9F4768FEE131359"
+                  },
+                  {
+                      "path":  "package.json",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "44419090460E29186D4D161AD77195BE050EB57E265F6739A72B5AFD2A596DEF"
+                  },
+                  {
+                      "path":  "docs/REVISAO-AJURA.md",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "34FF6E4825DA4447DE70378FE6BD9513C741FF53218F35D109487B8254D91AD6"
+                  },
+                  {
+                      "path":  "docs/INSTALACAO-REVISAO.md",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "94D9D8306FE8D7DB801F273D408CE9BB9A97FC1DAD034EF500B4B41B131BF068"
+                  },
+                  {
+                      "path":  "docs/ARQUITETURA-AJURA.md",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "2529715ABAB5BB1F52A8F0FB543333062D6709566D5916A38CE2B5892E53DF9D"
+                  },
+                  {
+                      "path":  "docs/DADOS-E-MIGRACOES.md",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "7D2B511A7D34B4169895A6D2207EFBDDA9A431A122362F74F7660D24FC0910AD"
+                  },
+                  {
+                      "path":  "docs/VALIDACAO.md",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "EAA3CBE5D388EF97674EDD3EFA2D1411EDB9B6BBF09D1BA96D7CA2C76F35B08B"
+                  },
+                  {
+                      "path":  "tests/dom.test.cjs",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "97BFE5DC29FA4640A90C2E1AD9D088D94873C413B22950D85C8479FDE5EA73F8"
+                  },
+                  {
+                      "path":  "tests/core.test.cjs",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "E2CE6502BC69292EC930B97CB721DE17B9BD88C580CF46D296A5BCC2D0403F92"
+                  },
+                  {
+                      "path":  "tests/structure.test.cjs",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "85F03E26906C282A153B8CE20C7AE8388F01D7FB4D9D5EC1BD8C64E84DE71E4D"
+                  },
+                  {
+                      "path":  "tests/browser.test.cjs",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "7EE7BC2855AF9EE9E9ADEECE6108747EA17CCC7123AD699F7A3CFE377997A0DF"
+                  }
+              ]
+}
