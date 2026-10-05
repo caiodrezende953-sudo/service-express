@@ -1,9 +1,13 @@
 /* Vitrine real: carregamento paginado e controles disponíveis mesmo sem ofertas. */
 (() => {
  'use strict';
- if(window.AJURA_CATALOG)return;
+ if(window.AJURA_CATALOG){
+  document.querySelectorAll('#realCatalog').forEach((node,index)=>{if(index>0)node.remove();});
+  return;
+ }
  const client=window.AJURA_AUTH?.client,C=window.AJURA_CORE;
  if(!client || !C)return;
+ document.querySelectorAll('#realCatalog').forEach(node=>node.remove());
  const root=document.createElement('section');root.id='realCatalog';root.className='real-catalog';root.setAttribute('aria-label','Profissionais aprovados');
  document.querySelector('#catalog')?.before(root);if(!root.isConnected)return;
  const {safe,money,allRows}=C,catalog=typeof SERVICE_CATALOG!=='undefined'?SERVICE_CATALOG:[];

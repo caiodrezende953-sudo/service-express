@@ -29,3 +29,9 @@ header nav button{min-height:44px}
 @media(max-width:760px){header{flex-wrap:wrap;gap:12px}header nav{width:100%;justify-content:flex-start}#realCatalog .filters{grid-template-columns:1fr 1fr}#realCatalog .filters .search{grid-column:1/-1}.ajura-pro-hero{padding:22px}.ajura-pro-actions button{width:100%}dialog{max-width:calc(100vw - 24px)}.request-toolbar label{flex:1 1 160px}}
 @media(max-width:420px){#realCatalog .filters{grid-template-columns:1fr}#realCatalog .filters .search{grid-column:auto}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+.demo-examples{margin:20px 0;padding:16px;border:1px solid #e4ded9;border-radius:14px;background:#fff}
+.demo-examples summary{cursor:pointer;font-weight:600}
+.demo-example-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.demo-example-grid article{padding:12px;background:#faf8f5;border-radius:10px}
+.demo-example-grid p{font-size:13px}

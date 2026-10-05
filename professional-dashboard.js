@@ -7,7 +7,7 @@
  const {safe,date,money,activeConnection}=C;
  let generation=0,professional=false,lastUser=null;
  const panel=document.createElement('section');panel.id='ajuraProfessionalDashboard';panel.hidden=true;main.prepend(panel);
- const toggle=document.createElement('button');toggle.id='ajuraModeToggle';toggle.textContent='Área profissional';toggle.setAttribute('aria-pressed','false');nav.append(toggle);
+ const toggle=document.createElement('button');toggle.hidden=true;toggle.id='ajuraModeToggle';toggle.textContent='Área profissional';toggle.setAttribute('aria-pressed','false');nav.append(toggle);
  function customer(){generation++;professional=false;document.body.classList.remove('ajura-professional');panel.hidden=true;panel.innerHTML='';toggle.textContent='Área profissional';toggle.setAttribute('aria-pressed','false');document.title='AJURA · Encontre serviços em Manaus';}
  async function dashboard(){
   const run=++generation;

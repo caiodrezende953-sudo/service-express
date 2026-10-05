@@ -32,6 +32,12 @@
   });
  }
  new MutationObserver(decorate).observe(document.querySelector('#modalBody'),{childList:true,subtree:true});decorate();
+ // Exemplos fictícios discretos; a vitrine de profissionais continua sendo real.
+ if(!document.querySelector('#demoExamples')){
+  const examples=document.createElement('details');examples.id='demoExamples';examples.className='demo-examples';
+  examples.innerHTML='<summary>Conheça exemplos de serviços do catálogo</summary><p class="hint">Exemplos demonstrativos. Não representam profissionais cadastrados nem ofertas disponíveis.</p><div class="demo-example-grid"><article><b>Troca de tomada</b><p>Exemplo de elétrica residencial.</p></article><article><b>Reparo de vazamento</b><p>Exemplo de manutenção hidráulica.</p></article><article><b>Fotografia de produtos</b><p>Exemplo de fotografia e mídia.</p></article></div>';
+  document.querySelector('#realCatalog')?.after(examples);
+ }
  const client=window.AJURA_AUTH?.client;let roleRun=0;
  async function updateRole(){
   const run=++roleRun,toggle=document.querySelector('#ajuraModeToggle');if(!toggle || !client)return;
@@ -40,5 +46,5 @@
    if(run===roleRun)toggle.hidden=Boolean(error || profile?.status!=='active' || !['provider','both'].includes(profile.account_type));
   }catch{if(run===roleRun)toggle.hidden=true;}
  }
- if(client){client.auth.onAuthStateChange(event=>{if(['SIGNED_IN','SIGNED_OUT','INITIAL_SESSION'].includes(event))setTimeout(updateRole,0);});void updateRole();}
+ if(client){client.auth.onAuthStateChange(event=>{if(['SIGNED_IN','SIGNED_OUT','INITIAL_SESSION'].includes(event)){const toggle=document.querySelector('#ajuraModeToggle');if(toggle)toggle.hidden=true;setTimeout(updateRole,0);}});void updateRole();}
 })();
