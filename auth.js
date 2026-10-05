@@ -114,7 +114,10 @@
     const labels = { client: 'Cliente', provider: 'Prestador', both: 'Cliente e prestador' };
     modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Endereço</dt><dd>${esc(data.address_line || 'Ainda não informado')}${data.address_number ? `, ${esc(data.address_number)}` : ''}${data.address_complement ? ` · ${esc(data.address_complement)}` : ''}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl><button class="primary" id="editClientButton">Editar meus dados</button>${data.account_type !== 'client' ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}${isAdmin === true ? '<button class="secondary" id="adminReviewButton">Analisar prestadores</button>' : ''}<p class="hint">O endereço completo fica protegido e será usado em um pedido somente após a contratação.</p><button class="secondary" id="logoutButton">Sair</button>`);
     $('#editClientButton').onclick = () => editClientView(data);
-    if (data.account_type !== 'client') $('#realProviderButton').onclick = providerView;
+    if (data.account_type !== 'client') $('#realProviderButton').onclick = () => {
+      document.querySelector('#modal')?.close();
+      document.dispatchEvent(new Event('ajura:professional'));
+    };
     if (isAdmin === true) $('#adminReviewButton').onclick = () => window.AJURA_ADMIN?.open();
     $('#logoutButton').onclick = async () => { await client.auth.signOut(); $('#modal').close(); };
   }
