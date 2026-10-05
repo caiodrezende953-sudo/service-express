@@ -7,6 +7,22 @@
  async function actor() { const { data: { session } } = await client.auth.getSession(); return session?.user.id; }
  async function create(serviceId) {
   const id = await actor(); if (!id) return $('#accountButton').click();
+  const { data: profile, error: profileError } = await client.from('profiles')
+   .select('full_name, phone, district, address_line, address_number, account_type, status').eq('id', id).single();
+  if (profileError) return toast('Não foi possível conferir seu cadastro. Tente novamente.');
+  if (profile.status !== 'active' || !['client', 'both'].includes(profile.account_type))
+   return toast('É necessário um perfil de cliente ativo para solicitar serviços.');
+  const missing = [];
+  if ((profile.full_name || '').trim().length < 3) missing.push('Nome completo');
+  if (!/^[0-9]{10,11}$/.test((profile.phone || '').replace(/[^0-9]/g, ''))) missing.push('Celular com DDD');
+  if ((profile.district || '').trim().length < 2) missing.push('Bairro');
+  if ((profile.address_line || '').trim().length < 3) missing.push('Rua ou avenida');
+  if (!(profile.address_number || '').trim()) missing.push('Número do endereço (ou S/N)');
+  if (missing.length) {
+   modal(`<h2>Complete seu cadastro</h2><p>Antes de solicitar um serviço, preencha:</p><ul>${missing.map(field => `<li>${safe(field)}</li>`).join('')}</ul><p class="hint">Seu endereço não será incluído na conversa inicial.</p><button class="primary" id="completeRequestProfile">Abrir minha conta</button>`);
+   $('#completeRequestProfile').onclick = () => $('#accountButton').click();
+   return;
+  }
   const { data: service, error } = await client.from('provider_services').select('id, provider_id, title').eq('id', serviceId).single();
   if (error) return toast('Serviço indisponível. Atualize a busca.');
   const { data: areas, error: areaError } = await client.from('provider_service_areas').select('district').eq('provider_id', service.provider_id).order('district');
