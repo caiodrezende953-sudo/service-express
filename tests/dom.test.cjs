@@ -13,7 +13,7 @@ const ctx=vm.createContext(window);vm.runInContext(`function esc(s){return Strin
 const stale=document.createElement('section');stale.id='realCatalog';document.querySelector('main').append(stale);
 const nav=document.querySelector('nav');const b=document.createElement('button');b.id='accountButton';nav.append(b);
 const fixture=fs.readFileSync('tests/browser.test.cjs','utf8').match(/const fixture=`([\s\S]*?)`;/)[1];vm.runInContext(fixture,ctx);vm.runInContext(fs.readFileSync('supabase-config.js','utf8'),ctx);vm.runInContext(fs.readFileSync('catalogo.js','utf8'),ctx);vm.runInContext(fs.readFileSync('bairros.js','utf8'),ctx);
-for(const f of ['core.js','auth.js','real-catalog.js','requests.js','quotes.js','mp-connect.js','professional-dashboard.js','workspace.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx,{filename:f});
+for(const f of ['core.js','auth.js','service-location.js','real-catalog.js','requests.js','quotes.js','mp-connect.js','professional-dashboard.js','workspace.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx,{filename:f});
 const wait=async()=>{for(let i=0;i<8;i++)await new Promise(r=>setTimeout(r,0));};
 const click=async selector=>{const el=document.querySelector(selector);assert(el,selector);assert.equal(typeof el.onclick,'function',selector+' handler');await el.onclick({target:el});await wait();};
 (async()=>{

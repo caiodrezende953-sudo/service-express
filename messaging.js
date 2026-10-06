@@ -55,6 +55,8 @@
    const resolve=body.querySelector('[data-support-resolve]');if(resolve)C.handleForm(resolve,async()=>{const note=resolve.elements.resolution.value.trim();if(note.length<10||note.length>2000){resolve.querySelector('[data-support-status]').textContent='Informe a resolucao em 10 a 2000 caracteres.';return;}const {error}=await client.rpc('resolve_support_ticket',{target_ticket:active.id,resolution:note});if(!resolve.isConnected)return;if(error){resolve.querySelector('[data-support-status]').textContent=error.message||'Nao foi possivel encerrar.';return;}await inbox(page,true);},m=>{if(resolve.isConnected)resolve.querySelector('[data-support-status]').textContent=m;});
    if(window.AJURA_REQUEST_OVERVIEW)await window.AJURA_REQUEST_OVERVIEW.attach(request,actor,body,()=>openRequest(id,central));
    if(run!==generation||!body.isConnected)return;
+   if(window.AJURA_LOCATION)await window.AJURA_LOCATION.attach(request,actor,body,()=>openRequest(id,central));
+   if(run!==generation||!body.isConnected)return;
    if(window.AJURA_SERVICE_CANCELLATION)await window.AJURA_SERVICE_CANCELLATION.attach(request,actor,body,()=>openRequest(id,central),central);
    if(run!==generation||!body.isConnected)return;
    if(!central){

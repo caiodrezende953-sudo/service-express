@@ -14,7 +14,7 @@
   const run=++generation;
   try {
    const id=await actor();if(run!==generation)return;if(!id)return login(serviceId);
-   const {data:profile,error:profileError}=await client.from('profiles').select('full_name,phone,district,address_line,address_number,account_type,status').eq('id',id).single();
+   const {data:profile,error:profileError}=await client.from('profiles').select('full_name,phone,district,address_line,address_number,address_complement,address_reference,account_type,status').eq('id',id).single();
    if(run!==generation)return;if(profileError)return toast('Não foi possível conferir seu cadastro. Tente novamente.');
    if(profile.status!=='active' || !['client','both'].includes(profile.account_type))return toast('É necessário um perfil de cliente ativo para solicitar serviços.');
    const missing=missingProfile(profile);
@@ -29,13 +29,16 @@
    const {data:areas,error:areaError}=await client.from('provider_service_areas').select('district').eq('provider_id',service.provider_id).order('district');
    if(run!==generation)return;if(areaError)return toast('Não foi possível carregar os bairros.');
    if(!areas?.length)return toast('Este profissional ainda não informou bairros atendidos.');
+   if(!window.AJURA_LOCATION)return toast('Modulo do local indisponivel. Atualize a pagina.');
    pendingService=null;
-   const body=show(`<span class="eyebrow">SOLICITAÇÃO DE SERVIÇO</span><h2>${safe(service.title)}</h2><p>Informe o que precisa para o profissional preparar uma proposta.</p><form id="realRequestForm" class="auth-form"><label>Bairro<select name="district" required><option value="">Selecione</option>${areas.map(a=>`<option value="${safe(a.district)}" ${a.district===profile.district?'selected':''}>${safe(a.district)}</option>`).join('')}</select></label><label>O que precisa ser feito?<textarea name="description" required minlength="10" maxlength="2000" placeholder="Ex.: trocar duas tomadas; informe o problema e os materiais disponíveis."></textarea></label><label>Data desejada<input name="date" type="date" min="${C.today()}" required></label><p class="hint">Você poderá adicionar fotos e PDFs na conversa após enviar. Esta solicitação não confirma atendimento e não gera cobrança. Não informe seu endereço completo nesta conversa inicial.</p><button class="primary" type="submit">Enviar solicitação</button><p id="requestError" role="status"></p></form>`);
+   const body=show(`<span class="eyebrow">SOLICITAÇÃO DE SERVIÇO</span><h2>${safe(service.title)}</h2><p>Informe o que precisa para o profissional preparar uma proposta.</p><form id="realRequestForm" class="auth-form"><label>Bairro<select name="district" required><option value="">Selecione</option>${areas.map(a=>`<option value="${safe(a.district)}" ${a.district===profile.district?'selected':''}>${safe(a.district)}</option>`).join('')}</select></label>${window.AJURA_LOCATION.markup(profile,'newRequestLocation')}<label>O que precisa ser feito?<textarea name="description" required minlength="10" maxlength="2000" placeholder="Ex.: trocar duas tomadas; informe o problema e os materiais disponíveis."></textarea></label><label>Data desejada<input name="date" type="date" min="${C.today()}" required></label><p class="hint">Você poderá adicionar fotos e PDFs na conversa após enviar. Esta solicitação não confirma atendimento e não gera cobrança. Não informe seu endereço completo nesta conversa inicial.</p><button class="primary" type="submit">Enviar solicitação</button><p id="requestError" role="status"></p></form>`);
    const form=body.querySelector('#realRequestForm'),report=t=>{if(form.isConnected)form.querySelector('#requestError').textContent=t;};
+   window.AJURA_LOCATION.bind(form);let submissionKey=null;
    counter(form.elements.description);
    handleForm(form,async()=>{
     const description=form.elements.description.value.trim();if(description.length<10)return report('Descreva o serviço com pelo menos 10 caracteres.');
-    const {data,error}=await client.rpc('create_service_request',{target_service:service.id,target_district:form.elements.district.value,details:description,desired_date:form.elements.date.value});
+    let location;try{location=window.AJURA_LOCATION.read(form);submissionKey=submissionKey||window.AJURA_LOCATION.submissionKey();}catch(e){return report(e.message);}
+    const {data,error}=await client.rpc('create_service_request_with_location',{target_service:service.id,target_district:form.elements.district.value,details:description,desired_date:form.elements.date.value,...location,submission_key:submissionKey});
     if(!form.isConnected)return;
     if(error)return report(error.message);
     document.dispatchEvent(new Event('ajura:requests-changed'));await conversation(data);
@@ -76,7 +79,7 @@
    listState.role=r.client_id===id?'client':'provider';
    const {data:messages,error:messageError}=await client.from('request_messages').select('*').eq('request_id',requestId).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(200);
    if(run!==generation)return;
-   const body=show(`<span class="eyebrow">CONVERSA DO SERVIÇO</span><h2>${safe(r.district)} · ${safe(statuses[r.status] || r.status)}</h2><p class="request-description">${safe(r.description)}</p><p>Data desejada: ${date(r.preferred_date)}</p><p class="hint">Combine o escopo por aqui. Orçamento aceito ainda não confirma pagamento ou contratação.</p><button class="secondary" id="refreshConversation">Atualizar conversa</button><div aria-label="Mensagens">${messageError?'<p>Falha ao carregar mensagens. Atualize a conversa.</p>':messages?.length?[...messages].reverse().map(m=>`<article class="service"><b>${m.sender_id===id?'Você':r.client_id===m.sender_id?'Cliente':'Profissional'}</b><p class="request-description">${safe(m.body)}</p><small>${time(m.created_at)}</small></article>`).join(''):'<p>Inicie a conversa.</p>'}</div>${messages?.length===200?'<p class="hint">Exibindo as 200 mensagens mais recentes.</p>':''}${r.status==='requested'?`<form id="sendRealMessage" class="auth-form"><label>Mensagem<textarea name="body" required maxlength="2000"></textarea></label><button class="primary" type="submit">Enviar</button><p id="messageError" role="status"></p></form><button class="secondary" id="closeRealRequest">${r.client_id===id?'Cancelar solicitação':'Recusar solicitação'}</button>`:''}<button class="link-button" id="requestsBack">Voltar às solicitações</button>`);
+   const body=show(`<span class="eyebrow">CONVERSA DO SERVIÇO</span><h2>${safe(r.district)} · ${safe(statuses[r.status] || r.status)}</h2><p class="request-description">${safe(r.description)}</p><p>Data desejada: ${date(r.preferred_date)}</p><p class="hint">Combine o escopo por aqui. Aceitar a proposta autoriza a consulta ao local confirmado; nao cria cobranca. O inicio depende do codigo do cliente.</p><button class="secondary" id="refreshConversation">Atualizar conversa</button><div aria-label="Mensagens">${messageError?'<p>Falha ao carregar mensagens. Atualize a conversa.</p>':messages?.length?[...messages].reverse().map(m=>`<article class="service"><b>${m.sender_id===id?'Você':r.client_id===m.sender_id?'Cliente':'Profissional'}</b><p class="request-description">${safe(m.body)}</p><small>${time(m.created_at)}</small></article>`).join(''):'<p>Inicie a conversa.</p>'}</div>${messages?.length===200?'<p class="hint">Exibindo as 200 mensagens mais recentes.</p>':''}${r.status==='requested'?`<form id="sendRealMessage" class="auth-form"><label>Mensagem<textarea name="body" required maxlength="2000"></textarea></label><button class="primary" type="submit">Enviar</button><p id="messageError" role="status"></p></form><button class="secondary" id="closeRealRequest">${r.client_id===id?'Cancelar solicitação':'Recusar solicitação'}</button>`:''}<button class="link-button" id="requestsBack">Voltar às solicitações</button>`);
    body.querySelector('#requestsBack').onclick=()=>inbox();
    body.querySelector('#refreshConversation').onclick=()=>conversation(requestId);
    if(r.status==='requested'){
@@ -94,6 +97,8 @@
      finally{if(close.isConnected)close.disabled=false;}
     };
    }
+   if(window.AJURA_LOCATION)await window.AJURA_LOCATION.attach(r,id,body,()=>conversation(requestId));
+   if(run!==generation||!body.isConnected)return;
    if(window.AJURA_QUOTES)await window.AJURA_QUOTES.attach(r,id);
    if(run===generation && body.isConnected && window.AJURA_REQUEST_FILES)await window.AJURA_REQUEST_FILES.attach(r,id,body);
   }catch{if(run===generation)toast('Falha ao abrir a conversa. Tente novamente.');}
