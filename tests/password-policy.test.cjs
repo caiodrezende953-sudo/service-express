@@ -1,0 +1,7 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('auth.js','utf8');
+const helper=source.slice(source.indexOf('  function passwordChecks'),source.indexOf('  const passwordRules'));
+const ctx={TextEncoder};vm.createContext(ctx);vm.runInContext(helper,ctx);
+test('Senha exige comprimento e as quatro categorias',()=>{for(const v of ['Curta1!','abcdefghijkl1!','ABCDEFGHIJKL1!','Abcdefghijkl!','Abcdefghijkl1'])assert.equal(ctx.passwordChecks(v).every(Boolean),false);assert.equal(ctx.passwordChecks('Abcdefghijkl1!').every(Boolean),true);});
+test('Espaço não substitui símbolo; limite em bytes respeitado',()=>{assert.equal(ctx.passwordChecks('Abcdefghijkl1 ').every(Boolean),false);assert.equal(ctx.passwordChecks('Aa1!'+ 'é'.repeat(35)).every(Boolean),false);});
+test('Cadastro e redefinição validam antes da chamada de autenticação',()=>{const signup=source.slice(source.indexOf('  function signupView'),source.indexOf('  function recoveryView'));const reset=source.slice(source.indexOf('  function newPasswordView'),source.indexOf('  function newPasswordView')+2400);assert(signup.indexOf('checkPassword(event.target')<signup.indexOf('client.auth.signUp'));assert(reset.indexOf('checkPassword(event.target')<reset.indexOf('client.auth.updateUser'));assert.match(source,/autocomplete="current-password" required minlength="8"/);});

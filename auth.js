@@ -10,7 +10,7 @@
     const text = error?.message || 'Não foi possível concluir. Tente novamente.';
     if (/invalid login credentials/i.test(text)) return 'E-mail ou senha incorretos.';
     if (/already registered|already been registered/i.test(text)) return 'Este e-mail já está cadastrado.';
-    if (/password/i.test(text) && /characters/i.test(text)) return 'A senha precisa ter pelo menos 8 caracteres.';
+    if (/password/i.test(text) && /characters/i.test(text)) return 'A senha precisa ter 12 caracteres, maiúscula, minúscula, número e símbolo.';
     return text;
   };
   const redirectUrl = () => location.protocol === 'http:' || location.protocol === 'https:'
@@ -40,13 +40,36 @@
     };
   }
 
+  function passwordChecks(value) {
+    const symbols = "!@#$%^&*()_+-=[]{};'\\:\"|<>?,./`~";
+    return [value.length >= 12, /[a-z]/.test(value), /[A-Z]/.test(value), /[0-9]/.test(value), [...value].some(c => symbols.includes(c)), new TextEncoder().encode(value).length <= 72];
+  }
+  const passwordRules = ['Pelo menos 12 caracteres', 'Uma letra minúscula (a–z)', 'Uma letra maiúscula (A–Z)', 'Um número (0–9)', 'Um símbolo, como ! @ # $', 'No máximo 72 bytes (acentos podem ocupar mais de um)'];
+  function passwordHelp() { return '<ul id="passwordRules" class="hint" aria-label="Requisitos da senha">' + passwordRules.map((label,i)=>`<li data-password-rule="${i}">○ ${label}</li>`).join('') + '</ul><p id="passwordFeedback" role="status"></p>'; }
+  function bindPassword(form) {
+    const field=form.querySelector('[name="password"]');
+    field.setAttribute('aria-describedby','passwordRules passwordFeedback');
+    field.oninput=()=>{
+      const checks=passwordChecks(field.value);
+      form.querySelectorAll('[data-password-rule]').forEach((item,i)=>{item.textContent=(checks[i]?'✓ ':'○ ')+passwordRules[i];});
+      form.querySelector('#passwordFeedback').textContent=checks.every(Boolean)?'Senha atende aos requisitos.':'';
+    };
+  }
+  function checkPassword(form,value) {
+    if(passwordChecks(value).every(Boolean))return true;
+    form.querySelector('#passwordFeedback').textContent='A senha ainda não atende a todos os requisitos acima.';
+    return false;
+  }
+
   function signupView(message = '') {
     if (!client) return setupRequired();
-    modal(`<span class="eyebrow">CADASTRO REAL · TESTE FECHADO</span><h2>Criar conta</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="signupForm" class="auth-form"><label>Nome completo<input name="full_name" autocomplete="name" required minlength="3" maxlength="100"></label><label>Celular com DDD<input name="phone" type="tel" autocomplete="tel" required maxlength="20" placeholder="(92) 99999-9999"></label><label>Bairro<select name="district" required><option value="">Selecione</option>${districts()}</select></label><fieldset><legend>Como pretende usar a AJURA?</legend><label class="check"><input type="radio" name="account_type" value="client" required>Quero contratar serviços</label><label class="check"><input type="radio" name="account_type" value="provider" required>Quero prestar serviços</label><label class="check"><input type="radio" name="account_type" value="both" required>Quero contratar e prestar serviços</label></fieldset><label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Senha<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label><p class="hint">Cadastro restrito aos testes internos. Termos de Uso e Política de Privacidade precisam ser publicados antes da abertura ao público.</p><button class="primary" type="submit">Criar conta de teste</button></form><button class="link-button" type="button" id="backLogin">Já tenho conta</button>`);
+    modal(`<span class="eyebrow">CADASTRO REAL · TESTE FECHADO</span><h2>Criar conta</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="signupForm" class="auth-form"><label>Nome completo<input name="full_name" autocomplete="name" required minlength="3" maxlength="100"></label><label>Celular com DDD<input name="phone" type="tel" autocomplete="tel" required maxlength="20" placeholder="(92) 99999-9999"></label><label>Bairro<select name="district" required><option value="">Selecione</option>${districts()}</select></label><fieldset><legend>Como pretende usar a AJURA?</legend><label class="check"><input type="radio" name="account_type" value="client" required>Quero contratar serviços</label><label class="check"><input type="radio" name="account_type" value="provider" required>Quero prestar serviços</label><label class="check"><input type="radio" name="account_type" value="both" required>Quero contratar e prestar serviços</label></fieldset><label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Senha<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="72"></label>${passwordHelp()}<p class="hint">Cadastro restrito aos testes internos. Termos de Uso e Política de Privacidade precisam ser publicados antes da abertura ao público.</p><button class="primary" type="submit">Criar conta de teste</button></form><button class="link-button" type="button" id="backLogin">Já tenho conta</button>`);
     $('#backLogin').onclick = () => loginView();
+    bindPassword($('#signupForm'));
     $('#signupForm').onsubmit = async event => {
       event.preventDefault();
       const data = new FormData(event.target);
+      if (!checkPassword(event.target, String(data.get('password') || ''))) return;
       const phone = clean(data.get('phone')).replace(/\D/g, '');
       if (phone.length < 10 || phone.length > 11) return signupView('Informe um celular válido com DDD.');
       const button = event.submitter;
@@ -90,11 +113,13 @@
 
   function newPasswordView(message = '') {
     if (!client) return setupRequired();
-    modal(`<span class="eyebrow">RECUPERAR ACESSO</span><h2>Crie uma nova senha</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="newPasswordForm" class="auth-form"><label>Nova senha<input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label><label>Confirme a nova senha<input name="confirmation" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label><button class="primary" type="submit">Salvar nova senha</button></form>`);
+    modal(`<span class="eyebrow">RECUPERAR ACESSO</span><h2>Crie uma nova senha</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="newPasswordForm" class="auth-form"><label>Nova senha<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="72"></label><label>Confirme a nova senha<input name="confirmation" type="password" autocomplete="new-password" required minlength="12" maxlength="72"></label>${passwordHelp()}<button class="primary" type="submit">Salvar nova senha</button></form>`);
+    bindPassword($('#newPasswordForm'));
     $('#newPasswordForm').onsubmit = async event => {
       event.preventDefault();
       const data = new FormData(event.target);
       const password = String(data.get('password') || '');
+      if (!checkPassword(event.target, password)) return;
       if (password !== String(data.get('confirmation') || '')) return newPasswordView('As senhas não coincidem.');
       const button = event.submitter;
       button.disabled = true;
