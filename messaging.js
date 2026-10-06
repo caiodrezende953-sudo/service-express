@@ -62,6 +62,8 @@
     if(run!==generation||!body.isConnected)return;
     if(!central&&window.AJURA_SERVICE_EXECUTION)await window.AJURA_SERVICE_EXECUTION.attach(request,actor,body,()=>openRequest(id,central));
    if(run!==generation||!body.isConnected)return;
+   if(!central&&window.AJURA_REVIEWS)await window.AJURA_REVIEWS.attach(request,actor,body,()=>openRequest(id,central));
+   if(run!==generation||!body.isConnected)return;
    const extras=document.createElement('details');extras.innerHTML='<summary>Orçamento e anexos</summary><div class="ajura-chat-extras"><button type="button" id="refreshConversation" hidden></button></div>';body.append(extras);
     // Orçamento usa um contêiner explícito para não depender da janela modal antiga.
     const extrasRoot=extras.querySelector('.ajura-chat-extras');

@@ -2,7 +2,7 @@
 (() => {
  'use strict';if(window.AJURA_REQUEST_OVERVIEW)return;
  const client=window.AJURA_AUTH?.client,C=window.AJURA_CORE;if(!client||!C)return;
- const labels={request_created:'Solicitação enviada',request_status:'Situação alterada',quote_created:'Orçamento enviado',quote_status:'Resposta ao orçamento',support_opened:'Atendimento da Central aberto',support_resolved:'Atendimento da Central encerrado',file_added:'Anexo enviado',state_observed:'Situação registrada ao ativar o histórico'};
+ const labels={review_submitted:'Avaliacao enviada',request_created:'Solicitação enviada',request_status:'Situação alterada',quote_created:'Orçamento enviado',quote_status:'Resposta ao orçamento',support_opened:'Atendimento da Central aberto',support_resolved:'Atendimento da Central encerrado',file_added:'Anexo enviado',state_observed:'Situação registrada ao ativar o histórico'};
  const quoteLabels={accepted:'Proposta aceita pelo cliente',rejected:'Proposta recusada pelo cliente',superseded:'Proposta substituída',pending:'Aguardando resposta'};
  function describe(event){
   const p=event.payload||{};
