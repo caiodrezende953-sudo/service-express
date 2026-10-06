@@ -1,4 +1,4 @@
-/* Caixa de mensagens e Central. Sem alteração automática de pedidos ou pagamentos. */
+/* Caixa de mensagens e Central. Decisoes de cancelamento somente pelo modulo autorizado. */
 (() => {
  'use strict'; if(window.AJURA_MESSAGING)return;
  const client=window.AJURA_AUTH?.client,C=window.AJURA_CORE;if(!client||!C)return;
@@ -52,8 +52,10 @@
    const supportForm=body.querySelector('[data-support-compose]');
    if(supportForm){supportForm.elements.body.value=drafts.get(`${id}:support`)||'';C.handleForm(supportForm,async()=>{await rpc('send_support_message',{target_ticket:active.id,message_text:supportForm.elements.body.value.trim()});supportForm.elements.body.value='';drafts.delete(`${id}:support`);await openRequest(id,central);},m=>{if(supportForm.isConnected)supportForm.querySelector('[data-support-status]').textContent=m;});supportForm.elements.body.oninput=()=>drafts.set(`${id}:support`,supportForm.elements.body.value);}
    const open=body.querySelector('[data-support-open]');if(open)C.handleForm(open,async()=>{await rpc('open_support_ticket',{target_request:id,explanation:open.elements.reason.value.trim()});await openRequest(id,central);},m=>{if(open.isConnected)open.querySelector('[data-support-status]').textContent=m;});
-   const resolve=body.querySelector('[data-support-resolve]');if(resolve)C.handleForm(resolve,async()=>{await rpc('resolve_support_ticket',{target_ticket:active.id,resolution:resolve.elements.resolution.value.trim()});await inbox(page,true);},m=>{if(resolve.isConnected)resolve.querySelector('[data-support-status]').textContent=m;});
+   const resolve=body.querySelector('[data-support-resolve]');if(resolve)C.handleForm(resolve,async()=>{const note=resolve.elements.resolution.value.trim();if(note.length<10||note.length>2000){resolve.querySelector('[data-support-status]').textContent='Informe a resolucao em 10 a 2000 caracteres.';return;}const {error}=await client.rpc('resolve_support_ticket',{target_ticket:active.id,resolution:note});if(!resolve.isConnected)return;if(error){resolve.querySelector('[data-support-status]').textContent=error.message||'Nao foi possivel encerrar.';return;}await inbox(page,true);},m=>{if(resolve.isConnected)resolve.querySelector('[data-support-status]').textContent=m;});
    if(window.AJURA_REQUEST_OVERVIEW)await window.AJURA_REQUEST_OVERVIEW.attach(request,actor,body,()=>openRequest(id,central));
+   if(run!==generation||!body.isConnected)return;
+   if(window.AJURA_SERVICE_CANCELLATION)await window.AJURA_SERVICE_CANCELLATION.attach(request,actor,body,()=>openRequest(id,central),central);
    if(run!==generation||!body.isConnected)return;
    if(!central){
     // Marca somente as mensagens carregadas, sem limpar mensagens que chegam depois.

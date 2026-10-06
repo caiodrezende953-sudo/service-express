@@ -2,10 +2,11 @@
 (() => {
  'use strict';if(window.AJURA_REQUEST_OVERVIEW)return;
  const client=window.AJURA_AUTH?.client,C=window.AJURA_CORE;if(!client||!C)return;
- const labels={review_submitted:'Avaliacao enviada',request_created:'Solicitação enviada',request_status:'Situação alterada',quote_created:'Orçamento enviado',quote_status:'Resposta ao orçamento',support_opened:'Atendimento da Central aberto',support_resolved:'Atendimento da Central encerrado',file_added:'Anexo enviado',state_observed:'Situação registrada ao ativar o histórico'};
+ const labels={cancellation_requested:'Cancelamento solicitado a Central',cancellation_decided:'Decisao da Central sobre cancelamento',cancellation_superseded:'Analise de cancelamento encerrada por mudanca do pedido',review_submitted:'Avaliacao enviada',request_created:'Solicitação enviada',request_status:'Situação alterada',quote_created:'Orçamento enviado',quote_status:'Resposta ao orçamento',support_opened:'Atendimento da Central aberto',support_resolved:'Atendimento da Central encerrado',file_added:'Anexo enviado',state_observed:'Situação registrada ao ativar o histórico'};
  const quoteLabels={accepted:'Proposta aceita pelo cliente',rejected:'Proposta recusada pelo cliente',superseded:'Proposta substituída',pending:'Aguardando resposta'};
  function describe(event){
   const p=event.payload||{};
+  if(event.event_type==='cancellation_decided')return p.decision==='cancel'?'Cancelamento aprovado pela Central':'Cancelamento nao aprovado pela Central';
   if(event.event_type==='quote_status')return quoteLabels[p.status]||labels.quote_status;
   if(event.event_type==='request_status')return C.statuses[p.status]||labels.request_status;
   return labels[event.event_type]||'Atualização do pedido';
