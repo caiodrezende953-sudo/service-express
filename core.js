@@ -1,7 +1,7 @@
 /* AJURA: utilitários compartilhados. Sem dados pessoais persistidos no navegador. */
 (() => {
  'use strict';
- const statuses = Object.freeze({requested:'Aberta',cancelled:'Cancelada pelo cliente',declined:'Recusada pelo profissional'});
+ const statuses = Object.freeze({requested:'Aberta',in_progress:'Em execucao',completed:'Concluido',cancelled:'Cancelada pelo cliente',declined:'Recusada pelo profissional'});
  const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const today = () => new Intl.DateTimeFormat('en-CA',{timeZone:'America/Manaus',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const date = value => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : 'Data não informada'; };
