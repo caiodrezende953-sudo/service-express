@@ -1,4 +1,68 @@
-.ajura-chat-launch{position:fixed;bottom:20px;right:20px;z-index:35;border:0;border-radius:24px;padding:14px 20px;background:#162d40;color:#fff;font-weight:700;box-shadow:0 4px 20px #0003;min-height:44px}
-.ajura-chat[hidden]{display:none!important}.ajura-chat{position:fixed;bottom:78px;right:20px;width:min(430px,calc(100vw - 24px));height:min(680px,calc(100dvh - 110px));z-index:40;display:flex;flex-direction:column;background:white;border:1px solid #d8e2e8;border-radius:18px;box-shadow:0 12px 48px #0004;color:#162d40;overflow:hidden}
-.ajura-chat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#162d40;color:white}.ajura-chat-head h2{font-size:18px;margin:0}.ajura-chat-head button{background:transparent;color:white;border:0;font-size:26px;min-width:44px;min-height:44px}.ajura-chat-body{padding:14px;overflow:auto;overscroll-behavior:contain;flex:1}.ajura-chat-body button{min-height:44px;cursor:pointer}.ajura-chat-item{display:flex;flex-direction:column;width:100%;text-align:left;padding:12px;gap:6px;margin-bottom:8px;border:1px solid #d8e2e8;border-radius:10px;background:#f7fafc}.ajura-chat-item span{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}.ajura-chat-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.ajura-chat-message{background:#f1f5f8;padding:10px;border-radius:10px;margin:8px 0}.ajura-chat-message p,.ajura-chat-scope{white-space:pre-wrap;overflow-wrap:anywhere}.ajura-chat-message p{margin:6px 0}.ajura-chat-message small{font-size:11px;color:#596c7b}.ajura-chat-support{border-top:1px solid #d8e2e8;margin-top:16px;padding-top:8px}.ajura-chat-body textarea{width:100%;box-sizing:border-box}.ajura-chat-body details{margin:10px 0}.ajura-chat-body summary{cursor:pointer;padding:8px 0;font-weight:600}.ajura-chat-body .service{padding:12px;margin:8px 0}.ajura-chat-body :focus-visible,.ajura-chat-launch:focus-visible{outline:3px solid #ed8800;outline-offset:3px}
-@media(max-width:480px){.ajura-chat{right:12px;bottom:76px;height:calc(100dvh - 100px)}.ajura-chat-launch{right:12px;bottom:16px}}
+/* AJURA: mesma paleta do site; regras restritas ao painel de mensagens. */
+.ajura-chat-launch {
+ position:fixed;bottom:20px;right:20px;z-index:35;min-height:44px;
+ border:1px solid transparent;border-radius:24px;padding:14px 20px;
+ background:var(--orange,#ff5b24);color:var(--ink,#242137);font-weight:700;
+ box-shadow:0 4px 20px #4926a826;cursor:pointer;
+}
+.ajura-chat-launch:hover {filter:brightness(.96)}
+.ajura-chat[hidden] {display:none!important}
+.ajura-chat {
+ position:fixed;bottom:78px;right:20px;width:min(430px,calc(100vw - 24px));
+ height:min(680px,calc(100dvh - 110px));z-index:40;display:flex;flex-direction:column;
+ background:var(--paper,#fbfaf7);border:1px solid #ded6ec;border-radius:18px;
+ box-shadow:0 12px 48px #4926a82b;color:var(--ink,#242137);overflow:hidden;
+}
+.ajura-chat-head {
+ display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+ background:var(--purple,#4926a8);color:#fff;border-top:4px solid var(--orange,#ff5b24);
+}
+.ajura-chat-head h2 {font-size:18px;margin:0;color:inherit}
+.ajura-chat-head button {
+ background:transparent;color:#fff;border:0;border-radius:8px;font-size:26px;
+ min-width:44px;min-height:44px;cursor:pointer;
+}
+.ajura-chat-head button:hover {background:#ffffff1f}
+.ajura-chat-body {padding:14px;overflow:auto;overscroll-behavior:contain;flex:1;min-height:0}
+.ajura-chat-body button {min-height:44px;cursor:pointer;font:inherit}
+.ajura-chat-body button:not(.primary):not(.ajura-chat-item) {
+ border:1px solid #ded6ec;border-radius:8px;padding:9px 12px;
+ background:#eee9fa;color:var(--purple,#4926a8);
+}
+.ajura-chat-body button.primary {
+ background:var(--purple,#4926a8);color:#fff;border:1px solid var(--purple,#4926a8);
+ border-radius:10px;padding:12px 16px;font-weight:700;
+}
+.ajura-chat-body button:not(:disabled):hover {filter:brightness(.96)}
+.ajura-chat-body button:disabled {
+ cursor:not-allowed;filter:none;opacity:1;background:#f1eeef;color:#756c7f;border-color:#e4dfe5;
+}
+.ajura-chat-item {
+ display:flex;flex-direction:column;width:100%;text-align:left;padding:12px;gap:6px;
+ margin-bottom:8px;border:1px solid #ded6ec;border-left:3px solid var(--orange,#ff5b24);
+ border-radius:10px;background:#fff;color:var(--ink,#242137);
+}
+.ajura-chat-item span {overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.ajura-chat-item small {color:#635d70}
+.ajura-chat-actions {display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.ajura-chat-message {background:#eee9fa;padding:10px;border:1px solid #e3daf3;border-radius:10px;margin:8px 0}
+.ajura-chat-message b {color:var(--purple,#4926a8)}
+.ajura-chat-message p,.ajura-chat-scope {white-space:pre-wrap;overflow-wrap:anywhere}
+.ajura-chat-message p {margin:6px 0}
+.ajura-chat-message small {font-size:11px;color:#635d70}
+.ajura-chat-support {border-top:1px solid #ded6ec;margin-top:16px;padding-top:8px}
+.ajura-chat-support h3 {color:var(--purple,#4926a8)}
+.ajura-chat-body input,.ajura-chat-body select,.ajura-chat-body textarea {
+ color:var(--ink,#242137);background:#fff;border:1px solid #ded6ec;
+}
+.ajura-chat-body textarea {width:100%;box-sizing:border-box}
+.ajura-chat-body details {margin:10px 0}
+.ajura-chat-body summary {cursor:pointer;padding:8px 0;font-weight:600;color:var(--purple,#4926a8)}
+.ajura-chat-body .service {padding:12px;margin:8px 0;background:#fff;border-color:var(--line,#e9e6df)}
+.ajura-chat-body .hint {color:#635d70}
+.ajura-chat-body :focus-visible,.ajura-chat-launch:focus-visible {outline:3px solid var(--purple,#4926a8);outline-offset:3px}
+.ajura-chat-head :focus-visible {outline:3px solid #fff;outline-offset:2px}
+@media(max-width:480px) {
+ .ajura-chat {right:12px;bottom:76px;height:calc(100dvh - 100px)}
+ .ajura-chat-launch {right:12px;bottom:16px}
+}
