@@ -1,54 +1,54 @@
 {
-    "version":  "2026.10.05.3",
+    "version":  "2026.10.06.3",
     "files":  [
                   {
-                      "path":  "admin.js",
-                      "accepted_sha256":  [
-                                              "428C720959C49C0B8A6478DB7DA2AC15AD4C1590FF7213D23DCCD552DDAAD727"
-                                          ],
-                      "new_sha256":  "CD2F1AFB330BD685BB1BB0F97AA3FADA06BB695F0A4447F39C20110B516BBEF8"
-                  },
-                  {
-                      "path":  "auth.js",
-                      "accepted_sha256":  [
-                                              "AD351D4FEB961BF57C5C19E6BAB6CB7334E1D88961CE4D611311784A1E04D502"
-                                          ],
-                      "new_sha256":  "ED6C1FF4BFDA26D9C10E156260DA2CA622AA2D0E222DC82D516B7F5EE7E15CEB"
-                  },
-                  {
-                      "path":  "core.js",
-                      "accepted_sha256":  [
-                                              "7A931FBFD1BCC85A313CAF0637DBA19E2DEF42BFA7A3AB32B983A2DECAC593A6"
-                                          ],
-                      "new_sha256":  "D35FFA99C8BC163DC92C1A1DA3E9AB82D16DB94C59AF0390929837784C457DD6"
-                  },
-                  {
-                      "path":  "docs/ETAPA3-VALIDACAO.md",
+                      "path":  "docs/RESUMO-E-HISTORICO.md",
                       "accepted_sha256":  [
 
                                           ],
-                      "new_sha256":  "D0173E202634F6CABCD6CA48867F9FD9D03DDB8C0FCD53C8E0D59D0382775ADC"
+                      "new_sha256":  "040F61B2F376382B633A79677E37DD58C2B62D3196B283C8767E931ECE35E849"
                   },
                   {
                       "path":  "index.html",
                       "accepted_sha256":  [
-                                              "5B9CEDC4A1C92F1D6DCD460D99DC672CA290446A6A3548D605C830C34E3DBFC5"
+                                              "4E58796230186BD130688D214425DD82E1B5BE9395B256692A52BF4F0290AA01"
                                           ],
-                      "new_sha256":  "AD031D03187A9F9A13FE5902AD9FA696621F01FDEFC42CA29F49AA7C8CA7FB89"
+                      "new_sha256":  "74281E81377E29A0C9F66FCADBA57079DEB183F16E623CC63AA37F37DCFFC070"
                   },
                   {
-                      "path":  "supabase/provider-validation.sql",
+                      "path":  "messaging.js",
+                      "accepted_sha256":  [
+                                              "13AF2C8AEB836EEC39998D7F643D6E6CBA3D5A61C7CE8620FA50A4EDEEF4509F"
+                                          ],
+                      "new_sha256":  "23C580E479831A0634F8B50E8D7E90283E5E0F8102B5294233BB746BF5C0AD84"
+                  },
+                  {
+                      "path":  "request-overview.css",
                       "accepted_sha256":  [
 
                                           ],
-                      "new_sha256":  "A14C16FE7A5D6E5F331F66A230F8FB289D4EC1D252D755295A525C0A80CF66F4"
+                      "new_sha256":  "AE86EEF5F06A060C2ED8509F958725CD7C6B69ED1C402F12D813BF6B8553F419"
                   },
                   {
-                      "path":  "tests/document.test.cjs",
+                      "path":  "request-overview.js",
                       "accepted_sha256":  [
 
                                           ],
-                      "new_sha256":  "D20F105F83660726C3AA1BC65E5993EF096BF9F90128CA1FFC243EE3547E95F5"
+                      "new_sha256":  "388B490BB96FF14D5032BDF20AAD6EE0E4A5E89E34D2ADA5886691D065DFA251"
+                  },
+                  {
+                      "path":  "supabase/request-overview.sql",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "D21828D5451BAE12CEADE2D8855E4CAAFD52BBFE41747CD528B3D3670E31AE61"
+                  },
+                  {
+                      "path":  "tests/request-overview.test.cjs",
+                      "accepted_sha256":  [
+
+                                          ],
+                      "new_sha256":  "2445C911F94CE5B9F4D32C3CEFB77DD16C4C740E16954562FB2C769CB977B138"
                   }
               ]
 }

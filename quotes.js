@@ -5,8 +5,8 @@
  const safe = value => esc(String(value ?? ''));
  const money = window.AJURA_CORE.money;
  const labels = { pending: 'Aguardando resposta', accepted: 'Aceito — contratação ainda não confirmada', rejected: 'Recusado', superseded: 'Substituído por nova proposta' };
- async function attach(request, userId) {
-  const anchor = document.querySelector('#refreshConversation');
+ async function attach(request, userId, container = document) {
+  const anchor = container.querySelector('#refreshConversation');
   if (!anchor) return;
   const section = document.createElement('section'); section.className = 'request-quotes';
   anchor.before(section);
@@ -37,7 +37,7 @@
     const { error } = await client.rpc('respond_request_quote', { target_quote: button.dataset.quote, decision: button.dataset.decision });
     if (!section.isConnected) return;
     if (error) { report(error.message); button.disabled = false; return; }
-    document.querySelector('#refreshConversation')?.click();
+    container.querySelector('#refreshConversation')?.click();
    } catch { report('Falha de conexão. Atualize a conversa para conferir o resultado.'); button.disabled = false; }
   });
   const form = section.querySelector('#sendQuoteForm');
@@ -47,7 +47,7 @@
     const { error } = await client.rpc('send_request_quote', { target_request: request.id, total: Number(form.elements.amount.value), service_scope: form.elements.scope.value.trim(), materials_details: form.elements.materials.value.trim(), service_date: form.elements.date.value });
     if (!section.isConnected) return;
     if (error) { report(error.message); button.disabled = false; return; }
-    document.querySelector('#refreshConversation')?.click();
+    container.querySelector('#refreshConversation')?.click();
    } catch { report('Falha de conexão. Atualize a conversa para conferir o resultado.'); button.disabled = false; }
   };
  }

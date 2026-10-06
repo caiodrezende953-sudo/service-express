@@ -30,7 +30,7 @@
    if(run!==generation)return;if(areaError)return toast('Não foi possível carregar os bairros.');
    if(!areas?.length)return toast('Este profissional ainda não informou bairros atendidos.');
    pendingService=null;
-   const body=show(`<span class="eyebrow">SOLICITAÇÃO DE SERVIÇO</span><h2>${safe(service.title)}</h2><p>Informe o que precisa para o profissional preparar uma proposta.</p><form id="realRequestForm" class="auth-form"><label>Bairro<select name="district" required><option value="">Selecione</option>${areas.map(a=>`<option value="${safe(a.district)}" ${a.district===profile.district?'selected':''}>${safe(a.district)}</option>`).join('')}</select></label><label>O que precisa ser feito?<textarea name="description" required minlength="10" maxlength="2000" placeholder="Ex.: trocar duas tomadas; informe o problema e os materiais disponíveis."></textarea></label><label>Data desejada<input name="date" type="date" min="${C.today()}" required></label><p class="hint">Esta solicitação não confirma atendimento e não gera cobrança. Não informe seu endereço completo nesta conversa inicial.</p><button class="primary" type="submit">Enviar solicitação</button><p id="requestError" role="status"></p></form>`);
+   const body=show(`<span class="eyebrow">SOLICITAÇÃO DE SERVIÇO</span><h2>${safe(service.title)}</h2><p>Informe o que precisa para o profissional preparar uma proposta.</p><form id="realRequestForm" class="auth-form"><label>Bairro<select name="district" required><option value="">Selecione</option>${areas.map(a=>`<option value="${safe(a.district)}" ${a.district===profile.district?'selected':''}>${safe(a.district)}</option>`).join('')}</select></label><label>O que precisa ser feito?<textarea name="description" required minlength="10" maxlength="2000" placeholder="Ex.: trocar duas tomadas; informe o problema e os materiais disponíveis."></textarea></label><label>Data desejada<input name="date" type="date" min="${C.today()}" required></label><p class="hint">Você poderá adicionar fotos e PDFs na conversa após enviar. Esta solicitação não confirma atendimento e não gera cobrança. Não informe seu endereço completo nesta conversa inicial.</p><button class="primary" type="submit">Enviar solicitação</button><p id="requestError" role="status"></p></form>`);
    const form=body.querySelector('#realRequestForm'),report=t=>{if(form.isConnected)form.querySelector('#requestError').textContent=t;};
    counter(form.elements.description);
    handleForm(form,async()=>{
@@ -67,6 +67,7 @@
   }catch{if(run===generation)toast('Falha ao consultar solicitações. Tente novamente.');}
  }
  async function conversation(requestId){
+  if(window.AJURA_MESSAGING)return window.AJURA_MESSAGING.openRequest(requestId);
   const run=++generation;
   try {
    const id=await actor();if(run!==generation)return;if(!id)return login();
@@ -94,6 +95,7 @@
     };
    }
    if(window.AJURA_QUOTES)await window.AJURA_QUOTES.attach(r,id);
+   if(run===generation && body.isConnected && window.AJURA_REQUEST_FILES)await window.AJURA_REQUEST_FILES.attach(r,id,body);
   }catch{if(run===generation)toast('Falha ao abrir a conversa. Tente novamente.');}
  }
  document.addEventListener('click',e=>{const b=e.target.closest('[data-request-service]');if(b)create(b.dataset.requestService);});
