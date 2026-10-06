@@ -50,17 +50,22 @@
   const run=++generation;
   try {
    const id=await actor();if(run!==generation)return;if(!id)return login();
-   const body=show(`<span class="eyebrow">AJURA · SOLICITAÇÕES</span><h2>Minhas solicitações</h2><div class="request-toolbar"><label>Visualizar<select id="requestRole"><option value="client">Serviços que solicitei</option><option value="provider">Solicitações que recebi</option></select></label><label>Situação<select id="requestStatus"><option value="">Todas</option>${Object.entries(statuses).map(([k,v])=>`<option value="${k}">${safe(v)}</option>`).join('')}</select></label></div><p id="requestListStatus" role="status">Carregando…</p><div id="requestList"></div><div class="request-toolbar"><button id="requestPrev" class="secondary">Anterior</button><span id="requestPage"></span><button id="requestNext" class="secondary">Próxima</button></div>`);
+   const body=show(`<span class="eyebrow">AJURA · SOLICITAÇÕES</span><h2>Minhas solicitações</h2><div id="requestSummary" role="status">Consultando resumo…</div><div class="request-toolbar"><label>Visualizar<select id="requestRole"><option value="client">Serviços que solicitei</option><option value="provider">Solicitações que recebi</option></select></label><label>Situação<select id="requestStatus"><option value="">Todas</option>${Object.entries(statuses).map(([k,v])=>`<option value="${k}">${safe(v)}</option>`).join('')}</select></label></div><p id="requestListStatus" role="status">Carregando…</p><div id="requestList"></div><div class="request-toolbar"><button id="requestPrev" class="secondary">Anterior</button><span id="requestPage"></span><button id="requestNext" class="secondary">Próxima</button></div>`);
    body.querySelector('#requestRole').value=listState.role;
    body.querySelector('#requestStatus').value=listState.status;
    body.querySelector('#requestRole').onchange=e=>inbox({role:e.target.value,page:0});
    body.querySelector('#requestStatus').onchange=e=>inbox({status:e.target.value,page:0});
+   client.rpc('my_request_summary',{p_role:listState.role}).then(({data,error})=>{
+    if(run!==generation || !body.isConnected)return;
+    const target=body.querySelector('#requestSummary');
+    target.textContent=error || !data || typeof data!=='object'?'Resumo indisponível. A lista abaixo continua disponível.':`Aguardando proposta: ${Number(data.awaiting_quote)} · Aguardando início: ${Number(data.awaiting_start)} · Em execução: ${Number(data.in_progress)} · Concluídos: ${Number(data.completed)} · Encerrados: ${Number(data.closed)}`;
+   }).catch(()=>{if(run===generation && body.isConnected)body.querySelector('#requestSummary').textContent='Não foi possível consultar o resumo.';});
    let query=client.from('service_requests').select('*',{count:'exact'}).eq(listState.role==='provider'?'provider_id':'client_id',id).order('created_at',{ascending:false}).order('id',{ascending:false});
    if(listState.status)query=query.eq('status',listState.status);
    const {data,error,count:total}=await query.range(listState.page*20,listState.page*20+19);
    if(run!==generation || !body.isConnected)return;
    body.querySelector('#requestListStatus').textContent=error?'Não foi possível carregar. Troque o filtro para tentar novamente.':`${total ?? data?.length ?? 0} solicitações encontradas`;
-   body.querySelector('#requestList').innerHTML=error?'':data?.map(r=>`<article class="service"><b>${safe(r.district)} · ${safe(statuses[r.status] || r.status)}</b><p class="request-description">${safe(r.description)}</p><p>Data desejada: ${date(r.preferred_date)}</p><button class="secondary" data-conversation="${safe(r.id)}">Abrir conversa e orçamento</button></article>`).join('') || '<p>Nenhuma solicitação neste filtro.</p>';
+   body.querySelector('#requestList').innerHTML=error?'':data?.map(r=>`<article class="service"><b>${safe(r.district)} · ${safe(statuses[r.status] || r.status)}</b><p class="request-description">${safe(r.description)}</p><p>Data desejada: ${date(r.preferred_date)}</p><button class="secondary" data-conversation="${safe(r.id)}">${r.status==='in_progress'?'Acompanhar execução':r.status==='completed'?'Ver conclusão e avaliação':r.status==='requested'?'Ver proposta e próximos passos':'Ver histórico'}</button></article>`).join('') || '<p>Nenhuma solicitação neste filtro.</p>';
    body.querySelectorAll('[data-conversation]').forEach(b=>b.onclick=()=>conversation(b.dataset.conversation));
    body.querySelector('#requestPage').textContent=`Página ${listState.page+1}`;
    body.querySelector('#requestPrev').disabled=listState.page===0 || Boolean(error);
