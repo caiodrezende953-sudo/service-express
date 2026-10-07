@@ -6,7 +6,7 @@
   const bucket = 'provider-verification';
   async function list(providerId, target) {
     const { data, error } = await client.from('provider_files').select('kind, original_name, object_path, created_at').eq('provider_id', providerId).order('created_at', { ascending: false });
-    if (error) { target.textContent = 'Arquivos indisponíveis. Confira se provider-files.sql foi executado.'; return; }
+    if (error) { target.textContent = 'Não foi possível carregar seus arquivos. Atualize a tela e tente novamente.'; return; }
     target.innerHTML = (data || []).map((file, i) => `<p>${file.kind === 'identity' ? 'Documento' : 'Foto de trabalho'} · ${safe(file.original_name)} <button type="button" class="link-button" data-file-index="${i}">Abrir arquivo</button></p>`).join('') || '<p>Nenhum arquivo enviado.</p>';
     target.querySelectorAll('[data-file-index]').forEach(button => {
       button.onclick = async () => {
@@ -25,7 +25,7 @@
     const { data: { session } } = await client.auth.getSession();
     if (!session) return;
     const id = session.user.id;
-    modal('<span class="eyebrow">VERIFICAÇÃO DO PRESTADOR</span><h2>Documentos e fotos</h2><p>Os arquivos ficam privados, acessíveis a você e à administração. Fotos enviadas aqui ainda não aparecem no perfil público.</p><form id="providerUpload" class="auth-form"><label>Tipo de arquivo<select name="kind"><option value="identity">Documento de identificação</option><option value="portfolio">Foto de trabalho realizado</option></select></label><label>Arquivo<input name="file" type="file" accept="image/jpeg,image/png,application/pdf" required></label><p class="hint">JPG, PNG ou PDF, até 5 MB. Envie somente documentos seus e fotos que você tem autorização para utilizar. Novos envios de perfis aprovados exigem nova análise.</p><button class="primary">Enviar arquivo</button><p id="uploadStatus" role="status"></p></form><h3>Arquivos enviados</h3><div id="providerFilesList"></div><button type="button" class="link-button" id="filesBack">Voltar para minha conta</button>');
+    modal('<span class="eyebrow">VERIFICAÇÃO DO PRESTADOR</span><h2>Documentos e fotos</h2><p>Os arquivos ficam privados, acessíveis a você e à administração. Fotos enviadas aqui ainda não aparecem no perfil público.</p><form id="providerUpload" class="auth-form"><label>Tipo de arquivo<select name="kind"><option value="identity">Documento de identificação</option><option value="portfolio">Foto de trabalho realizado</option></select></label><label>Arquivo<input name="file" type="file" accept="image/jpeg,image/png,application/pdf" required></label><p class="hint">Até 10 arquivos de verificação por prestador, com 5 MB cada (JPG, PNG ou PDF). Envie somente documentos seus e fotos que você tem autorização para utilizar. Novos envios de perfis aprovados exigem nova análise.</p><button class="primary">Enviar arquivo</button><p id="uploadStatus" role="status"></p></form><h3>Arquivos enviados</h3><div id="providerFilesList"></div><button type="button" class="link-button" id="filesBack">Voltar para minha conta</button>');
     $('#filesBack').onclick = () => $('#accountButton').click();
     await list(id, $('#providerFilesList'));
     $('#providerUpload').onsubmit = async event => {
@@ -46,7 +46,7 @@
         status.textContent = 'Arquivo enviado. A equipe poderá conferir na análise do cadastro.';
         form.reset();
         await list(id, $('#providerFilesList'));
-      } catch (error) { status.textContent = `Não foi possível enviar: ${error.message}`; }
+      } catch (error) { status.textContent = 'Não foi possível enviar. Confira a conexão e o limite de 10 arquivos. Se persistir, procure a Central.'; }
       finally { button.disabled = false; }
     };
   }
