@@ -4,6 +4,8 @@
   const configured = /^https:\/\/.+\.supabase\.co$/.test(config.url || '') && Boolean(config.anonKey);
   const client = configured && window.supabase ? window.supabase.createClient(config.url, config.anonKey) : null;
   let session = null;
+  let sessionRevision = 0;
+  let logoutBusy = false;
 
   const clean = value => String(value || '').trim();
   const authMessage = error => {
@@ -11,7 +13,11 @@
     if (/invalid login credentials/i.test(text)) return 'E-mail ou senha incorretos.';
     if (/already registered|already been registered/i.test(text)) return 'Este e-mail já está cadastrado.';
     if (/password/i.test(text) && /characters/i.test(text)) return 'A senha precisa ter 12 caracteres, maiúscula, minúscula, número e símbolo.';
-    return text;
+    if (/email not confirmed/i.test(text)) return "Confirme seu e-mail antes de entrar.";
+    if (/signups not allowed/i.test(text)) return "Novos cadastros estão temporariamente indisponíveis.";
+    if (/expired|invalid.*token|session.*missing|refresh.token/i.test(text)) return 'Sua sessão expirou. Entre novamente.';
+    if (/rate limit|too many requests/i.test(text)) return "Muitas tentativas. Aguarde antes de tentar novamente.";
+    return "Não foi possível concluir. Confira sua conexão e tente novamente.";
   };
   const redirectUrl = () => location.protocol === 'http:' || location.protocol === 'https:'
     ? `${location.origin}${location.pathname}`
@@ -22,21 +28,41 @@
     modal('<span class="eyebrow">CONFIGURAÇÃO NECESSÁRIA</span><h2>Cadastro real ainda não conectado</h2><p>As telas e as regras do banco já estão preparadas, mas o projeto Supabase ainda precisa ser criado e conectado.</p><p class="hint">Não informe senha enquanto esta configuração estiver pendente.</p>');
   }
 
+  async function authFormRequest(form, action, success) {
+    if (form.dataset.busy === 'true') return;
+    form.dataset.busy = 'true';
+    const button = form.querySelector('button[type="submit"]');
+    if (button) button.disabled = true;
+    let feedback = form.querySelector('[data-auth-feedback]');
+    if (!feedback) { feedback = document.createElement('p'); feedback.dataset.authFeedback = ''; feedback.setAttribute('role', 'alert'); form.appendChild(feedback); }
+    feedback.textContent = '';
+    const alive = () => form.isConnected && form.closest('dialog')?.open !== false;
+    form.setAttribute('aria-busy', 'true');
+    try {
+      const result = await action();
+      if (!alive()) return;
+      if (result.error) { feedback.textContent = authMessage(result.error); return; }
+      await success(result);
+    } catch (error) {
+      if (alive()) feedback.textContent = authMessage(error);
+    } finally {
+      delete form.dataset.busy;
+      form.removeAttribute('aria-busy');
+      if (button) button.disabled = false;
+    }
+  }
+
   function loginView(message = '') {
     if (!client) return setupRequired();
-    modal(`<span class="eyebrow">ACESSO AJURA</span><h2>Entrar</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="loginForm" class="auth-form"><label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Senha<input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="72"></label><button class="primary" type="submit">Entrar</button></form><div class="auth-actions"><button class="secondary" type="button" id="openSignup">Criar conta</button><button class="link-button" type="button" id="openRecovery">Esqueci minha senha</button></div>`);
+    modal(`<span class="eyebrow">ACESSO AJURA</span><h2>Entrar</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<form id="loginForm" class="auth-form"><label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Senha<input name="password" type="password" autocomplete="current-password" required></label><button class="primary" type="submit">Entrar</button></form><div class="auth-actions"><button class="secondary" type="button" id="openSignup">Criar conta</button><button class="link-button" type="button" id="openRecovery">Esqueci minha senha</button></div>`);
     $('#openSignup').onclick = () => signupView();
     $('#openRecovery').onclick = () => recoveryView();
     $('#loginForm').onsubmit = async event => {
       event.preventDefault();
-      const button = event.submitter;
-      button.disabled = true;
       const data = new FormData(event.target);
-      const { error } = await client.auth.signInWithPassword({ email: clean(data.get('email')).toLowerCase(), password: String(data.get('password') || '') });
-      button.disabled = false;
-      if (error) return loginView(authMessage(error));
-      $('#modal').close();
-      toast('Acesso realizado.');
+      await authFormRequest(event.target,
+        () => client.auth.signInWithPassword({ email: clean(data.get('email')).toLowerCase(), password: String(data.get('password') || '') }),
+        () => { $('#modal').close(); toast('Acesso realizado.'); });
     };
   }
 
@@ -71,9 +97,7 @@
       const data = new FormData(event.target);
       if (!checkPassword(event.target, String(data.get('password') || ''))) return;
       const phone = clean(data.get('phone')).replace(/\D/g, '');
-      if (phone.length < 10 || phone.length > 11) return signupView('Informe um celular válido com DDD.');
-      const button = event.submitter;
-      button.disabled = true;
+      if (phone.length < 10 || phone.length > 11) { event.target.querySelector('#passwordFeedback').textContent = 'Informe um celular válido com DDD.'; return; }
       const metadata = {
         full_name: clean(data.get('full_name')),
         phone,
@@ -83,16 +107,15 @@
       const options = { data: metadata };
       const target = redirectUrl();
       if (target) options.emailRedirectTo = target;
-      const { data: result, error } = await client.auth.signUp({
+      await authFormRequest(event.target, () => client.auth.signUp({
         email: clean(data.get('email')).toLowerCase(),
         password: String(data.get('password') || ''),
         options
-      });
-      button.disabled = false;
-      if (error) return signupView(authMessage(error));
+      }), ({ data: result }) => {
       if (!result.session) return loginView('Cadastro recebido. Confirme o e-mail antes de entrar.');
       $('#modal').close();
       toast('Conta criada.');
+      });
     };
   }
 
@@ -105,9 +128,9 @@
       const options = {};
       const target = redirectUrl();
       if (target) options.redirectTo = target;
-      const { error } = await client.auth.resetPasswordForEmail(clean(new FormData(event.target).get('email')).toLowerCase(), options);
-      if (error) return recoveryView(authMessage(error));
-      loginView('Se o e-mail existir, enviaremos as instruções de recuperação.');
+      const email = clean(new FormData(event.target).get('email')).toLowerCase();
+      await authFormRequest(event.target, () => client.auth.resetPasswordForEmail(email, options),
+        () => loginView('Se o e-mail existir, enviaremos as instruções de recuperação.'));
     };
   }
 
@@ -120,26 +143,45 @@
       const data = new FormData(event.target);
       const password = String(data.get('password') || '');
       if (!checkPassword(event.target, password)) return;
-      if (password !== String(data.get('confirmation') || '')) return newPasswordView('As senhas não coincidem.');
-      const button = event.submitter;
-      button.disabled = true;
-      const { error } = await client.auth.updateUser({ password });
-      if (error) return newPasswordView(authMessage(error));
-      await client.auth.signOut();
-      loginView('Senha alterada. Entre com a nova senha.');
+      if (password !== String(data.get('confirmation') || '')) { event.target.querySelector('#passwordFeedback').textContent = 'As senhas não coincidem.'; return; }
+      await authFormRequest(event.target, () => client.auth.updateUser({ password }), async () => {
+        const { error } = await client.auth.signOut();
+        if (error) { event.target.querySelector('[data-auth-feedback]').textContent = 'Senha alterada. Não foi possível encerrar a sessão; use Sair na sua conta.'; return; }
+        applySession(null);
+        $('#modal')?.close();
+        toast('Senha alterada. Entre com a nova senha.');
+      });
     };
+  }
+
+  async function logout() {
+    if (!client || logoutBusy) return;
+    logoutBusy = true;
+    const button = $('#logoutButton');
+    if (button) button.disabled = true;
+    try {
+      const { error } = await client.auth.signOut();
+      if (error) throw error;
+      applySession(null);
+      $('#modal')?.close();
+    } catch (error) { toast(authMessage(error)); }
+    finally { logoutBusy = false; if (button?.isConnected) button.disabled = false; }
   }
 
   async function accountView() {
     if (!client) return setupRequired();
     if (!session) return loginView();
+    const revision = sessionRevision;
+    try {
     const { data, error } = await client.from('profiles').select('full_name, phone, district, address_line, address_number, address_complement, address_reference, account_type, status').eq('id', session.user.id).single();
+    if (revision !== sessionRevision || !session) return;
     if (error) {
       modal(`<h2>Minha conta</h2><p class="auth-message">${esc(authMessage(error))}</p><button class="secondary" id="logoutButton">Sair</button>`);
-      $('#logoutButton').onclick = async () => { const { error: exitError } = await client.auth.signOut(); if (exitError) return toast(authMessage(exitError)); $('#modal').close(); };
+      $('#logoutButton').onclick = logout;
       return;
     }
     const { data: isAdmin } = await client.rpc('admin_is_current_user');
+    if (revision !== sessionRevision || !session) return;
     const labels = { client: 'Cliente', provider: 'Prestador', both: 'Cliente e prestador' };
     modal(`<span class="eyebrow">CONTA REAL</span><h2>${esc(data.full_name)}</h2><dl class="profile-data"><div><dt>E-mail</dt><dd>${esc(session.user.email)}</dd></div><div><dt>Celular</dt><dd>${esc(data.phone)}</dd></div><div><dt>Bairro</dt><dd>${esc(data.district)}</dd></div><div><dt>Endereço</dt><dd>${esc(data.address_line || 'Ainda não informado')}${data.address_number ? `, ${esc(data.address_number)}` : ''}${data.address_complement ? ` · ${esc(data.address_complement)}` : ''}</dd></div><div><dt>Perfil</dt><dd>${esc(labels[data.account_type] || data.account_type)}</dd></div><div><dt>Situação</dt><dd>${esc(data.status)}</dd></div></dl><button class="primary" id="editClientButton">Editar meus dados</button>${['provider', 'both'].includes(data.account_type) ? '<button class="primary" id="realProviderButton">Meu cadastro profissional</button>' : '<p class="hint">Para prestar serviços, solicite a alteração do tipo de conta durante o piloto.</p>'}${isAdmin === true ? '<button class="secondary" id="adminReviewButton">Analisar prestadores</button>' : ''}<p class="hint">O endereço completo fica protegido e será usado em um pedido somente após a contratação.</p><button class="secondary" id="logoutButton">Sair</button>`);
     $('#editClientButton').onclick = () => editClientView(data);
@@ -148,7 +190,13 @@
       document.dispatchEvent(new Event('ajura:professional'));
     };
     if (isAdmin === true) $('#adminReviewButton').onclick = () => window.AJURA_ADMIN?.open();
-    $('#logoutButton').onclick = async () => { const { error } = await client.auth.signOut(); if (error) return toast(authMessage(error)); $('#modal').close(); };
+    $('#logoutButton').onclick = logout;
+    } catch {
+      if (revision !== sessionRevision || !session) return;
+      modal('<h2>Minha conta</h2><p role="status">Não foi possível carregar sua conta. Confira a conexão e tente novamente.</p><button type="button" id="retryAccount" class="primary">Tentar novamente</button><button type="button" id="logoutButton" class="secondary">Sair</button>');
+      $('#retryAccount').onclick = accountView;
+      $('#logoutButton').onclick = logout;
+    }
   }
 
   function editClientView(data, message = '') {
@@ -171,9 +219,11 @@
   async function providerView(message = '') {
     if (typeof message !== 'string') message = '';
     if (!session) return loginView();
-    const id = session.user.id;
+    const id = session.user.id, revision = sessionRevision;
+    try {
     const { data: accessProfile, error: accessError } = await client.from('profiles')
       .select('account_type, status').eq('id', id).single();
+    if (revision !== sessionRevision || session?.user.id !== id) return;
     if (accessError || accessProfile?.status !== 'active' ||
         !['provider', 'both'].includes(accessProfile?.account_type)) {
       return toast('A área profissional é exclusiva de prestadores ou contas com os dois perfis.');
@@ -184,8 +234,10 @@
       client.from('provider_service_areas').select('district').eq('provider_id', id).order('district'),
       client.from('provider_services').select('id, category, subcategory, title, description, pricing_type, starting_price, active').eq('provider_id', id).order('id')
     ]);
+    if (revision !== sessionRevision || session?.user.id !== id) return;
     if (profileError || areasError || servicesError) return modal(`<h2>Cadastro profissional</h2><p class="auth-message">${esc(authMessage(profileError || areasError || servicesError))}</p>`);
     const { data: identity, error: identityError } = await client.from('provider_private_details').select('document_number, business_name').eq('provider_id', id).maybeSingle();
+    if (revision !== sessionRevision || session?.user.id !== id) return;
     if (identityError) return modal('<h2>Cadastro profissional</h2><p>Execute a atualização provider-onboarding.sql no Supabase antes de cadastrar documentos.</p>');
     const selected = new Set((areas || []).map(area => area.district));
     const status = { pending: 'Aguardando análise', approved: 'Aprovado', rejected: 'Recusado', suspended: 'Suspenso' };
@@ -285,6 +337,7 @@
       }
       providerView('Cadastro salvo. A aprovação continua sob análise da equipe.');
     };
+    } catch { if (revision === sessionRevision && session?.user.id === id) toast('Não foi possível abrir seu cadastro profissional. Confira a conexão e tente novamente.'); }
   }
 
   function editRealService(service, message = '') {
@@ -393,7 +446,13 @@
 
 
   function applySession(nextSession) {
+    const previousUser = session?.user?.id;
+    sessionRevision += 1;
     session = nextSession;
+    if (previousUser && previousUser !== session?.user?.id) {
+      $('#modalBody')?.replaceChildren();
+      $('#modal')?.close();
+    }
     const button = $('#accountButton');
     if (!button) return;
     button.textContent = session ? 'Minha conta' : 'Entrar ou cadastrar';
@@ -406,10 +465,17 @@
     accountButton.onclick = configured ? accountView : setupRequired;
   }
   if (client) {
-    client.auth.getSession().then(({ data }) => applySession(data.session));
+    const initialRevision = sessionRevision;
+    client.auth.getSession().then(({ data, error }) => {
+      if (initialRevision !== sessionRevision) return;
+      applySession(error ? null : data?.session || null);
+    }).catch(() => { if (initialRevision === sessionRevision) applySession(null); });
     client.auth.onAuthStateChange((event, nextSession) => {
       applySession(nextSession);
-      if (event === 'PASSWORD_RECOVERY') setTimeout(() => newPasswordView(), 0);
+      if (event === 'PASSWORD_RECOVERY') {
+        const revision = sessionRevision;
+        setTimeout(() => { if (session && revision === sessionRevision) newPasswordView(); }, 0);
+      }
     });
   }
   window.AJURA_AUTH = { client, configured, openProvider: providerView };
