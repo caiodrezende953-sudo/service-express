@@ -49,8 +49,16 @@
    if(!alive())return;
    const total=Number(form.elements.amount.value),scope=form.elements.scope.value.trim(),materials=form.elements.materials.value.trim();
    if(!Number.isFinite(total)||total<=0||total>1000000||scope.length<10||materials.length<3){report('Confira valor, descrição e materiais antes de enviar.');return;}
-   try{const {error}=await client.rpc('send_request_quote',{target_request:request.id,total,service_scope:scope,materials_details:materials,service_date:form.elements.date.value});if(!alive())return;if(error)throw error;document.dispatchEvent(new Event('ajura:requests-changed'));container.querySelector('#refreshConversation')?.click();}
-   catch{report('Não foi possível confirmar o envio. Seus campos foram preservados. Atualize a conversa para conferir se a proposta chegou antes de reenviar.');}
+   try{
+    if(!window.AJURA_QUOTE_SUBMISSION){report('Atualize a página para carregar o envio protegido.');return;}
+    const payload={target_request:request.id,total,service_scope:scope,materials_details:materials,service_date:form.elements.date.value};
+    const attempt=await window.AJURA_QUOTE_SUBMISSION.requestKey(request.id,userId,payload);
+    if(!alive())return;
+    const {data:quoteId,error}=await client.rpc('send_request_quote_once',{...payload,submission_key:attempt.key});
+    if(!alive())return;if(error)throw error;if(!quoteId)throw Error('Resposta não confirmada');
+    attempt.clear();document.dispatchEvent(new Event('ajura:requests-changed'));container.querySelector('#refreshConversation')?.click();
+   }
+   catch{report('Não foi possível confirmar o envio. Seus campos foram preservados. Reenvie os mesmos dados para recuperar a tentativa sem criar outra proposta.');}
   },report);
 
  }
