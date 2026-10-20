@@ -1,65 +1,19 @@
-/* Arquivos de verificação privados: proprietário e administrador. */
+/* Documentos privados: respostas tardias não restauram dados de outra sessão. */
 (() => {
-  const client = window.AJURA_AUTH?.client;
-  if (!client) return;
-  const safe = value => esc(String(value ?? ''));
-  const bucket = 'provider-verification';
-  async function list(providerId, target) {
-    const { data, error } = await client.from('provider_files').select('kind, original_name, object_path, created_at').eq('provider_id', providerId).order('created_at', { ascending: false });
-    if (error) { target.textContent = 'Não foi possível carregar seus arquivos. Atualize a tela e tente novamente.'; return; }
-    target.innerHTML = (data || []).map((file, i) => `<p>${file.kind === 'identity' ? 'Documento' : 'Foto de trabalho'} · ${safe(file.original_name)} <button type="button" class="link-button" data-file-index="${i}">Abrir arquivo</button></p>`).join('') || '<p>Nenhum arquivo enviado.</p>';
-    target.querySelectorAll('[data-file-index]').forEach(button => {
-      button.onclick = async () => {
-        // Abrir a janela durante o clique evita bloqueio do navegador após o await.
-        const tab = window.open('about:blank', '_blank');
-        if (tab) tab.opener = null;
-        const file = data[Number(button.dataset.fileIndex)];
-        const { data: link, error } = await client.storage.from(bucket).createSignedUrl(file.object_path, 60);
-        if (error) { if (tab) tab.close(); toast('Não foi possível abrir o arquivo.'); return; }
-        if (tab) tab.location.replace(link.signedUrl);
-        else toast('Permita abrir uma nova aba para visualizar o arquivo.');
-      };
-    });
-  }
-  async function open() {
-    const { data: { session } } = await client.auth.getSession();
-    if (!session) return;
-    const id = session.user.id;
-    modal('<span class="eyebrow">VERIFICAÇÃO DO PRESTADOR</span><h2>Documentos e fotos</h2><p>Os arquivos ficam privados, acessíveis a você e à administração. Fotos enviadas aqui ainda não aparecem no perfil público.</p><form id="providerUpload" class="auth-form"><label>Tipo de arquivo<select name="kind"><option value="identity">Documento de identificação</option><option value="portfolio">Foto de trabalho realizado</option></select></label><label>Arquivo<input name="file" type="file" accept="image/jpeg,image/png,application/pdf" required></label><p class="hint">Até 10 arquivos de verificação por prestador, com 5 MB cada (JPG, PNG ou PDF). Envie somente documentos seus e fotos que você tem autorização para utilizar. Novos envios de perfis aprovados exigem nova análise.</p><button class="primary">Enviar arquivo</button><p id="uploadStatus" role="status"></p></form><h3>Arquivos enviados</h3><div id="providerFilesList"></div><button type="button" class="link-button" id="filesBack">Voltar para minha conta</button>');
-    $('#filesBack').onclick = () => $('#accountButton').click();
-    await list(id, $('#providerFilesList'));
-    $('#providerUpload').onsubmit = async event => {
-      event.preventDefault();
-      const form = event.target, file = form.elements.file.files[0], status = $('#uploadStatus');
-      if (!file || !['image/jpeg','image/png','application/pdf'].includes(file.type) || file.size > 5242880 || !file.size) { status.textContent = 'Escolha JPG, PNG ou PDF de até 5 MB.'; return; }
-      const button = event.submitter;
-      button.disabled = true;
-      status.textContent = 'Enviando…';
-      const kind = form.elements.kind.value;
-      const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'application/pdf': 'pdf' }[file.type];
-      const path = `${id}/${crypto.randomUUID()}.${extension}`;
-      try {
-        const upload = await client.storage.from(bucket).upload(path, file, { contentType: file.type, upsert: false });
-        if (upload.error) throw upload.error;
-        const record = await client.from('provider_files').insert({ provider_id: id, kind, object_path: path, original_name: file.name.slice(0, 200) });
-        if (record.error) { await client.storage.from(bucket).remove([path]); throw record.error; }
-        status.textContent = 'Arquivo enviado. A equipe poderá conferir na análise do cadastro.';
-        form.reset();
-        await list(id, $('#providerFilesList'));
-      } catch (error) { status.textContent = 'Não foi possível enviar. Confira a conexão e o limite de 10 arquivos. Se persistir, procure a Central.'; }
-      finally { button.disabled = false; }
-    };
-  }
-  const observer = new MutationObserver(() => {
-    const form = $('#realProviderForm');
-    if (!form || $('#providerFilesButton')) return;
-    // O botão de adicionar serviço indica que o perfil já foi salvo.
-    if (!$('#realAddService')) return;
-    const button = document.createElement('button');
-    button.id = 'providerFilesButton'; button.type = 'button'; button.className = 'secondary';
-    button.textContent = 'Documentos e fotos'; button.onclick = open;
-    form.after(button);
-  });
-  observer.observe($('#modalBody'), { childList: true, subtree: true });
-  window.AJURA_FILES = { list };
+ const client=window.AJURA_AUTH?.client,U=window.AJURA_UPLOAD_FLOW;if(!client||!U)return;
+ const safe=v=>esc(String(v??'')),bucket='provider-verification';let revision=0,sessionActor=null;
+ const alive=(target,version)=>target.isConnected&&target.closest('dialog')?.open!==false&&version===revision;
+ async function actor(id,target,version){if(!alive(target,version))throw Error('Tela ou sessão alterada.');const {data,error}=await client.auth.getSession();if(error||data?.session?.user?.id!==id||!alive(target,version))throw Error('Sessão alterada. Entre novamente.');}
+ async function list(id,target){const version=revision;try{const {data,error}=await client.from('provider_files').select('kind,original_name,object_path,created_at').eq('provider_id',id).order('created_at',{ascending:false});if(!alive(target,version))return;if(error)throw error;target.innerHTML=(data||[]).map((f,i)=>`<p>${f.kind==='identity'?'Documento':'Foto de trabalho'} · ${safe(f.original_name)} <button type="button" class="link-button" data-file-index="${i}">Abrir arquivo</button></p>`).join('')||'<p>Nenhum arquivo enviado.</p>';
+ target.querySelectorAll('[data-file-index]').forEach(b=>b.onclick=async()=>{if(b.disabled)return;b.disabled=true;const tab=window.open('about:blank','_blank');if(tab)tab.opener=null;try{if(!alive(target,version))throw Error();const {data:link,error}=await client.storage.from(bucket).createSignedUrl(data[Number(b.dataset.fileIndex)].object_path,60);if(error||!alive(target,version))throw Error();const url=new URL(link.signedUrl);if(url.protocol!=='https:'||url.origin!==new URL(window.AJURA_SUPABASE.url).origin)throw Error();if(tab)tab.location.replace(url.href);else toast('Permita abrir uma nova aba para visualizar o arquivo.');}catch{tab?.close();if(alive(target,version))toast('Não foi possível abrir o arquivo.');}finally{if(b.isConnected)b.disabled=false;}});
+ }catch{if(alive(target,version))target.textContent='Não foi possível carregar os arquivos. Atualize a tela e tente novamente.';}}
+ async function open(){const version=revision;let id;try{const {data,error}=await client.auth.getSession();if(error||!data?.session||version!==revision)return;id=data.session.user.id;sessionActor=id;}catch{toast('Não foi possível conferir a sessão.');return;}
+ modal('<h2>Documentos e fotos</h2><p>Arquivos privados para você e a administração. As fotos não são publicadas no perfil.</p><form id="providerUpload" class="auth-form"><label>Tipo<select name="kind"><option value="identity">Documento de identificação</option><option value="portfolio">Foto de trabalho realizado</option></select></label><label>Arquivo<input name="file" type="file" accept="image/jpeg,image/png,application/pdf" required></label><p class="hint">Até 10 arquivos, com 5 MB cada. Em caso de falha, mantenha o arquivo selecionado e tente novamente. Novos documentos exigem nova análise.</p><button class="primary" type="submit">Enviar arquivo</button><p id="uploadStatus" role="status"></p></form><h3>Enviados</h3><div id="providerFilesList"></div><button type="button" id="filesBack" class="link-button">Voltar</button>');
+ const form=document.querySelector('#providerUpload'),status=form.querySelector('#uploadStatus'),target=document.querySelector('#providerFilesList');document.querySelector('#filesBack').onclick=()=>document.querySelector('#accountButton').click();
+ const flow=U.engine({client,bucket,owner:id,prefix:id,table:'provider_files',guard:()=>actor(id,form,version),register:(path,file,kind)=>client.from('provider_files').insert({provider_id:id,kind,object_path:path,original_name:file.name.slice(0,200)})});
+ form.onsubmit=async e=>{e.preventDefault();if(form.dataset.busy)return;form.dataset.busy='1';form.setAttribute('aria-busy','true');const b=form.querySelector('button');b.disabled=true;try{status.textContent='Conferindo e enviando…';await flow.send(form.elements.file.files[0],form.elements.kind.value);if(!alive(form,version))return;status.textContent='Arquivo confirmado. A equipe poderá analisar seu cadastro.';form.reset();await list(id,target);}catch(error){if(alive(form,version))status.textContent=error.message||'Falha no envio. O arquivo selecionado foi preservado.';}finally{delete form.dataset.busy;form.removeAttribute('aria-busy');b.disabled=false;}};
+ await list(id,target);
+ }
+ new MutationObserver(()=>{const form=document.querySelector('#realProviderForm');if(!form||document.querySelector('#providerFilesButton')||!document.querySelector('#realAddService'))return;const b=document.createElement('button');b.id='providerFilesButton';b.type='button';b.className='secondary';b.textContent='Documentos e fotos';b.onclick=open;form.after(b);}).observe(document.querySelector('#modalBody'),{childList:true,subtree:true});
+ client.auth.onAuthStateChange((event,next)=>{const id=next?.user?.id||null;if(event==='SIGNED_OUT'||(event==='SIGNED_IN'&&id!==sessionActor)){sessionActor=id;revision++;const form=document.querySelector('#providerUpload');if(form){document.querySelector('#modalBody').textContent='Sessão alterada. Abra novamente seus documentos.';document.querySelector('#modal')?.close();}}});window.AJURA_FILES={list,open};
 })();
