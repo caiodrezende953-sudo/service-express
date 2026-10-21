@@ -33,14 +33,20 @@
    pendingService=null;
    const body=show(`<span class="eyebrow">SOLICITAÇÃO DE SERVIÇO</span><h2>${safe(service.title)}</h2><p>Informe o que precisa para o profissional preparar uma proposta.</p><form id="realRequestForm" class="auth-form"><label>Bairro<select name="district" required><option value="">Selecione</option>${areas.map(a=>`<option value="${safe(a.district)}" ${a.district===profile.district?'selected':''}>${safe(a.district)}</option>`).join('')}</select></label>${window.AJURA_LOCATION.markup(profile,'newRequestLocation')}<label>O que precisa ser feito?<textarea name="description" required minlength="10" maxlength="2000" placeholder="Ex.: trocar duas tomadas; informe o problema e os materiais disponíveis."></textarea></label><label>Data desejada<input name="date" type="date" min="${C.today()}" required></label><p class="hint">Você poderá adicionar fotos e PDFs na conversa após enviar. Esta solicitação não confirma atendimento e não gera cobrança. Não informe seu endereço completo nesta conversa inicial.</p><button class="primary" type="submit">Enviar solicitação</button><p id="requestError" role="status"></p></form>`);
    const form=body.querySelector('#realRequestForm'),report=t=>{if(form.isConnected)form.querySelector('#requestError').textContent=t;};
-   window.AJURA_LOCATION.bind(form);let submissionKey=null;
+   window.AJURA_LOCATION.bind(form);let uncertainPayload=null;
    counter(form.elements.description);
    handleForm(form,async()=>{
     const description=form.elements.description.value.trim();if(description.length<10)return report('Descreva o serviço com pelo menos 10 caracteres.');
-    let location;try{location=window.AJURA_LOCATION.read(form);submissionKey=submissionKey||window.AJURA_LOCATION.submissionKey();}catch(e){return report(e.message);}
-    const {data,error}=await client.rpc('create_service_request_with_location',{target_service:service.id,target_district:form.elements.district.value,details:description,desired_date:form.elements.date.value,...location,submission_key:submissionKey});
-    if(!form.isConnected)return;
-    if(error)return report(error.message);
+    let location;try{location=window.AJURA_LOCATION.read(form);}catch(e){return report(e.message);}
+    const S=window.AJURA_SAFE_ACTIONS;if(!S)throw C.userError('Atualize a página para carregar o envio protegido.');
+    const payload={target_service:service.id,target_district:form.elements.district.value,details:description,desired_date:form.elements.date.value,...location};
+    const serialized=JSON.stringify(payload);if(uncertainPayload&&uncertainPayload!==serialized)throw C.userError('Confira Minhas solicitações antes de mudar os dados de um envio ainda não confirmado.');
+    const token=await S.snapshot();if(token.id!==id)throw C.userError('Sessão alterada. Reabra a solicitação.');
+    const attempt=await S.requestKey(`request:${service.id}`,id,payload);await S.guard(token,form);
+    let response;try{response=await client.rpc('create_service_request_with_location',{...payload,submission_key:attempt.key});}catch{uncertainPayload=serialized;throw C.userError('Não foi possível confirmar. Reenvie os mesmos dados para recuperar a tentativa.');}
+    if(!form.isConnected||!S.current(token)||form.closest('dialog')?.open===false)return;
+    const {data,error}=response;if(error){if(!error.code)uncertainPayload=serialized;return report(error.message);}if(!data){uncertainPayload=serialized;throw C.userError('Resposta ainda não confirmada. Reenvie os mesmos dados.');}
+    attempt.clear();uncertainPayload=null;
     document.dispatchEvent(new Event('ajura:requests-changed'));await conversation(data);
    },report);
   }catch{if(run===generation)toast('Falha ao abrir a solicitação. Tente novamente.');}

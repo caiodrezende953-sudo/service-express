@@ -5,7 +5,7 @@
  const skip=document.createElement('a');skip.className='skip-link';skip.href='#mainContent';skip.textContent='Ir para o conteúdo';document.body.prepend(skip);
  const main=document.querySelector('main');if(main){main.id='mainContent';main.tabIndex=-1;}
  const notice=document.querySelector('.notice');if(notice)notice.textContent='PILOTO AJURA · Cadastros e solicitações reais · Pagamentos em preparação';
- const how=document.querySelector('footer span');if(how)how.textContent='Profissionais perto. Serviço resolvido. · Piloto em Manaus';
+ const how=document.querySelector('#footerTagline');if(how)how.textContent='Profissionais perto. Serviço resolvido. · Piloto em Manaus';
  const explore=document.querySelector('#explore');if(explore){explore.onclick=()=>{window.AJURA_DASHBOARD?.customer();document.querySelector('#realCatalog')?.scrollIntoView({behavior:'smooth'});};}
  const network=document.createElement('div');network.id='networkStatus';network.setAttribute('role','status');network.hidden=navigator.onLine;network.textContent='Você está sem conexão. Dados e envios precisam de internet; confira o resultado antes de repetir uma ação.';document.querySelector('header')?.after(network);
  window.addEventListener('offline',()=>network.hidden=false);window.addEventListener('online',()=>{network.hidden=true;window.AJURA_CATALOG?.refresh();});

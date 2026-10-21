@@ -2,7 +2,7 @@
 const {parseHTML}=require('linkedom');const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const {window}=parseHTML(fs.readFileSync('index.html','utf8'));
 const document=window.document;const events=[];
-Object.assign(window,{console,setTimeout,clearTimeout,Intl,Date,URL,location:{protocol:'https:',origin:'https://local.ajura.test',pathname:'/index.html'},confirm:()=>true});
+Object.assign(window,{TextEncoder,console,setTimeout,clearTimeout,Intl,Date,URL,location:{protocol:'https:',origin:'https://local.ajura.test',pathname:'/index.html'},confirm:()=>true});
 const selectProto=Object.getPrototypeOf(document.createElement('select'));Object.defineProperty(selectProto,'value',{get(){return this.querySelector('option[selected]')?.getAttribute('value') || this.querySelector('option')?.getAttribute('value') || '';},set(v){for(const o of this.querySelectorAll('option')){if(o.getAttribute('value')===v)o.setAttribute('selected','');else o.removeAttribute('selected');}},configurable:true});
 const inputProto=Object.getPrototypeOf(document.createElement('input'));Object.defineProperty(inputProto,'maxLength',{get(){return Number(this.getAttribute('maxlength') || -1)},configurable:true});
 const textareaProto=Object.getPrototypeOf(document.createElement('textarea'));Object.defineProperty(textareaProto,'maxLength',{get(){return Number(this.getAttribute('maxlength') || -1)},configurable:true});
@@ -13,11 +13,11 @@ const ctx=vm.createContext(window);vm.runInContext(`function esc(s){return Strin
 const stale=document.createElement('section');stale.id='realCatalog';document.querySelector('main').append(stale);
 const nav=document.querySelector('nav');const b=document.createElement('button');b.id='accountButton';nav.append(b);
 const fixture=fs.readFileSync('tests/browser.test.cjs','utf8').match(/const fixture=`([\s\S]*?)`;/)[1];vm.runInContext(fixture,ctx);vm.runInContext(fs.readFileSync('supabase-config.js','utf8'),ctx);vm.runInContext(fs.readFileSync('catalogo.js','utf8'),ctx);vm.runInContext(fs.readFileSync('bairros.js','utf8'),ctx);
-for(const f of ['core.js','auth.js','service-location.js','real-catalog.js','requests.js','quotes.js','mp-connect.js','professional-dashboard.js','workspace.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx,{filename:f});
+for(const f of ['core.js','auth.js','safe-actions.js','service-location.js','real-catalog.js','requests.js','quotes.js','mp-connect.js','professional-dashboard.js','workspace.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx,{filename:f});
 const wait=async()=>{for(let i=0;i<8;i++)await new Promise(r=>setTimeout(r,0));};
 const click=async selector=>{const el=document.querySelector(selector);assert(el,selector);assert.equal(typeof el.onclick,'function',selector+' handler');await el.onclick({target:el});await wait();};
 (async()=>{
- await wait();assert.equal(document.querySelectorAll('#realCatalog').length,1);assert(document.querySelector('#demoExamples'));assert.equal(document.querySelector('#demoExamples').hasAttribute('open'),false);assert.equal(document.querySelectorAll('.demo-example-grid article').length,3);assert.equal(document.querySelectorAll('.offer-card').length,1);
+ await wait();assert.equal(document.querySelector('footer b').textContent,'AJURA');assert.equal(document.querySelectorAll('#footerTagline').length,1);assert.equal(document.querySelectorAll('#realCatalog').length,1);assert(document.querySelector('#demoExamples'));assert.equal(document.querySelector('#demoExamples').hasAttribute('open'),false);assert.equal(document.querySelectorAll('.demo-example-grid article').length,3);assert.equal(document.querySelectorAll('.offer-card').length,1);
  await click('#accountButton');await click('#realProviderButton');assert.equal(modalEl.hasAttribute('open'),false);assert(document.body.classList.contains('ajura-professional'));assert(document.querySelector('#ajuraProfessionalDashboard').textContent.includes('Nenhum recebimento ainda'));assert(document.querySelector('#ajuraAcceptedTotal').textContent.includes('100'));
  await click('#ajuraEditProfessional');assert(!document.querySelector('#modalBody').textContent.includes('[object PointerEvent]'));modalEl.close();
  assert(document.querySelector('#ajuraWorkflowSummary').textContent.includes('Aguardando início: 1'));await click('#ajuraAllRequests');assert.equal(document.querySelector('#requestRole').value,'provider');assert(document.querySelector('#requestSummary').textContent.includes('Aguardando início: 1'));await click('[data-conversation]');

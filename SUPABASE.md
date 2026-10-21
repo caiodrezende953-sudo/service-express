@@ -1,92 +1,27 @@
-# Configurar cadastro real da AJURA
+# Supabase da AJURA — operação do piloto
 
-Esta etapa habilita autenticação e perfis para um teste fechado. Ela ainda não habilita cadastro profissional completo, pedidos reais nem pagamentos.
+O projeto existente usa `wmgungulnwingtcwebuy`. O arquivo público `supabase-config.js` contém apenas URL e chave publicável. Senha do banco, service_role, tokens OAuth e segredos das Edge Functions ficam fora do frontend.
 
-## 1. Criar o projeto
+## Migrações deste bloco
 
-1. Crie um projeto em https://supabase.com/dashboard.
-2. Escolha uma senha forte para o banco e guarde-a fora do repositório.
-3. Use a região mais próxima disponível para o público brasileiro.
+As três migrações em `supabase/migrations/` foram aplicadas diretamente ao projeto autorizado. **Não cole os SQL novamente no Editor.** Não execute indiscriminadamente os arquivos históricos na raiz de `supabase/`: eles registram versões sucessivas e alguns recriam regras antigas.
 
-## 2. Criar as tabelas e regras
+1. `safe_provider_writes`: cadastro profissional transacional; unicidade de oferta por prestador/atividade; tentativas opacas e mensagens com recibo.
+2. `scoped_activity_permissions`: habilitação por categoria/subserviço e histórico privado da decisão; restrição de emissão e confirmação de códigos quando faltar habilitação.
+3. `request_rescheduling`: proposta de nova data, aceite exclusivo do cliente e preservação do combinado original até esse aceite.
 
-1. Abra **SQL Editor** no painel do projeto.
-2. Copie todo o conteúdo de `supabase/schema.sql`.
-3. Execute uma vez e confirme que a tabela `public.profiles` foi criada com RLS habilitado.
+As tentativas persistidas no servidor contêm hash, identificador e recibo, sem duplicar CPF, endereço, texto da mensagem ou código. O navegador guarda apenas identificadores opacos por sessão; rascunhos de conversa ficam em memória. Ao trocar de conta, a interface descarta o contexto anterior.
 
-## 3. Configurar o site
+## Verificações
 
-Em **Project Settings > API**, copie apenas:
+`npm.cmd run test:sql` usa PGlite em memória, com `auth.uid` e Storage simulados para exercitar funções, transações, grants e RLS. Não testa entrega de e-mails, OAuth, sessão JWT real ou upload de verdade.
 
-- Project URL;
-- chave pública `anon` ou `publishable`.
+A sequência de `tests/sql/bootstrap.cjs` reconstrói os contratos necessários às regressões. Ela **não é** um instalador completo de produção: a configuração externa de Auth, Storage e as funções de integração precisam de documentação e versionamento próprios. Essa pendência continua no roteiro; nenhuma credencial deve ser copiada para o repositório.
 
-Preencha `supabase-config.js`:
+O histórico anterior a este bloco ainda usa arquivos SQL legados e não está inteiramente espelhado na pasta de migrações. Não use `supabase db push` para reconciliar essa base sem antes completar essa etapa.
 
-```js
-window.AJURA_SUPABASE = {
-  url: 'https://SEU-PROJETO.supabase.co',
-  anonKey: 'SUA-CHAVE-PUBLICA'
-};
-```
+Antes de novas alterações: consultar o histórico remoto, criar migração incremental, validar isoladamente, aplicar uma vez e conferir permissões/advisors. Não executar SQL antigo para desfazer uma migração. Uma correção posterior deve preservar os dados criados desde a atualização.
 
-Nunca coloque a chave `service_role`, senha do banco ou outro segredo em HTML ou JavaScript público.
+## Limitações e custos
 
-## 4. URLs de autenticação
-
-Em **Authentication > URL Configuration**:
-
-- Site URL: `https://caiodrezende953-sudo.github.io/service-express/`
-- Redirect URL permitida: `https://caiodrezende953-sudo.github.io/service-express/`
-
-Mantenha a confirmação de e-mail habilitada. Não abra o cadastro ao público antes de publicar Termos de Uso e Política de Privacidade.
-
-## 5. Teste mínimo
-
-1. Crie uma conta de cliente com um e-mail de teste.
-2. Confirme o e-mail recebido.
-3. Entre e confira **Minha conta**.
-4. No Table Editor, confirme que existe exatamente um perfil para o usuário.
-5. Saia, recupere a senha e confirme que o link retorna ao endereço publicado.
-6. Entre com outra conta e confirme que ela não consegue consultar nem alterar o primeiro perfil.
-
-## 6. Trave a escolha do tipo de conta depois do cadastro
-
-Em projetos criados com a versão anterior de `schema.sql`, execute uma vez
-`supabase/lock-profile-role.sql` no SQL Editor. O cadastro continua aceitando
-cliente, prestador ou ambos, mas a pessoa não pode mudar `account_type` depois
-diretamente pelo navegador. O SQL interrompe a transação se esse bloqueio falhar.
-
-Confira depois:
-
-```sql
-select
-  has_column_privilege('authenticated', 'public.profiles', 'account_type', 'UPDATE') as pode_mudar_tipo,
-  has_column_privilege('authenticated', 'public.profiles', 'phone', 'UPDATE') as pode_atualizar_telefone;
-```
-
-O esperado é `false` e `true`, respectivamente.
-
-## 7. Ativar o cadastro completo do cliente
-
-Execute uma vez `supabase/client-profile.sql`. Ele adiciona rua, número,
-complemento e referência ao perfil, mantém RLS e cria o histórico de aceite
-de Termos e Política por versão. O formulário do site libera a edição desses
-dados; o endereço completo não entra na vitrine pública.
-
-Os documentos ainda precisam ser publicados antes de registrar um aceite real.
-Quando houver texto aprovado, use versões como `termos-1.0` e `privacidade-1.0`
-no formulário de aceite da próxima entrega.
-
-Para concluir o teste de recuperação, em **Authentication > URL Configuration**
-inclua `https://caiodrezende953-sudo.github.io/service-express/index.html`
-nas URLs de redirecionamento permitidas. O link de recuperação enviado pelo
-site usa esse endereço exato. Depois teste **Esqueci minha senha**, abra o link
-no e-mail, altere a senha e entre novamente com ela. Não envie o link, código
-ou senha a ninguém.
-
-
-## Etapa 3 — identificação privada do prestador
-Executar `supabase/provider-onboarding.sql` sobre a base existente. A aprovação usada pela aplicação é `provider_profiles.approval_status`; os campos extras em `profiles` criados anteriormente não são usados como aprovação. Não executar novamente schema.sql.
-CPF/CNPJ e razão social são salvos em provider_private_details, acessível apenas ao próprio usuário pela API. Conferência administrativa de documentos e upload de fotos/documentos ainda pendentes. O formato numérico é validado; isso não comprova autenticidade do documento.
-Testar com conta provider/both: identificação, bairros, múltiplos serviços, recarga e ausência de pendentes na vitrine real.
+Plano gratuito preservado. Nenhuma cobrança, recurso pago ou branch de banco foi criada neste bloco. As tabelas adicionais ocupam espaço no mesmo projeto; cotas e crescimento continuam precisando de acompanhamento. A integração de pagamento de teste permanece desativada para cobranças reais.

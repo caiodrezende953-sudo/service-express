@@ -55,3 +55,28 @@ credentials/
 /ajura-mensagens-central/
 
 /ajura-pedido-resumo/
+
+# Pacotes de atualizacao preservados localmente
+/ajura-bugs-protecao/
+/ajura-acesso-atualizado/
+/ajura-admin-organizado/
+/ajura-admin-suspensao/
+/ajura-atividades/
+/ajura-avaliacoes-reais/
+/ajura-cancelamento-central/
+/ajura-catalogo-ampliado/
+/ajura-central-unica/
+/ajura-chat-paleta/
+/ajura-codigos-servico/
+/ajura-endereco-pedido/
+/ajura-interface-mobile/
+/ajura-moderacao-avaliacoes/
+/ajura-orcamentos-seguros/
+/ajura-paineis-pedidos/
+/ajura-pedidos-organizados/
+/ajura-prioridades-altas/
+/ajura-senha-segura/
+/ajura-uploads-resilientes/
+/ajura-validacao-integrada/
+
+/supabase/.temp/

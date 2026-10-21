@@ -14,15 +14,15 @@
    const report=message=>{if(section.isConnected)section.querySelector('[data-execution-status]').textContent=message;};
    const button=section.querySelector('[data-issue-code]');if(button)button.onclick=async()=>{
     if(button.disabled||!window.confirm(phase==='start'?'Gerar codigo para autorizar o inicio deste servico?':'Gerar codigo para confirmar que o servico foi concluido?'))return;
-    button.disabled=true;section.querySelector('[data-issued-code]').textContent='';
+    button.disabled=true;
     try{
      const {data:issued,error}=await client.rpc('issue_service_code',{target_request:request.id});
      if(!section.isConnected)return;if(error)throw error;
      if(!issued||!/^\d{6}$/.test(issued.code)||issued.phase!==phase)throw new Error('Resposta inesperada. Atualize a conversa.');
-     const out=section.querySelector('[data-issued-code]');
+     const out=section.querySelector('[data-issued-code]');out.replaceChildren();
      const code=document.createElement('strong');code.style.fontSize='1.6rem';code.style.letterSpacing='.25em';code.textContent=issued.code;out.append(code);
      const date=document.createElement('p');date.textContent='Valido ate: '+C.time(issued.expires_at);out.append(date);report('Codigo exibido somente para voce. Ao fechar a conversa ele desaparece da tela.');
-    }catch(e){report(e.message||'Falha de conexao. Um codigo pode ter sido gerado; aguarde 60 segundos antes de tentar novamente.');}
+    }catch(e){const uncertain=section.querySelector('[data-issued-code]')?.textContent&&!e?.code;report((e.message||'Falha de conexao. Aguarde 60 segundos antes de tentar novamente.')+(uncertain?' O codigo exibido foi mantido. Se uma nova emissao ficou sem resposta, ele pode ter sido invalidado; aguarde e gere outro antes de compartilhar.':''));}
     finally{if(button.isConnected)button.disabled=false;}
    };
    const form=section.querySelector('[data-confirm-code]');if(form)C.handleForm(form,async()=>{

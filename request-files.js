@@ -18,7 +18,7 @@
  async function attach(request,actor,body){
   const section=document.createElement('section');section.className='service';section.setAttribute('aria-label','Anexos da solicitação');body.append(section);
   if(sessionActor===null)sessionActor=actor;
-  sections.add(section);const version=revision;const active=()=>section.isConnected&&section.closest('dialog')?.open!==false&&revision===version;
+  for(const previous of sections)if(!previous.isConnected)sections.delete(previous);sections.add(section);const version=revision;const active=()=>section.isConnected&&section.closest('dialog')?.open!==false&&revision===version;
   const guard=async()=>{if(!active())throw Error('Tela ou sessão alterada.');const {data,error}=await client.auth.getSession();if(error||data?.session?.user?.id!==actor||!active())throw Error('Sessão alterada.');};
   const flow=window.AJURA_UPLOAD_FLOW?.engine({client,bucket,owner:actor,prefix:`${actor}/${request.id}`,table:'request_files',guard,register:(path,file)=>client.rpc('register_request_file',{target_request:request.id,uploaded_path:path,uploaded_name:file.name.slice(0,200)})});
   async function render(message=''){

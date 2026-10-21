@@ -1,54 +1,268 @@
 {
-    "version":  "2026.10.06.3",
-    "files":  [
-                  {
-                      "path":  "docs/RESUMO-E-HISTORICO.md",
-                      "accepted_sha256":  [
-
-                                          ],
-                      "new_sha256":  "040F61B2F376382B633A79677E37DD58C2B62D3196B283C8767E931ECE35E849"
-                  },
-                  {
-                      "path":  "index.html",
-                      "accepted_sha256":  [
-                                              "4E58796230186BD130688D214425DD82E1B5BE9395B256692A52BF4F0290AA01"
-                                          ],
-                      "new_sha256":  "74281E81377E29A0C9F66FCADBA57079DEB183F16E623CC63AA37F37DCFFC070"
-                  },
-                  {
-                      "path":  "messaging.js",
-                      "accepted_sha256":  [
-                                              "13AF2C8AEB836EEC39998D7F643D6E6CBA3D5A61C7CE8620FA50A4EDEEF4509F"
-                                          ],
-                      "new_sha256":  "23C580E479831A0634F8B50E8D7E90283E5E0F8102B5294233BB746BF5C0AD84"
-                  },
-                  {
-                      "path":  "request-overview.css",
-                      "accepted_sha256":  [
-
-                                          ],
-                      "new_sha256":  "AE86EEF5F06A060C2ED8509F958725CD7C6B69ED1C402F12D813BF6B8553F419"
-                  },
-                  {
-                      "path":  "request-overview.js",
-                      "accepted_sha256":  [
-
-                                          ],
-                      "new_sha256":  "388B490BB96FF14D5032BDF20AAD6EE0E4A5E89E34D2ADA5886691D065DFA251"
-                  },
-                  {
-                      "path":  "supabase/request-overview.sql",
-                      "accepted_sha256":  [
-
-                                          ],
-                      "new_sha256":  "D21828D5451BAE12CEADE2D8855E4CAAFD52BBFE41747CD528B3D3670E31AE61"
-                  },
-                  {
-                      "path":  "tests/request-overview.test.cjs",
-                      "accepted_sha256":  [
-
-                                          ],
-                      "new_sha256":  "2445C911F94CE5B9F4D32C3CEFB77DD16C4C740E16954562FB2C769CB977B138"
-                  }
-              ]
+  "version": "2026.10.21.1",
+  "base_commit": "f1744bdf116ebfc92c52efb294663d7b3490cfd5",
+  "files": [
+    {
+      "path": ".gitignore",
+      "new_sha256": "16cdc52ba9cc2ac960f11362531d8f813f3d7934b8fdcf4cdfbbff929d20b816",
+      "accepted_sha256": [
+        "0b9970b7700b22e912913116b8e07aff52fec9a5af05ab92ca5dae32ded04de6"
+      ]
+    },
+    {
+      "path": "LEIA-ME.md",
+      "new_sha256": "24002e67f67a11389b9556bc58232f4b815d81e02273a20346fdba4229d01a6d",
+      "accepted_sha256": [
+        "cd9b13425a4d11169534fb5b7db9d701544854deaece06f05348d02d509afd4d"
+      ]
+    },
+    {
+      "path": "README.md",
+      "new_sha256": "36243564b0b7b5e429b1427738f454b461cd26b821ce1a400ff9475090c6eae9",
+      "accepted_sha256": [
+        "95f0ccb5448c6255d2c1faa1e129298a48fb793e8277e2df5b554840359f1b45"
+      ]
+    },
+    {
+      "path": "SUPABASE.md",
+      "new_sha256": "7f39fca79dab0b1bfdc9a2f4af00e4769976223ec3bb595dac9f120cbeea4fa3",
+      "accepted_sha256": [
+        "ebd3aa271bf9a7464b14ca322535d0c5e4ea4265f6bfd168c44172072c96f5d1"
+      ]
+    },
+    {
+      "path": "activities-ui.js",
+      "new_sha256": "cd38a33d13a71df39bd81d2973e97d0678c04d80da24682fd37d6094ab3945ca",
+      "accepted_sha256": [
+        "129cfb38177eaa3d667241c94999bd1d3009fb66020203ea95ee6059410347fe"
+      ]
+    },
+    {
+      "path": "auth.js",
+      "new_sha256": "dccfe4c1b61673b4f39c6d82f8a05f7864f36896b288758598320e2ed8696d6e",
+      "accepted_sha256": [
+        "098cc5717e72aea6ef921940d09f82d6a421f0a5d81236519a0e59eb26a5d4d8"
+      ]
+    },
+    {
+      "path": "core.js",
+      "new_sha256": "dc55c2389f63255365d0ea97acbe98fa03d27838ebb95efc13882bd40b9d6ce5",
+      "accepted_sha256": [
+        "0edd1edd4136676b65177944c9b6dc6a9c32b371a2db91129f56adae897b9e6f"
+      ]
+    },
+    {
+      "path": "docs/BUGS-E-PROTECAO.md",
+      "new_sha256": "a061b44c6f0e5b5bb374377d13c3c3655b98c69fde7e2b34e8c568f683503af5",
+      "accepted_sha256": []
+    },
+    {
+      "path": "docs/ROADMAP-UPGRADE.md",
+      "new_sha256": "c30e99decd7a631d8b9c9ea46972d27ac4a3fcab92a3929132d73b59158dee53",
+      "accepted_sha256": []
+    },
+    {
+      "path": "docs/VALIDACAO-BUGS-PROTECAO.md",
+      "new_sha256": "18273c27a2c92e160b29b7bd8d11d15bfb838219d5b7cca933277dba1b36bb62",
+      "accepted_sha256": []
+    },
+    {
+      "path": "docs/historico/LEIA-ME.md",
+      "new_sha256": "32269e031d69348931e6b589a4be8096a156d826978b3c110f6aa12efe978b3c",
+      "accepted_sha256": []
+    },
+    {
+      "path": "docs/historico/README.md",
+      "new_sha256": "6ce5870874f9ff184ecac20ef970e226389455364e85c77fdaf43c7a46a15c4c",
+      "accepted_sha256": []
+    },
+    {
+      "path": "docs/historico/SUPABASE.md",
+      "new_sha256": "33c26bbc0e178b205c8065f01e3309815cccd870bba417e21674d6b04c73f27f",
+      "accepted_sha256": []
+    },
+    {
+      "path": "index.html",
+      "new_sha256": "1bb71e03b4cf643cb5968cd4d3c4a4a0dbd5378b50efff8714e4ab5c5365de00",
+      "accepted_sha256": [
+        "369623ed08473fe342d68383d339d0de812fe0980f6cd31fe990dd11d310ba58"
+      ]
+    },
+    {
+      "path": "messaging.js",
+      "new_sha256": "88bb95af9e1a01bb74de1440fe6ae94a2f1f0e9d6c41c7f7dbe4500898696544",
+      "accepted_sha256": [
+        "0c8391933a590591954287a194555ca621020b457e9035568ebe8f514704d17a"
+      ]
+    },
+    {
+      "path": "package-lock.json",
+      "new_sha256": "7da366df1014ba0f10494987f9dcb87143ee45100929131d04f08003dc86b410",
+      "accepted_sha256": [
+        "3515d84d17d3fecb273fc62e602d0057353fb64c5fd8d7d3c6de9b9d5fa80f5f"
+      ]
+    },
+    {
+      "path": "package.json",
+      "new_sha256": "9c4f8fb613ff7d7ad63daffbecce4a1966ce93de6db01f88d02703c72b1d55b5",
+      "accepted_sha256": [
+        "647bac9e25c7ea17efc53f28628f60f3590623f7aa8aafbfe2dc0ba494fb9312"
+      ]
+    },
+    {
+      "path": "quotes.js",
+      "new_sha256": "3ef7ee4506223e1db07962090f9ea6cdef89e0df4c4c8ddde507cc87933bfb63",
+      "accepted_sha256": [
+        "1b37f976805352bb85c4adab6eeb4353c4458f7271b779730e28d13b5005ac09"
+      ]
+    },
+    {
+      "path": "request-files.js",
+      "new_sha256": "fa1b8ea11c81d739cef32d878e7a23f9410e8ef3ff9713dee6b501988170d0c3",
+      "accepted_sha256": [
+        "be2dc55973e63ec4c13ccf32e20a24560ee4b927c60fd841aadb689f776963e5"
+      ]
+    },
+    {
+      "path": "request-overview.js",
+      "new_sha256": "0c7863af23553b9627e3f0ad265430a0b2fb14423fe612ca1772ea897e1669be",
+      "accepted_sha256": [
+        "f925ba714a7df211842e9280965dc4a5a219520190f875e91f089355c12fc638"
+      ]
+    },
+    {
+      "path": "requests.js",
+      "new_sha256": "f25a09388abd564025a3249b30b01a724b6572b9dd2bd294ac1c4dbadcaab43f",
+      "accepted_sha256": [
+        "23411a5381c9b69878595045ea36682461d1c0637e1ba7102dabd55b9b4f6339"
+      ]
+    },
+    {
+      "path": "safe-actions.js",
+      "new_sha256": "d9f0dc83c2aeac113a9bb5132d517212bdbcc55fb1c58ca0f9173635730d5fbc",
+      "accepted_sha256": []
+    },
+    {
+      "path": "service-execution.js",
+      "new_sha256": "b630c72bbe23e8723105dbfc284219e2b9d418d429be8494125d2327b849bd5d",
+      "accepted_sha256": [
+        "a06c6aaab8a57f55f472a1c90d7fb0e1922438b430057e010864d298379d9693"
+      ]
+    },
+    {
+      "path": "service-reschedule.js",
+      "new_sha256": "51cb46c59426deb83534f17e1434a34e8fe4f147edeb575687dfb65c91eb756f",
+      "accepted_sha256": []
+    },
+    {
+      "path": "supabase/migrations/20261021133033_safe_provider_writes.sql",
+      "new_sha256": "edcd86d8442d23e5f6113642d1d515068c181ad3f7fe90950944a296f4136f27",
+      "accepted_sha256": []
+    },
+    {
+      "path": "supabase/migrations/20261021133819_scoped_activity_permissions.sql",
+      "new_sha256": "967d55d8d3a91ba43f1440d8a850bf0126c969b7457328cca8421fa63a89866d",
+      "accepted_sha256": []
+    },
+    {
+      "path": "supabase/migrations/20261021134711_request_rescheduling.sql",
+      "new_sha256": "beb3801d18cea74b7b1d1655d4b24b4f2a5fef59e2727ea5ee64e2b75eaedb45",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/activities.test.cjs",
+      "new_sha256": "2cf4b31e31a87866192931cd83e502731085b07d53761f5962d7698efaacd5cc",
+      "accepted_sha256": [
+        "19d474778b6d110c69715e82ee782f9e01bc0b5702b4b61f4566dc45d385da06"
+      ]
+    },
+    {
+      "path": "tests/dom.test.cjs",
+      "new_sha256": "570ed5e65210a2e479969387ecf65d59ccca6f79ee4c9f1002c8403ce7833e0e",
+      "accepted_sha256": [
+        "a05e8657481b99f6cd5eee583a05654dc353d8dcfdcdeaedcb53c2e318519280"
+      ]
+    },
+    {
+      "path": "tests/helpers/safety.cjs",
+      "new_sha256": "317debfc8c27e4b69dae462c064492316c0415e40f1b837110f7f905d7e0501a",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/messaging.test.cjs",
+      "new_sha256": "f8a4166d2a6dfcf18815b5221a916cb99bcbb41d295c493de5f1c8a7d0026f2f",
+      "accepted_sha256": [
+        "e085d81f8450d37b133424aaef2d4d14775f19f9d318d16c44ac4bb1006e581d"
+      ]
+    },
+    {
+      "path": "tests/safe-actions.test.cjs",
+      "new_sha256": "10a857da7f1d8c069815e025a19447078ca39f11d4cb8eb1b7c0395fa1a9b1fb",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/service-cancellation.test.cjs",
+      "new_sha256": "ac506486e7f1bdb13c8640fc714a74c2e92652c4968512ba9267283e4787e9fe",
+      "accepted_sha256": [
+        "90eda6d07191e387c5f855199c6a9535c6b8dd96af66bc0b8b9301a82a9e2a59"
+      ]
+    },
+    {
+      "path": "tests/service-execution.test.cjs",
+      "new_sha256": "a4c4a79221f5232740b8a4edaa45405ab8f9c19a8e862c976b1707ace14e1913",
+      "accepted_sha256": [
+        "4df3f2acea95700f3034ae5cade938c319c5a760c49ef711d4f29f2c5a407d55"
+      ]
+    },
+    {
+      "path": "tests/service-location.test.cjs",
+      "new_sha256": "37bb6411681ff6c563cc9c775a37f3c725b56c0812622e8a3117aeefd8f2a0aa",
+      "accepted_sha256": [
+        "0acd13017fb524410115aa44846940f832a63f632872f9eef93ddc3c89b4ea52"
+      ]
+    },
+    {
+      "path": "tests/service-reschedule.test.cjs",
+      "new_sha256": "48897075701b20ac3c76397ccf0743c1deb07cbdcb9558e6d367f6357c6094b9",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/sql/bootstrap.cjs",
+      "new_sha256": "2126287a2c123a810e664b04932ed0c3198f7f8f6794e994519e482d60441c10",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/sql/protection.test.cjs",
+      "new_sha256": "820f11c9484062bf27f0b30b6e846bf078170bc11dd7eeafa4adb0123c010e0a",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/structure.test.cjs",
+      "new_sha256": "8fb03f0c940ba825d63d0e8ed8818b870f597be4771302b6557e0a6f76e659c6",
+      "accepted_sha256": [
+        "85f03e26906c282a153b8ce20c7ae8388f01d7fb4d9d5ec1bd8c64e84de71e4d"
+      ]
+    },
+    {
+      "path": "ui.js",
+      "new_sha256": "0b51ba189617e6fe7ef4b05a158dcd0033286ac15dc52edc6d015bbda9856541",
+      "accepted_sha256": [
+        "5560ba8238e905c8d2611b1bdaba765a8ea37640f179058af4cd14ce6050a83d"
+      ]
+    },
+    {
+      "path": "v2.js",
+      "new_sha256": "ba3fb08f5f3c315448fbe79987600a0df974cf1bac4f1e093775a92037f5fcf5",
+      "accepted_sha256": [
+        "b3e7af792c3b308da295c44301c1ea9730ee415bb4894b1f80bc4cb9c15e4f92"
+      ]
+    },
+    {
+      "path": "workspace.js",
+      "new_sha256": "596b059f1c5061f0e96441445e01124a56c499c7d2dd0adfaaecd95339e2b9d6",
+      "accepted_sha256": [
+        "5301781366505b953b52bf3506e3e440e12fa47197585f8fcdebaea7a1451414"
+      ]
+    }
+  ]
 }

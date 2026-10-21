@@ -18,6 +18,7 @@
  };
  const activeConnection = rows => Boolean(rows?.length && new Date(rows[0].token_expires_at).getTime() > Date.now());
  const debounce = (fn, delay=180) => {let timer; return (...args)=>{clearTimeout(timer);timer=setTimeout(()=>fn(...args),delay);};};
+ const userError = message => Object.assign(new Error(message), {userMessage:String(message).slice(0,500)});
  // Impede dois envios simultâneos do mesmo formulário; sempre libera em falha.
  function handleForm(form, handler, report) {
   if (!form) return;
@@ -27,7 +28,7 @@
    form.dataset.busy='true'; form.setAttribute('aria-busy','true');
    if(button) button.disabled=true;
    try { await handler(event); }
-   catch { if(form.isConnected) report('Falha de conexão. Confira o resultado antes de repetir o envio.'); }
+   catch(error) { if(form.isConnected) report(typeof error?.userMessage==='string'?error.userMessage:'Falha de conexão. Confira o resultado antes de repetir o envio.'); }
    finally {delete form.dataset.busy;form.removeAttribute('aria-busy');if(button?.isConnected) button.disabled=false;}
   };
  }
@@ -46,7 +47,7 @@
   }
   return {rows,truncated:true};
  }
- window.AJURA_CORE=Object.freeze({safe,today,date,time,money,statuses,missingProfile,activeConnection,debounce,handleForm,counter,allRows,version:'2026.10.05.1'});
+ window.AJURA_CORE=Object.freeze({safe,today,date,time,money,statuses,missingProfile,activeConnection,debounce,userError,handleForm,counter,allRows,version:'2026.10.21.1'});
 })();
 
 /* Dígitos verificadores: não substitui conferência de identidade. */

@@ -147,7 +147,7 @@
       await authFormRequest(event.target, () => client.auth.updateUser({ password }), async () => {
         const { error } = await client.auth.signOut();
         if (error) { event.target.querySelector('[data-auth-feedback]').textContent = 'Senha alterada. Não foi possível encerrar a sessão; use Sair na sua conta.'; return; }
-        applySession(null);
+        applySession(null, true);
         $('#modal')?.close();
         toast('Senha alterada. Entre com a nova senha.');
       });
@@ -162,7 +162,7 @@
     try {
       const { error } = await client.auth.signOut();
       if (error) throw error;
-      applySession(null);
+      applySession(null, true);
       $('#modal')?.close();
     } catch (error) { toast(authMessage(error)); }
     finally { logoutBusy = false; if (button?.isConnected) button.disabled = false; }
@@ -230,7 +230,7 @@
     }
     document.dispatchEvent(new Event('ajura:professional'));
     const [{ data: profile, error: profileError }, { data: areas, error: areasError }, { data: services, error: servicesError }] = await Promise.all([
-      client.from('provider_profiles').select('display_name, bio, approval_status').eq('id', id).maybeSingle(),
+      client.from('provider_profiles').select('display_name, bio, approval_status, updated_at').eq('id', id).maybeSingle(),
       client.from('provider_service_areas').select('district').eq('provider_id', id).order('district'),
       client.from('provider_services').select('id, category, subcategory, title, description, pricing_type, starting_price, active').eq('provider_id', id).order('id')
     ]);
@@ -241,7 +241,7 @@
     if (identityError) return modal('<h2>Cadastro profissional</h2><p>Execute a atualização provider-onboarding.sql no Supabase antes de cadastrar documentos.</p>');
     const selected = new Set((areas || []).map(area => area.district));
     const status = { pending: 'Aguardando análise', approved: 'Aprovado', rejected: 'Recusado', suspended: 'Suspenso' };
-    modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">Seu perfil aparece na busca real após aprovação. Complete os dados, os bairros e pelo menos um serviço.</p><div id="providerReadiness" class="hint" role="status">Conferindo requisitos do cadastro…</div><form id="realProviderForm" class="auth-form"><fieldset><legend>1. Identificação profissional</legend><label>CPF ou CNPJ<input name="document_number" autocapitalize="characters" required maxlength="18" value="${esc(identity?.document_number || '')}" placeholder="CPF ou CNPJ, com ou sem pontuação"></label><label>Razão social ou nome completo<input name="business_name" required minlength="3" maxlength="160" value="${esc(identity?.business_name || '')}"></label><p class="hint">Documento e razão social ficam protegidos e não aparecem na busca.</p></fieldset><label>Nome exibido aos clientes<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>2. Onde você atende?</legend><label>Encontrar bairro<input id="providerAreaSearch" type="search" placeholder="Digite o bairro"></label><p id="providerAreaCount" class="hint"></p><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary">Salvar cadastro</button></form><h3>3. Serviços que ofereço</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
+    modal(`<span class="eyebrow">CADASTRO PROFISSIONAL REAL</span><h2>Meu perfil profissional</h2>${message ? `<p class="auth-message">${esc(message)}</p>` : ''}<p>Situação: <b>${esc(profile ? status[profile.approval_status] || profile.approval_status : 'Ainda não enviado')}</b></p><p class="hint">Seu perfil aparece na busca real após aprovação. Complete os dados, os bairros e pelo menos um serviço.</p><div id="providerReadiness" class="hint" role="status">Conferindo requisitos do cadastro…</div><form id="realProviderForm" class="auth-form"><fieldset><legend>1. Identificação profissional</legend><label>CPF ou CNPJ<input name="document_number" autocapitalize="characters" required maxlength="18" value="${esc(identity?.document_number || '')}" placeholder="CPF ou CNPJ, com ou sem pontuação"></label><label>Razão social ou nome completo<input name="business_name" required minlength="3" maxlength="160" value="${esc(identity?.business_name || '')}"></label><p class="hint">Documento e razão social ficam protegidos e não aparecem na busca.</p></fieldset><label>Nome exibido aos clientes<input name="display_name" required minlength="3" maxlength="100" value="${esc(profile?.display_name || '')}"></label><label>Apresentação<textarea name="bio" maxlength="1000">${esc(profile?.bio || '')}</textarea></label><fieldset><legend>2. Onde você atende?</legend><label>Encontrar bairro<input id="providerAreaSearch" type="search" placeholder="Digite o bairro"></label><p id="providerAreaCount" class="hint"></p><div class="area-list">${(typeof BAIRROS_MANAUS !== 'undefined' ? BAIRROS_MANAUS : []).map(name => `<label class="check"><input type="checkbox" name="district" value="${esc(name)}" ${selected.has(name) ? 'checked' : ''}>${esc(name)}</label>`).join('')}</div></fieldset><button class="primary" type="submit">Salvar cadastro</button><p data-provider-save-status role="status"></p></form><h3>3. Serviços que ofereço</h3>${(services || []).map(service => `<article class="service"><b>${esc(service.title)}</b><p>${esc(service.category)} · ${esc(service.subcategory)}</p><p>${esc(service.description)}</p><small>${service.pricing_type === 'quote' ? 'Sob orçamento' : `A partir de R$ ${Number(service.starting_price).toFixed(2).replace('.', ',')}`}</small></article>`).join('') || '<p>Nenhum serviço cadastrado.</p>'}${profile ? '<button class="secondary" id="realAddService">Adicionar serviço</button>' : '<p class="hint">Salve o perfil antes de adicionar serviços.</p>'}<button class="link-button" id="backAccount">Voltar para minha conta</button>`);
     const checklistTarget = $('#providerReadiness');
     client.rpc('provider_approval_checklist', { target_provider: id }).then(result => {
       if (!checklistTarget?.isConnected) return;
@@ -304,39 +304,26 @@
       actions.append(status, edit, toggle);
       article.append(actions);
     });
-    $('#realProviderForm').onsubmit = async event => {
-      event.preventDefault();
-      const form = event.target, data = new FormData(form), chosen = data.getAll('district');
-      if (!chosen.length) return providerView('Selecione ao menos um bairro.');
-      const documentNumber = window.AJURA_DOCUMENT.normalize(data.get('document_number'));
-      if (!window.AJURA_DOCUMENT.valid(documentNumber)) {
-        form.querySelector('input[name="document_number"]').setCustomValidity('CPF ou CNPJ inválido. Confira todos os caracteres e os dígitos finais.');
-        form.reportValidity();
-        form.querySelector('input[name="document_number"]').oninput = event => event.target.setCustomValidity('');
-        return;
-      }
-      const button = event.submitter;
-      button.disabled = true;
-      const payload = { id, display_name: clean(data.get('display_name')), bio: clean(data.get('bio')) };
-      const { error } = profile
-        ? await client.from('provider_profiles').update({ display_name: payload.display_name, bio: payload.bio }).eq('id', id)
-        : await client.from('provider_profiles').insert(payload);
-      if (error) return providerView(authMessage(error));
-      const { error: privateError } = await client.from('provider_private_details').upsert({ provider_id: id, document_number: documentNumber, business_name: clean(data.get('business_name')), updated_at: new Date().toISOString() });
-      if (privateError) return providerView('Perfil salvo, mas a identificação não foi salva: ' + authMessage(privateError));
-      const old = [...selected];
-      const add = chosen.filter(district => !selected.has(district));
-      const remove = old.filter(district => !chosen.includes(district));
-      if (add.length) {
-        const result = await client.from('provider_service_areas').insert(add.map(district => ({ provider_id: id, district })));
-        if (result.error) return providerView('Perfil salvo, mas alguns bairros não foram adicionados: ' + authMessage(result.error));
-      }
-      if (remove.length) {
-        const result = await client.from('provider_service_areas').delete().eq('provider_id', id).in('district', remove);
-        if (result.error) return providerView('Perfil salvo, mas alguns bairros não foram removidos: ' + authMessage(result.error));
-      }
-      providerView('Cadastro salvo. A aprovação continua sob análise da equipe.');
-    };
+    const providerForm=$('#realProviderForm');
+    window.AJURA_CORE.handleForm(providerForm,async()=>{
+      const feedback=providerForm.querySelector('[data-provider-save-status]');
+      const values=new FormData(providerForm),chosen=values.getAll('district');
+      if(!chosen.length)throw window.AJURA_CORE.userError('Selecione ao menos um bairro. Seus dados foram preservados.');
+      const documentNumber=window.AJURA_DOCUMENT.normalize(values.get('document_number'));
+      if(!window.AJURA_DOCUMENT.valid(documentNumber))throw window.AJURA_CORE.userError('CPF ou CNPJ inválido. Confira os caracteres e os dígitos finais.');
+      const S=window.AJURA_SAFE_ACTIONS;if(!S)throw window.AJURA_CORE.userError('Atualize a página para carregar o cadastro protegido.');
+      const token=await S.snapshot();if(token.id!==id)throw window.AJURA_CORE.userError('Sessão alterada. Reabra o cadastro.');
+      const payload={profile_data:{display_name:clean(values.get('display_name')),bio:clean(values.get('bio')),document_number:documentNumber,business_name:clean(values.get('business_name'))},served_districts:[...chosen].sort()};
+      const attempt=await S.requestKey('onboarding',id,payload,{persist:false});
+      await S.guard(token,providerForm);
+      feedback.textContent='Salvando cadastro completo…';
+      const {data:result,error}=await client.rpc('save_provider_onboarding',{...payload,submission_key:attempt.key,expected_updated_at:profile?.updated_at||null});
+      if(!S.current(token)||!providerForm.isConnected||providerForm.closest('dialog')?.open===false)return;
+      if(error)throw window.AJURA_CORE.userError(error.message||'Não foi possível confirmar. Seus dados foram preservados.');
+      if(!result?.id)throw window.AJURA_CORE.userError('Salvamento não confirmado. Tente novamente com os mesmos dados.');
+      attempt.clear();await providerView('Cadastro salvo por completo. Confira a situação da aprovação.');
+      document.dispatchEvent(new Event('ajura:profile-saved'));
+    },message=>{if(providerForm.isConnected)providerForm.querySelector('[data-provider-save-status]').textContent=message;});
     } catch { if (revision === sessionRevision && session?.user.id === id) toast('Não foi possível abrir seu cadastro profissional. Confira a conexão e tente novamente.'); }
   }
 
@@ -445,9 +432,9 @@
   }
 
 
-  function applySession(nextSession) {
+  function applySession(nextSession, force = false) {
     const previousUser = session?.user?.id;
-    sessionRevision += 1;
+    if (force || previousUser !== nextSession?.user?.id) sessionRevision += 1;
     session = nextSession;
     if (previousUser && previousUser !== session?.user?.id) {
       $('#modalBody')?.replaceChildren();
@@ -469,9 +456,9 @@
     client.auth.getSession().then(({ data, error }) => {
       if (initialRevision !== sessionRevision) return;
       applySession(error ? null : data?.session || null);
-    }).catch(() => { if (initialRevision === sessionRevision) applySession(null); });
+    }).catch(() => { if (initialRevision === sessionRevision) applySession(null, true); });
     client.auth.onAuthStateChange((event, nextSession) => {
-      applySession(nextSession);
+      applySession(nextSession, event === 'SIGNED_OUT');
       if (event === 'PASSWORD_RECOVERY') {
         const revision = sessionRevision;
         setTimeout(() => { if (session && revision === sessionRevision) newPasswordView(); }, 0);
