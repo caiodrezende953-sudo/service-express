@@ -17,7 +17,7 @@ function setupMessaging(options={}){
  const context={request:req,tickets:[],messages:[],history:[{id:1,sender_id:'provider',body:'<img src=x onerror=alert(1)>',created_at:'2026-10-06T13:00:00Z'}]};
  const client={auth:{getSession:async()=>({data:{session:actor?{user:{id:actor}}:null}}),onAuthStateChange:fn=>auth.push(fn)},from:()=>({select(){return this},eq(){return this},single:async()=>({data:req})}),rpc:async(name,args)=>{calls.push([name,args]);if(options.fail===name)return {error:{message:'Erro de conexão'}};return {data:name==='support_context'?context:name==='messaging_inbox'?[{id:'request',district:'Tarumã',partner:'Prestador',preview:'Olá',unread:2}]:name==='messaging_unread_count'?2:name==='admin_is_current_user'?Boolean(options.admin):name==='admin_support_queue'?[]:name.endsWith('_message_once')?77:null};}};
  window.AJURA_AUTH={client};window.AJURA_CORE={safe:s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),statuses:{requested:'Aberta'},time:()=> '10:00',date:s=>s,counter:()=>{},handleForm:(f,fn,report)=>{f.onsubmit=async e=>{e?.preventDefault();try{await fn()}catch(error){report(error.message)}};}};
- const ctx={window,document,setTimeout:()=>{},setInterval:()=>{}};require('./helpers/safety.cjs')(ctx,window);vm.runInContext(fs.readFileSync(path.join(__dirname,'../messaging.js'),'utf8'),ctx);
+ const ctx={window,document,setTimeout:()=>{},clearTimeout:()=>{},setInterval:()=>{}};require('./helpers/safety.cjs')(ctx,window);vm.runInContext(fs.readFileSync(path.join(__dirname,'../messaging.js'),'utf8'),ctx);
  return {window,document,calls,auth,context,api:window.AJURA_MESSAGING};
 }
 

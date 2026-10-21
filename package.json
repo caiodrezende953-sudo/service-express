@@ -1,6 +1,6 @@
 {
   "name": "ajura-piloto",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "private": true,
   "description": "Verificações locais do frontend AJURA; não executam pagamentos.",
   "scripts": {
@@ -8,11 +8,13 @@
     "check": "node scripts/check-source.cjs",
     "test:quick": "node tests/core.test.cjs && node tests/structure.test.cjs && node tests/dom.test.cjs",
     "test:browser": "node tests/browser.test.cjs",
-    "test:sql": "node --test tests/sql/protection.test.cjs"
+    "test:sql": "node --test tests/sql/protection.test.cjs",
+    "measure:performance": "node scripts/measure-performance.cjs"
   },
   "devDependencies": {
-    "linkedom": "0.18.13",
-    "@electric-sql/pglite": "0.5.8"
+    "@electric-sql/pglite": "0.5.8",
+    "css-tree": "3.2.1",
+    "linkedom": "0.18.13"
   },
   "engines": {
     "node": ">=20"

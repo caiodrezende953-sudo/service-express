@@ -8,6 +8,7 @@
  client.auth?.onAuthStateChange((event,next)=>{const id=next?.user?.id||null;if(event==='SIGNED_OUT'||(event==='SIGNED_IN'&&id!==sessionActor)){sessionActor=id;revision++;for(const section of sections){if(section.isConnected)section.textContent='Sessão alterada. Reabra a conversa.';}sections.clear();}});
  const bucket='request-attachments', maxSize=5*1024*1024, types={'image/jpeg':'jpg','image/png':'png','application/pdf':'pdf'};
  async function validate(file){
+  if(window.AJURA_UPLOAD_FLOW?.validate)return window.AJURA_UPLOAD_FLOW.validate(file);
   if(!types[file.type] || file.size<1 || file.size>maxSize)throw new Error('Use JPG, PNG ou PDF, com até 5 MB por arquivo.');
   const bytes=new Uint8Array(await file.slice(0,8).arrayBuffer());
   const match=file.type==='image/jpeg'?bytes[0]===255&&bytes[1]===216&&bytes[2]===255:

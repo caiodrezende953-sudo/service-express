@@ -1,41 +1,41 @@
 # Roteiro do upgrade — 45 itens
 
-A auditoria original propôs 15 itens de desempenho, 15 de interface e 15 de uso intuitivo. A entrega 0.5.0 cobre o primeiro bloco de bugs e proteção. Itens parciais não são considerados concluídos. Pagamentos ficam por último.
+A auditoria original propôs 15 itens de desempenho, 15 de interface e 15 de uso intuitivo. A entrega 0.5.0 cobre o primeiro bloco de bugs e proteção; a 0.6.0 implementa o bloco visual. A conferência visual em Chrome e celular continua pendente. A 0.7.0 traz a primeira entrega de desempenho no navegador. Itens parciais não são considerados concluídos. Pagamentos ficam por último.
 
 | ID | Proposta | Situação |
 |---|---|---|
 | D01 | Carregar o catálogo detalhado quando necessário | Pendente — blocos seguintes |
 | D02 | Separar a demonstração do sistema real | Pendente — blocos seguintes |
 | D03 | Paginar a vitrine no servidor | Pendente — blocos seguintes |
-| D04 | Buscar apenas os campos de cada tela | Pendente — blocos seguintes |
-| D05 | Indexar a pesquisa de profissões | Pendente — blocos seguintes |
-| D06 | Encerrar eventos e observadores de telas fechadas | Parcial: referências desconectadas de orçamento/anexos removidas; observadores continuam pendentes |
+| D04 | Buscar apenas os campos de cada tela | Parcial: colunas explícitas em pedidos, mensagens e propostas; revisar os demais módulos no bloco de banco |
+| D05 | Indexar a pesquisa de profissões | Entregue índice local de textos e posições, consulta compilada e reutilização dos resultados por pesquisa |
+| D06 | Encerrar eventos e observadores de telas fechadas | Parcial: buscas adiadas canceláveis; consolidação e desconexão dos observadores legados ainda pendentes |
 | D07 | Compartilhar o contexto de sessão e perfil | Parcial: contexto de ações e deduplicação inicial; migração de todos os módulos fica pendente |
-| D08 | Abrir conversas sem uma fila de consultas | Pendente — blocos seguintes |
-| D09 | Agrupar a atualização de mensagens não lidas | Parcial: deduplicação e descarte por conta; espera progressiva pendente |
+| D08 | Abrir conversas sem uma fila de consultas | Entregue no chat: contexto único, seções independentes em paralelo e orçamento/anexos sob demanda |
+| D09 | Agrupar a atualização de mensagens não lidas | Entregue: consultas simultâneas compartilham tentativa, pausa fora da página/rede e espera progressiva após falha |
 | D10 | Calcular os indicadores do prestador no banco | Pendente — blocos seguintes |
 | D11 | Indexar os caminhos mais usados | Pendente — blocos seguintes |
 | D12 | Evitar recalcular autenticação por linha na RLS | Entregue para a policy de propostas identificada na auditoria |
 | D13 | Carregar o histórico de mensagens por partes | Pendente — blocos seguintes |
-| D14 | Publicar scripts e estilos com versão consistente | Pendente — blocos seguintes |
-| D15 | Reduzir o trabalho repetido nos uploads | Pendente — blocos seguintes |
-| G01 | Corrigir a marca e o slogan no rodapé | Parcial: nome no rodapé corrigido; revisão global da identidade pendente |
-| G02 | Unificar a paleta da marca | Pendente — blocos seguintes |
-| G03 | Melhorar a leitura dos botões e avisos | Pendente — blocos seguintes |
-| G04 | Alinhar a grade dos filtros | Pendente — blocos seguintes |
-| G05 | Padronizar a hierarquia de texto | Pendente — blocos seguintes |
-| G06 | Uniformizar espaçamentos e tamanhos de ações | Pendente — blocos seguintes |
-| G07 | Alinhar informações e ações nas ofertas | Pendente — blocos seguintes |
-| G08 | Dar prioridade aos atendimentos no painel | Pendente — blocos seguintes |
-| G09 | Agrupar formulários em seções claras | Pendente — blocos seguintes |
-| G10 | Organizar título, fechamento e rolagem dos modais | Pendente — blocos seguintes |
-| G11 | Distinguir mensagens enviadas, recebidas e da Central | Pendente — blocos seguintes |
-| G12 | Manter o campo de mensagem ao alcance | Pendente — blocos seguintes |
-| G13 | Empilhar dados de perfil e resumos em telas estreitas | Pendente — blocos seguintes |
-| G14 | Padronizar estados, notas e indicadores | Pendente — blocos seguintes |
-| G15 | Dar padrão aos estados de carregamento e falha | Pendente — blocos seguintes |
-| U01 | Preservar o caminho e o contexto de navegação | Pendente — blocos seguintes |
-| U02 | Simplificar a busca e os filtros avançados | Pendente — blocos seguintes |
+| D14 | Publicar scripts e estilos com versão consistente | Parcial: recursos locais com versão uniforme; dependência externa e publicação verificável pendentes |
+| D15 | Reduzir o trabalho repetido nos uploads | Entregue: validação e hash reaproveitados para o mesmo objeto File em memória; autorização e recuperação mantidas |
+| G01 | Corrigir a marca e o slogan no rodapé | Implementado na 0.6.0; revisão visual final pendente |
+| G02 | Unificar a paleta da marca | Implementado na 0.6.0; revisão visual final pendente |
+| G03 | Melhorar a leitura dos botões e avisos | Implementado na 0.6.0; revisão visual final pendente |
+| G04 | Alinhar a grade dos filtros | Implementado na 0.6.0; revisão visual final pendente |
+| G05 | Padronizar a hierarquia de texto | Implementado na 0.6.0; revisão visual final pendente |
+| G06 | Uniformizar espaçamentos e tamanhos de ações | Implementado na 0.6.0; revisão visual final pendente |
+| G07 | Alinhar informações e ações nas ofertas | Implementado na 0.6.0; revisão visual final pendente |
+| G08 | Dar prioridade aos atendimentos no painel | Implementado na 0.6.0; revisão visual final pendente |
+| G09 | Agrupar formulários em seções claras | Implementado na 0.6.0; revisão visual final pendente |
+| G10 | Organizar título, fechamento e rolagem dos modais | Implementado na 0.6.0; revisão visual final pendente |
+| G11 | Distinguir mensagens enviadas, recebidas e da Central | Implementado na 0.6.0; revisão visual final pendente |
+| G12 | Manter o campo de mensagem ao alcance | Implementado na 0.6.0; revisão visual final pendente |
+| G13 | Empilhar dados de perfil e resumos em telas estreitas | Implementado na 0.6.0; revisão visual final pendente |
+| G14 | Padronizar estados, notas e indicadores | Implementado na 0.6.0; revisão visual final pendente |
+| G15 | Dar padrão aos estados de carregamento e falha | Implementado na 0.6.0; revisão visual final pendente |
+| U01 | Preservar o caminho e o contexto de navegação | Parcial: retorno do foco e posição inicial do modal; navegação completa pendente |
+| U02 | Simplificar a busca e os filtros avançados | Parcial: filtros recolhidos e remoção individual; sugestões de pesquisa pendentes |
 | U03 | Permitir ao cliente indicar um serviço ausente | Pendente — blocos seguintes |
 | U04 | Salvar o cadastro profissional de forma atômica | Entregue neste bloco |
 | U05 | Mostrar o caminho de aprovação do prestador | Pendente — blocos seguintes |

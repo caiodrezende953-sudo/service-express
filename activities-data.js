@@ -3,6 +3,11 @@ const rows = [{"category": "Elétrica", "subcategory": "Tomadas e interruptores"
 const norm = value => String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const index = new Map(rows.map(x=>[x.category+'\0'+x.subcategory,x]));
 const get = (category,subcategory) => index.get(category+'\0'+subcategory);
-const matches = (row,query) => {const hay=norm([row.area,row.profession,row.specialty,row.service,...row.aliases].join(' '));return norm(query).split(' ').filter(Boolean).every(word=>hay.includes(word));};
-window.AJURA_ACTIVITIES = Object.freeze({rows:Object.freeze(rows.map(Object.freeze)),get,matches,norm});
+const text = new WeakMap(rows.map(row=>[row,norm([row.area,row.profession,row.specialty,row.service,...row.aliases].join(' '))]));
+const positions = new WeakMap(rows.map((row,i)=>[row,i]));
+let previousQuery=null,previousMatcher=null;
+const compile = query => {const normalized=norm(query);if(normalized===previousQuery)return previousMatcher;const words=normalized.split(' ').filter(Boolean);previousQuery=normalized;previousMatcher=row=>{const hay=text.get(row)??norm([row.area,row.profession,row.specialty,row.service,...(row.aliases||[])].join(' '));return words.every(word=>hay.includes(word));};return previousMatcher;};
+const matches = (row,query) => compile(query)(row);
+const search = query => rows.filter(compile(query));
+window.AJURA_ACTIVITIES = Object.freeze({rows:Object.freeze(rows.map(Object.freeze)),get,matches,compile,search,position:row=>positions.get(row),norm});
 })();

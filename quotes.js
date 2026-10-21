@@ -13,7 +13,7 @@
   const section = document.createElement('section'); section.className = 'request-quotes';
   anchor.before(section);
   lastActor=userId;for(const previous of sections)if(!previous.isConnected)sections.delete(previous);sections.add(section);const version=revision,alive=()=>section.isConnected&&version===revision&&section.closest('dialog')?.open!==false;
-  let response;try{response=await client.from('request_quotes').select('*').eq('request_id', request.id).order('created_at', { ascending: false }).limit(50);}catch{if(alive())section.textContent='Não foi possível carregar os orçamentos. Atualize a conversa.';return;}
+  let response;try{response=await client.from('request_quotes').select('id,request_id,provider_id,amount,scope,materials,scheduled_date,status,created_at').eq('request_id', request.id).order('created_at', { ascending: false }).limit(50);}catch{if(alive())section.textContent='Não foi possível carregar os orçamentos. Atualize a conversa.';return;}
   const {data:quotes,error}=response;
   if (!alive()) return;
   if (error) { section.textContent = 'Orçamentos indisponíveis. Atualize a conversa e tente novamente.'; return; }

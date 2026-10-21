@@ -10,7 +10,7 @@
  const network=document.createElement('div');network.id='networkStatus';network.setAttribute('role','status');network.hidden=navigator.onLine;network.textContent='Você está sem conexão. Dados e envios precisam de internet; confira o resultado antes de repetir uma ação.';document.querySelector('header')?.after(network);
  window.addEventListener('offline',()=>network.hidden=false);window.addEventListener('online',()=>{network.hidden=true;window.AJURA_CATALOG?.refresh();});
  let returnFocus=null;const originalModal=window.modal;
- if(typeof originalModal==='function')window.modal=function(html){returnFocus=document.activeElement;originalModal(html);const body=document.querySelector('#modalBody');setTimeout(()=>{if(body?.isConnected)body.querySelector('input:not([type="hidden"]),select,textarea,button')?.focus();},0);};
+ if(typeof originalModal==='function')window.modal=function(html){const dialog=document.querySelector('#modal');if(!dialog?.open||!dialog.contains(document.activeElement))returnFocus=document.activeElement;originalModal(html);const content=document.querySelector('#modalBody');if(content)content.scrollTop=0;const body=document.querySelector('#modalBody');setTimeout(()=>{if(body?.isConnected)body.querySelector('input:not([type="hidden"]),select,textarea,button')?.focus();},0);};
  document.querySelector('#modal')?.addEventListener('close',()=>{if(returnFocus?.isConnected)returnFocus.focus();});
  const wrapped=new WeakMap();
  function decorate(){

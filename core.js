@@ -1,7 +1,7 @@
 /* AJURA: utilitários compartilhados. Sem dados pessoais persistidos no navegador. */
 (() => {
  'use strict';
- const statuses = Object.freeze({requested:'Aberta',in_progress:'Em execucao',completed:'Concluido',cancelled:'Cancelada',declined:'Recusada pelo profissional'});
+ const statuses = Object.freeze({requested:'Aberta',in_progress:'Em execução',completed:'Concluído',cancelled:'Cancelada',declined:'Recusada pelo profissional'});
  const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const today = () => new Intl.DateTimeFormat('en-CA',{timeZone:'America/Manaus',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const date = value => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value ?? '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : 'Data não informada'; };
@@ -17,7 +17,7 @@
   return fields;
  };
  const activeConnection = rows => Boolean(rows?.length && new Date(rows[0].token_expires_at).getTime() > Date.now());
- const debounce = (fn, delay=180) => {let timer; return (...args)=>{clearTimeout(timer);timer=setTimeout(()=>fn(...args),delay);};};
+ const debounce = (fn, delay=180) => {let timer;const cancel=()=>{clearTimeout(timer);timer=undefined;};const call=(...args)=>{cancel();timer=setTimeout(()=>{timer=undefined;fn(...args);},delay);};call.cancel=cancel;return call;};
  const userError = message => Object.assign(new Error(message), {userMessage:String(message).slice(0,500)});
  // Impede dois envios simultâneos do mesmo formulário; sempre libera em falha.
  function handleForm(form, handler, report) {
@@ -47,7 +47,8 @@
   }
   return {rows,truncated:true};
  }
- window.AJURA_CORE=Object.freeze({safe,today,date,time,money,statuses,missingProfile,activeConnection,debounce,userError,handleForm,counter,allRows,version:'2026.10.21.1'});
+ function stateBadge(status,labels=statuses){const names=new Set(['requested','pending','approved','active','blocked','in_progress','completed','rejected','suspended','cancelled','declined']);return `<span class="ajura-state${names.has(status)?' ajura-state--'+status:''}">${safe(labels[status]||status||'Indisponível')}</span>`;}
+ window.AJURA_CORE=Object.freeze({safe,today,date,time,money,statuses,stateBadge,missingProfile,activeConnection,debounce,userError,handleForm,counter,allRows,version:'2026.10.21.3'});
 })();
 
 /* Dígitos verificadores: não substitui conferência de identidade. */
