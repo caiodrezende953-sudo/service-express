@@ -80,5 +80,5 @@
   },report);
 
  }
- window.AJURA_QUOTES = { attach,remember };
+ window.AJURA_QUOTES = { attach,remember,forget(){drafts.clear();} };
 })();

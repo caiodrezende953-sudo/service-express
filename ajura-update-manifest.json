@@ -1,124 +1,122 @@
 {
-  "version": "2026.10.22.1",
-  "base_commit": "152c39cc49cc1fcd95cf3387790b2a1ccf492600",
-  "base_release": "2026.10.21.4",
+  "version": "2026.10.22.2",
+  "base_commit": "9aeead211952271653aecfffdf7394c2f784c424",
+  "base_release": "2026.10.22.1",
   "files": [
     {
       "path": ".gitignore",
-      "new_sha256": "f580cc6d60b7969bd8aec5aaff363cfa0de96a945dbd7bedc54336ba495bf676",
+      "new_sha256": "a9f3d3a57c62a6028014671dbbc82c558f5f6a171cfcb1a0f819f905e1cf4c23",
       "accepted_sha256": [
-        "6f99a24698b1f2c3484499c2b7b1ef1c05431ac4fb0281af2800ad553ff88f91"
+        "f580cc6d60b7969bd8aec5aaff363cfa0de96a945dbd7bedc54336ba495bf676"
       ]
     },
     {
       "path": "README.md",
-      "new_sha256": "6a828fa95138493a26a448e7f6116bde852c23f8051dbea210f30c1395ee5588",
+      "new_sha256": "041c6fc15dda265ee90e136c6257d9e311603fcaf711dc50d76dbe403b7b728a",
       "accepted_sha256": [
-        "f60252dbdecae5cdafbbe546ff19162903988d0549e385361f0484c519a7769a"
+        "6a828fa95138493a26a448e7f6116bde852c23f8051dbea210f30c1395ee5588"
       ]
     },
     {
       "path": "conversation.css",
-      "new_sha256": "c108b048e24d116da2c95c84e73ddd5d57b9c4acb8dbda8c5d70a764b34518ae",
-      "accepted_sha256": []
-    },
-    {
-      "path": "docs/CONVERSA-E-CONTRATACAO.md",
-      "new_sha256": "02dfc3ada1ba9d7cf54d9e5b907d5f658ef91ce02c7b203a7637af38e2a0b78e",
+      "new_sha256": "804eda4bbdce6e358a812d3efea844765550704307ef28de024bd475b66f79af",
       "accepted_sha256": [
-        "a35b41aa1d678ffdd258c0acadf72ee89e3fa9320157d62f1b821c4669a75eb0"
+        "c108b048e24d116da2c95c84e73ddd5d57b9c4acb8dbda8c5d70a764b34518ae"
       ]
     },
     {
-      "path": "docs/CONVERSA-UNIFICADA.md",
-      "new_sha256": "672dde4256a3d6168a9e29373eb2af05ca4a270af935f24e751fb65534590d75",
+      "path": "docs/CONVERSA-E-CONTRATACAO.md",
+      "new_sha256": "94db6961410d22cd8687efcfd772f3ce0d556332c319a2f9e059292daa7c21af",
+      "accepted_sha256": [
+        "02dfc3ada1ba9d7cf54d9e5b907d5f658ef91ce02c7b203a7637af38e2a0b78e"
+      ]
+    },
+    {
+      "path": "docs/RESPOSTAS-ATUALIZADAS.md",
+      "new_sha256": "000baf114ade9e44eabca6a3cc75664b7ea4a3a772e3cc47e7366bfe2b58a5ea",
       "accepted_sha256": []
     },
     {
       "path": "docs/ROADMAP-UPGRADE.md",
-      "new_sha256": "6a0317fa8d1348c3eb640c1c0ec3733ceeb6d555e943e33abd4380cd1b030aac",
+      "new_sha256": "1ffb7b5d419e37d633bf6305af43ab01ca6b0bce12737ce6e51d0aea98e48e9f",
       "accepted_sha256": [
-        "dbd09f0769ee7469eee0b5e044fe74f425a264aaa64b322ebb43b5800a4b76c4"
+        "6a0317fa8d1348c3eb640c1c0ec3733ceeb6d555e943e33abd4380cd1b030aac"
       ]
     },
     {
       "path": "index.html",
-      "new_sha256": "a9b05790bffd108308631e59a85b8e3d2f0c4895874912125884a21a8e456fbb",
+      "new_sha256": "e9237570083a04545e223fe50e499243902db53aa09011792c35a4ef7880a3ce",
       "accepted_sha256": [
-        "d991884c62d4816fbce6e34b7cde1a66781fae4448ba1e649439f3e2a5d4f384"
+        "a9b05790bffd108308631e59a85b8e3d2f0c4895874912125884a21a8e456fbb"
       ]
     },
     {
       "path": "messaging.js",
-      "new_sha256": "1f68105153d6c1a2bd009d3d07d8d1f2616de4d232ba5434125eee517fef15d7",
+      "new_sha256": "5f381a5d085c771aec3bb342d5efbd5efa51254ac2fbb09fba205c524b099e56",
       "accepted_sha256": [
-        "223d04273ebdee003fd23217d8488f8d56101667de896de1f5e8f3e32b3c2435"
-      ]
-    },
-    {
-      "path": "order-workflow.js",
-      "new_sha256": "d2bfd95f0f5b55fb53ffe658c00d34da592a96f831776a586f8efb163fbf5b0d",
-      "accepted_sha256": [
-        "dd2615aba5147a678cf5640944d304177e2fc9daf272e9ad1b07557c2f807be1"
+        "1f68105153d6c1a2bd009d3d07d8d1f2616de4d232ba5434125eee517fef15d7"
       ]
     },
     {
       "path": "package-lock.json",
-      "new_sha256": "3a96e74718ad3fe0cec7d4a4395aeade7a3a8a9e5a1d91b79dee92041fe038e2",
+      "new_sha256": "d3705366ca216160564c5e0bcf7282c560538c201a4b4177924ada7e192481bc",
       "accepted_sha256": [
-        "c5d312b9ace8e89b4fd5cee8a9c03ba9af0b97e418870884463a0470983c165e"
+        "3a96e74718ad3fe0cec7d4a4395aeade7a3a8a9e5a1d91b79dee92041fe038e2"
       ]
     },
     {
       "path": "package.json",
-      "new_sha256": "2f0e963288f998ae87ba5a2eb6b136898ac96025b4be98844e81e7b909c5cdd8",
+      "new_sha256": "4eb7e9084ba4411d6899bdf857322c3f65d72a95ad608ba479edf29360c89487",
       "accepted_sha256": [
-        "28cabc96f1d66e0f18924aefed18566e64ce92697962447c55d6e3eaeb5318a4"
+        "2f0e963288f998ae87ba5a2eb6b136898ac96025b4be98844e81e7b909c5cdd8"
       ]
     },
     {
       "path": "quotes.js",
-      "new_sha256": "1b9222405e87a94c5472902014d41493d80b669ce8d922a122fc0379119734a7",
+      "new_sha256": "37dd0f8fd838e80966dc8d530f8919164fb05d3c291ee242c6c58e086f2bd675",
       "accepted_sha256": [
-        "4dba6235a43db875288993a05a16fbe031fd6dd2928b98457fb0a85b932b889e"
+        "1b9222405e87a94c5472902014d41493d80b669ce8d922a122fc0379119734a7"
       ]
     },
     {
-      "path": "request-overview.js",
-      "new_sha256": "c1b0bdf2c1cab58b7bfc81d6b19f07bff8d600fbcebad0c734156131e9edc600",
-      "accepted_sha256": [
-        "0c7863af23553b9627e3f0ad265430a0b2fb14423fe612ca1772ea897e1669be"
-      ]
+      "path": "supabase/migrations/20261022144804_messaging_incremental_updates.sql",
+      "new_sha256": "2cb4e15955f246d4af4c55697327ca7f9eb145d35d59d60d335fcd2694351271",
+      "accepted_sha256": []
     },
     {
       "path": "tests/browser.test.cjs",
-      "new_sha256": "6d2f091fa52d50791ecf321d4cb9a9209e74e0c5bfd634cd4042937036f5cc25",
+      "new_sha256": "938248ce438ab1be553d53cd7bee3ef8b1d47223735fc0dd94ec490829c7feaf",
       "accepted_sha256": [
-        "0541b5a1769324df049955233efd9a61249b0c6d24e60078ee1003c08dda7a46"
+        "6d2f091fa52d50791ecf321d4cb9a9209e74e0c5bfd634cd4042937036f5cc25"
       ]
     },
     {
       "path": "tests/helpers/messaging.cjs",
-      "new_sha256": "e72e5fa1947d63f18e1d9c5b7fcbc28e9a20003a9cdfb644d4ad874be8843f33",
+      "new_sha256": "ff951508a7ca5ff26182286fd55a1e89a862a9c2071f37fbf9a536c46ecab27e",
+      "accepted_sha256": [
+        "e72e5fa1947d63f18e1d9c5b7fcbc28e9a20003a9cdfb644d4ad874be8843f33"
+      ]
+    },
+    {
+      "path": "tests/sql/message-updates.test.cjs",
+      "new_sha256": "b33255c8482d498fc19e9ed34b2d9472793e9967307d4ee7747d352957f36d02",
       "accepted_sha256": []
     },
     {
-      "path": "tests/messaging.test.cjs",
-      "new_sha256": "5bebdb09338170043d44e2cdd1733dbeab6fce49903b19276d10bc906e424ed7",
-      "accepted_sha256": [
-        "e6bd2388602a93e53bf9e577007df3e779fe698867e6fa70d1bc6fc4d7a7a443"
-      ]
-    },
-    {
-      "path": "tests/order-workflow.test.cjs",
-      "new_sha256": "b8f6b9af456feb7b0d998f94ad805ecf3c4a15e072cfb886dc90f215a2637ef2",
-      "accepted_sha256": [
-        "0746a1ae70e9d2594adcc5366196309ac09c67dde5ebde1f7332f81b3a0014fa"
-      ]
+      "path": "tests/thread-updates.test.cjs",
+      "new_sha256": "d752facb4dbc459b01a25104a791d934eeadb6261a8dcd01552b4175c289d403",
+      "accepted_sha256": []
     },
     {
       "path": "tests/unified-conversation.test.cjs",
-      "new_sha256": "c9a22d62e9f75cc08165c0b745ea39cec8f253c132f3d8bbb701651d6af737ed",
+      "new_sha256": "7b378c33daf6cfffbac8381adb6d2650eb92ed0803a88184a76aad4210a7b8c8",
+      "accepted_sha256": [
+        "c9a22d62e9f75cc08165c0b745ea39cec8f253c132f3d8bbb701651d6af737ed"
+      ]
+    },
+    {
+      "path": "thread-updates.js",
+      "new_sha256": "a16746b05fbb9fbb3930059944340266900310c1fb25376c8580c89950ec3774",
       "accepted_sha256": []
     }
   ]

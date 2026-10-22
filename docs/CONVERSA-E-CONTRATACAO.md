@@ -41,3 +41,5 @@ Há conversa vinculada ao pedido, rascunhos em memória da página, anexos priva
 Após definir a coleta e a privacidade, acompanhar a passagem de solicitação para primeira resposta, orçamento, aceite e conclusão; observar atrasos, falhas/duplicações e dificuldades relatadas. Tempo de resposta depende também da disponibilidade do profissional. Não atribuir abandono ao contato externo sem evidência.
 
 Parte desta diretriz foi implementada na entrega 0.9.0: veja docs/CONVERSA-UNIFICADA.md para o escopo exato, testes e pendências. Validação com pessoas e aparelhos reais, atualização contínua das respostas e nova contratação continuam pendentes. Não antecipa pagamentos.
+
+Atualização 0.10.0: consulta incremental periódica e avisos implementados; veja docs/RESPOSTAS-ATUALIZADAS.md. Push, conexão instantânea e nova contratação continuam pendentes, assim como a conferência real do fluxo.

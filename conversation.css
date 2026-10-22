@@ -24,3 +24,10 @@
 .ajura-chat-head h2{flex:1;min-width:0;font-size:16px;margin-inline:6px}
 .ajura-chat-head .ajura-chat-reload{font-size:13px;padding-inline:8px}
 .ajura-chat-head [data-back]{font-size:22px;flex:0 0 44px}
+/* Avisos de novas respostas ficam fora da rolagem e não cobrem o campo. */
+.ajura-thread-notice{flex:0 0 auto;padding:5px 12px;background:var(--surface,#fff);border-bottom:1px solid var(--line,#ded9e8);font-size:12px;color:var(--muted,#625b71)}
+.ajura-thread-notice p{margin:0;line-height:1.4;overflow-wrap:anywhere}
+.ajura-thread-notice>div{display:flex;gap:6px;flex-wrap:wrap}
+.ajura-thread-notice button{font:inherit;font-weight:650;min-height:44px;padding:6px 10px;background:var(--purple-soft,#f0eafb);color:var(--purple,#4926a8);border:1px solid var(--line,#ded9e8);border-radius:8px;cursor:pointer}
+.ajura-thread-notice [hidden]{display:none!important}
+@media(max-height:500px){.ajura-thread-notice{padding-block:2px}.ajura-thread-notice p{font-size:11px}.ajura-thread-notice:has(button:not([hidden])) p{display:none}}

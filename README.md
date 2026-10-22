@@ -1,6 +1,6 @@
 # AJURA — piloto fechado
 
-Marketplace de serviços em Manaus, com site estático e Supabase. Versão 0.9.0 — conversa, proposta e aceite no mesmo pedido, sobre o commit 152c39c. Leia docs/CONVERSA-UNIFICADA.md para instalar e conferir. Pagamentos continuam para depois dos blocos atuais.
+Marketplace de serviços em Manaus, com site estático e Supabase. Versão 0.10.0 — atualização incremental e avisos na conversa aberta, sobre o commit 9aeead2. Leia docs/RESPOSTAS-ATUALIZADAS.md. A consulta foi aplicada no Supabase; não execute SQL manualmente. Pagamentos continuam após os blocos atuais.
 
 ## Abrir e validar
 

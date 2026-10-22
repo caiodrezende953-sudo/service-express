@@ -43,7 +43,7 @@ A auditoria original propôs 15 itens de desempenho, 15 de interface e 15 de uso
 | U07 | Limpar o chat imediatamente ao trocar de conta | Entregue no chat |
 | U08 | Preservar rascunhos ao voltar às conversas | Entregue em memória da página |
 | U09 | Explicar anexos, recuperação e espaço disponível | Pendente — blocos seguintes |
-| U10 | Avisar novas respostas e manter o canal correto | Pendente — blocos seguintes |
+| U10 | Avisar novas respostas e manter o canal correto | Parcial: consulta incremental, avisos por canal e leitura seletiva na 0.10.0; push/Realtime e conferência real pendentes |
 | U11 | Tornar os códigos claros e recuperáveis na tela | Parcial: preservação na falha; falta o contador visual |
 | U12 | Permitir reagendamento com novo aceite | Entregue sem integração financeira |
 | U13 | Separar profissão e habilitação sem agrupamentos indevidos | Parcial: autorização por serviço corrigida; refino dos nomes de profissão pendente |
@@ -63,3 +63,5 @@ Diretriz do próximo bloco de usabilidade: docs/CONVERSA-E-CONTRATACAO.md — pe
 Essas entregas estão pendentes e ficam depois da confirmação do bloco de pagamentos. Não entram na implementação atual. O documento deve distinguir conclusão do serviço, pagamento e repasse; não incluir códigos secretos nem documentos pessoais completos e não se apresentar como nota fiscal, laudo ou garantia de qualidade.
 
 Entrega 0.9.0: docs/CONVERSA-UNIFICADA.md. Abas por pedido, resumo fixo do aceite, ação contextual, rascunho de orçamento e confirmação de envio implementados; conferência real com duas contas, celular e leitor de tela pendente. Novas respostas na conversa aberta ainda dependem de atualização; notificações/tempo real e nova contratação não foram implementados neste bloco.
+
+Entrega 0.10.0: docs/RESPOSTAS-ATUALIZADAS.md. Mensagens novas são acrescentadas sem remontar formulários; rolagem e rascunhos preservados, consulta periódica adaptativa, avisos de proposta/atendimento e pausa por ciclo de vida. Migração aplicada em 22/10/2026. Teste entre duas contas e em celular continua pendente.

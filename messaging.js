@@ -3,6 +3,7 @@
  'use strict'; if(window.AJURA_MESSAGING)return;
  const client=window.AJURA_AUTH?.client,C=window.AJURA_CORE;if(!client||!C)return;
  const drafts=new Map(),sendStates=new Map();let generation=0,page=0,selected=null,adminMode=false,lastFocus=null;
+ let threadLive=null;const stopThread=()=>{threadLive?.stop();threadLive=null;};
  let lastActor=null,identityKnown=false,identityRevision=0,badgeTask=null,badgeTimer=null,badgeFailures=0,pagePaused=false;
  const stopBadge=()=>{if(badgeTimer!==null)clearTimeout(badgeTimer);badgeTimer=null;};
  function scheduleBadge(){stopBadge();if(!lastActor||document.hidden||pagePaused||window.navigator?.onLine===false)return;badgeTimer=setTimeout(()=>{badgeTimer=null;void badge();},Math.min(300000,60000*2**badgeFailures));}
@@ -17,12 +18,12 @@
    const f=panel.querySelector(selector);if(f?.elements[field])drafts.set(draftKey(lastActor,selected,channel),f.elements[field].value);
   }
  }
- function close(){rememberDrafts();generation++;panel.hidden=true;panel.replaceChildren();selected=null;launch.setAttribute('aria-expanded','false');lastFocus?.focus();}
+ function close(){rememberDrafts();stopThread();generation++;panel.hidden=true;panel.replaceChildren();selected=null;launch.setAttribute('aria-expanded','false');lastFocus?.focus();}
  function adoptActor(id,force=false){
   if(identityKnown&&id===lastActor&&!force)return;
   const changed=identityKnown||force;identityKnown=true;
   if(changed){
-   identityRevision++;generation++;roleGeneration++;badgeTask=null;stopBadge();badgeFailures=0;drafts.clear();sendStates.clear();selected=null;adminMode=false;
+   stopThread();identityRevision++;generation++;roleGeneration++;badgeTask=null;stopBadge();badgeFailures=0;drafts.clear();sendStates.clear();selected=null;adminMode=false;
    panel.hidden=true;panel.replaceChildren();launch.setAttribute('aria-expanded','false');launch.textContent='Mensagens';launch.setAttribute('aria-label','Mensagens');clearCentralButtons();
   }
   lastActor=id;
@@ -45,7 +46,7 @@
  }
  function errorView(body,error,retry){if(body.isConnected)body.innerHTML=`<p role="status">${C.safe(error.message||'Falha de conexão.')}</p><button type="button" data-retry>Tentar novamente</button>`;body.querySelector('[data-retry]')?.addEventListener('click',retry);}
  async function inbox(nextPage=0,central=false){
-  rememberDrafts();const run=++generation;page=nextPage;adminMode=central;selected=null;const body=frame(central?'Central AJURA':'Mensagens');body.textContent='Carregando…';
+  rememberDrafts();stopThread();const run=++generation;page=nextPage;adminMode=central;selected=null;const body=frame(central?'Central AJURA':'Mensagens');body.textContent='Carregando…';
   try{
    const actor=await user();if(run!==generation||!body.isConnected)return;
    if(!actor){body.innerHTML='<p>Entre na sua conta para conversar.</p><button type="button" data-login>Entrar</button>';body.querySelector('[data-login]').onclick=()=>{close();document.querySelector('#accountButton')?.click();};return;}
@@ -78,7 +79,7 @@
  }
  async function openRequest(id,central=false,initialView='conversation'){
   // Preserve rascunho quando a pessoa clica em atualizar ou muda a conversa.
-  rememberDrafts();
+  rememberDrafts();stopThread();
   const run=++generation;selected=id;adminMode=central;
   document.querySelector('#modal')?.close();const body=frame(central?'Atendimento da Central':'Conversa do serviço');body.textContent='Carregando…';
   try{
@@ -89,6 +90,7 @@
    if(run!==generation||!body.isConnected)return;
    const tickets=context.tickets||[],active=tickets.find(t=>t.status==='open'),support=context.messages||[];
    body.innerHTML=`<div class="ajura-chat-actions"><button type="button" data-back>← Conversas</button><button type="button" data-chat-refresh>Atualizar</button></div><p><b>${C.safe(request.district)}</b> · ${C.safe(C.statuses[request.status]||request.status)}</p><p class="ajura-chat-scope">${C.safe(request.description)}</p><small>Data desejada: ${C.date(request.preferred_date)}</small><p class="hint">Conversa vinculada ao pedido. Orçamento aceito ainda não confirma cobrança.</p><details ${central?'':'open'}><summary>Conversa entre cliente e prestador</summary><div class="ajura-chat-history">${messageList(messages,actor,request)}</div></details>${!central&&['requested','in_progress'].includes(request.status)?'<form data-chat-compose class="auth-form"><label>Mensagem ao cliente/prestador<textarea name="body" maxlength="2000" required></textarea></label><button class="primary" type="submit">Enviar mensagem</button><p data-message-status role="status"></p></form>':''}<section class="ajura-chat-support"><h3>Central AJURA</h3>${tickets.length?`<p>${active?'Atendimento aberto. Aguarde a resposta da equipe.':'Atendimentos encerrados.'}</p><div class="ajura-chat-history">${messageList(support,actor,request)}</div>`:'<p>Precisa de ajuda com este pedido?</p>'}${active?'<form data-support-compose class="auth-form"><label>Mensagem à Central e aos participantes<textarea name="body" maxlength="2000" required></textarea></label><button class="primary" type="submit">Enviar à Central</button><p data-support-status role="status"></p></form>':!central?'<details><summary>Solicitar atendimento da Central</summary><form data-support-open class="auth-form"><label>Explique o problema<textarea name="reason" minlength="10" maxlength="1000" required></textarea></label><p class="hint">A Central recebe o pedido de ajuda. Cliente e prestador podem acompanhar o motivo e as mensagens do atendimento.</p><button class="primary" type="submit">Encaminhar à Central</button><p data-support-status role="status"></p></form></details>':''}${central&&active?'<details><summary>Encerrar atendimento</summary><form data-support-resolve class="auth-form"><label>Resolução<textarea name="resolution" minlength="10" maxlength="2000" required></textarea></label><button class="secondary" type="submit">Registrar resolução e encerrar</button><p data-support-status role="status"></p></form></details>':''}</section>`;
+   const scrollPositions=new Map();let viewInitialized=false;
    let currentView=['conversation','quote','details','help'].includes(initialView)?initialView:'conversation',workspace=null,composer=null;
    if(!central){
     const toolbar=body.querySelector('.ajura-chat-actions');
@@ -119,12 +121,14 @@
     workspace.bar=bar;
    }
    function navigate(view,focus=false){
-    if(!workspace)return;currentView=view;
+    if(!workspace)return;if(viewInitialized)scrollPositions.set(currentView,body.scrollTop);currentView=view;
     panel.querySelectorAll('[data-order-tab]').forEach(tab=>{const active=tab.dataset.orderTab===view;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;});
     workspace.querySelectorAll('[data-order-view]').forEach(node=>node.hidden=node.dataset.orderView!==view);
     if(view==='conversation'&&form)composer?.show('normal');else if(view==='help'&&supportForm)composer?.show('support');else composer?.hide();
     if(view==='details')loadFiles?.();
-    if(view==='conversation'){const history=workspace.querySelector('.ajura-chat-history');body.scrollTop=body.scrollHeight;if(focus)form?.elements.body.focus();}
+    body.scrollTop=scrollPositions.get(view)??(['conversation','help'].includes(view)?body.scrollHeight:0);viewInitialized=true;
+    if(view==='conversation'&&focus)form?.elements.body.focus();
+    threadLive?.channelChanged();
     if(focus&&view!=='conversation')workspace.querySelector('[data-order-view="'+view+'"]')?.focus();
    }
    panel.querySelector('[data-back]').onclick=()=>inbox(page,central);panel.querySelector('[data-chat-refresh]').onclick=()=>openRequest(id,central,currentView);
@@ -149,7 +153,8 @@
     if(form.elements.body.value.trim()===args.message_text){drafts.delete(draftKey(actor,id,channel));form.elements.body.value='';}
     else drafts.set(draftKey(actor,id,channel),form.elements.body.value);
     sendStates.set(draftKey(actor,id,channel),'Mensagem confirmada pela AJURA. Isso não confirma a leitura pelo destinatário.');
-    await openRequest(id,central,channel==='support'?'help':'conversation');await badge();
+    if(threadLive){if(status)status.textContent=sendStates.get(draftKey(actor,id,channel));form.elements.body.dispatchEvent(new Event('input'));await threadLive.refresh();}
+    else await openRequest(id,central,channel==='support'?'help':'conversation');await badge();
    }
    if(form){
     form.elements.body.value=drafts.get(draftKey(actor,id,'normal'))||'';C.counter(form.elements.body);
@@ -195,7 +200,7 @@
    if(!central){
     // A leitura depende somente das mensagens visíveis, não da consulta dos módulos.
     const last=messages.at(-1)?.id||0,lastSupport=support.at(-1)?.id||0;
-    if(!document.hidden)jobs.push(rpc('messaging_mark_read',{target_request:id,through_message:last,through_support:lastSupport}).catch(()=>{if(alive()){const note=document.createElement('p');note.className='hint';note.textContent='A leitura ainda não foi confirmada. Você pode continuar a conversa.';body.append(note);}}));
+    if(!document.hidden&&!window.AJURA_THREAD_UPDATES)jobs.push(rpc('messaging_mark_read',{target_request:id,through_message:last,through_support:lastSupport}).catch(()=>{if(alive()){const note=document.createElement('p');note.className='hint';note.textContent='A leitura ainda não foi confirmada. Você pode continuar a conversa.';body.append(note);}}));
     const quoteRoot=workspace.querySelector('[data-order-view="quote"]');
     quoteRoot.innerHTML='<button type="button" id="refreshConversation" hidden></button>';
     quoteRoot.querySelector('#refreshConversation').onclick=refresh;
@@ -214,6 +219,24 @@
    }
    if(workspace&&!window.AJURA_REQUEST_OVERVIEW){overviewFailed=true;updateBar();}
    await Promise.allSettled(jobs);
+   if(alive()&&window.AJURA_THREAD_UPDATES){
+    const normalHistory=body.querySelector('details .ajura-chat-history');
+    const supportSection=body.querySelector('.ajura-chat-support');
+    let supportHistory=supportSection.querySelector('.ajura-chat-history');
+    if(!supportHistory){supportHistory=document.createElement('div');supportHistory.className='ajura-chat-history';supportSection.querySelector('h3').after(supportHistory);}
+    try{threadLive=window.AJURA_THREAD_UPDATES.attach({request,actor,central,panel,body,normalHistory,supportHistory,initialMessages:messages,initialSupport:support,alive,
+     currentChannel:()=>central?'support':currentView==='conversation'?'normal':currentView==='help'?'support':null,
+     baseline:()=>({status:request.status,preferred_date:request.preferred_date,quotes:quoteRows,active_ticket:active?.id||null}),
+     navigate:view=>navigate(view),refreshContext:refresh,paused:()=>pagePaused,onRead:()=>void badge(),
+     onChange:state=>{
+      // Campos ficam preservados, mas ações antigas exigem conferir o estado novo.
+      body.querySelectorAll('[data-chat-module] button,.request-quotes button').forEach(b=>b.disabled=true);
+      body.querySelectorAll('[data-issued-code]').forEach(node=>node.replaceChildren());
+      if(!['requested','in_progress'].includes(state.status)){const submit=form?.querySelector('[type="submit"]');if(submit)submit.disabled=true;}
+      if(state.active_ticket!==active?.id){const submit=supportForm?.querySelector('[type="submit"]');if(submit)submit.disabled=true;}
+     },onDenied:()=>{close();drafts.clear();sendStates.clear();window.AJURA_QUOTES?.forget?.();}
+    });}catch{const note=document.createElement('p');note.setAttribute('role','status');note.textContent='Atualização automática indisponível. Use Atualizar no cabeçalho; seu rascunho foi preservado.';body.append(note);}
+   }
    if(alive()&&!central)await badge();
   }catch(error){if(run===generation)errorView(body,error,()=>openRequest(id,central));}
  }
@@ -232,5 +255,5 @@
  window.addEventListener?.('offline',stopBadge);window.addEventListener?.('online',()=>badge());
  window.addEventListener?.('pagehide',()=>{pagePaused=true;stopBadge();});window.addEventListener?.('pageshow',()=>{pagePaused=false;badge();});
  badge();refreshRole();
- window.AJURA_MESSAGING=Object.freeze({openRequest,inbox,close,refreshUnread:badge});
+ window.AJURA_MESSAGING=Object.freeze({openRequest,inbox,close,refreshUnread:badge,refreshThread:()=>threadLive?.refresh()});
 })();
