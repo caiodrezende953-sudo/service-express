@@ -1,6 +1,6 @@
 # AJURA — piloto fechado
 
-Marketplace de serviços em Manaus, com site estático e Supabase para autenticação, banco, regras de acesso e arquivos privados. Versão 0.7.0 — primeira entrega de desempenho, sobre a interface 0.6.0 validada localmente pelo usuário. Veja docs/DESEMPENHO-SITE.md. Paginação da vitrine, agregações e índices de banco permanecem para a próxima entrega.
+Marketplace de serviços em Manaus, com site estático e Supabase para autenticação, banco, regras de acesso e arquivos privados. Versão 0.8.0 — paginação, filtros e indicadores no banco, sobre o commit 0e9899a. Veja docs/BANCO-PAGINADO.md. A migração foi aplicada diretamente no projeto AJURA; não execute SQL manualmente. Pagamentos permanecem por último.
 
 ## Abrir e validar
 

@@ -1,148 +1,124 @@
 {
-  "version": "2026.10.21.3",
-  "base_commit": "0858fc8a590441e91a50db8e6072c4b311318dfc",
-  "base_release": "2026.10.21.2",
+  "version": "2026.10.21.4",
+  "base_commit": "0e9899a116c65c95facb5b39e8f04ef5406614d0",
+  "base_release": "2026.10.21.3",
   "files": [
     {
       "path": ".gitignore",
-      "new_sha256": "2d3c2c60dee83154c6f1d1118f4aabe001f2ab8b1d00d1cd4d6906a311e0a9fb",
+      "new_sha256": "6f99a24698b1f2c3484499c2b7b1ef1c05431ac4fb0281af2800ad553ff88f91",
       "accepted_sha256": [
-        "9df943e9727018c851542a76dd4524aebcef813dae03d7586cf741688fb082d7"
+        "2d3c2c60dee83154c6f1d1118f4aabe001f2ab8b1d00d1cd4d6906a311e0a9fb"
       ]
     },
     {
       "path": "README.md",
-      "new_sha256": "a545d05c9bb78710123dcb177427a5b811a05ed32bd7b9581c5391edfc78dc39",
+      "new_sha256": "f60252dbdecae5cdafbbe546ff19162903988d0549e385361f0484c519a7769a",
       "accepted_sha256": [
-        "cb2a3c1a0a7157e3ed75877a558d557d9414b8096b58c1a1aab0938ccba3e11b"
+        "a545d05c9bb78710123dcb177427a5b811a05ed32bd7b9581c5391edfc78dc39"
       ]
     },
     {
-      "path": "activities-data.js",
-      "new_sha256": "62720c3d31a5ef98320c9e00d757d5ede106aed9f61da49c22b0768753501b54",
-      "accepted_sha256": [
-        "1587fce6de375085b9e9a455099101e2fb0edcbb5747618021c7400a3b6f9250"
-      ]
+      "path": "docs/BANCO-PAGINADO.md",
+      "new_sha256": "58c6600217113382dd81177632e963fa6cb43c8706c00e6bcdb6fba58ecae589",
+      "accepted_sha256": []
     },
     {
-      "path": "activities-ui.js",
-      "new_sha256": "58d7f004250aeb3ca7724c337d7b9d2a853d67ac26c680902203351a227f5c36",
-      "accepted_sha256": [
-        "cd38a33d13a71df39bd81d2973e97d0678c04d80da24682fd37d6094ab3945ca"
-      ]
-    },
-    {
-      "path": "core.js",
-      "new_sha256": "30a243ec8b1731e32b41ebc6265707641ed7e8875d0c6c431fe0216770ec1aa1",
-      "accepted_sha256": [
-        "5212cfa97f7cfc7a6968f7545b791a81df910befabf2cbe2747c3f5bab2ba9af"
-      ]
-    },
-    {
-      "path": "docs/DESEMPENHO-SITE.md",
-      "new_sha256": "f814018aeacf17de98cc465aeb345acda6b5f4ab3988c9278bd46aa674335480",
+      "path": "docs/CONVERSA-E-CONTRATACAO.md",
+      "new_sha256": "a35b41aa1d678ffdd258c0acadf72ee89e3fa9320157d62f1b821c4669a75eb0",
       "accepted_sha256": []
     },
     {
       "path": "docs/ROADMAP-UPGRADE.md",
-      "new_sha256": "8bbec6b986832af65b0d9b648d6f28a5d209c2d4fca78935589715e733e85517",
+      "new_sha256": "dbd09f0769ee7469eee0b5e044fe74f425a264aaa64b322ebb43b5800a4b76c4",
       "accepted_sha256": [
-        "d31d6ec0fde8037ea4346105550ae0534a21ab42bd416c7460d1eb3d00e20a95"
+        "8bbec6b986832af65b0d9b648d6f28a5d209c2d4fca78935589715e733e85517"
       ]
+    },
+    {
+      "path": "docs/VALIDACAO-BANCO-PAGINADO.md",
+      "new_sha256": "80e43984f176cf20135282e7714e3b683ee07047c42c343bf85d71fd09678051",
+      "accepted_sha256": []
     },
     {
       "path": "index.html",
-      "new_sha256": "98ec390b4d1ef19adecf97f338c1b607b0343076dc56012dc43287a08b2f2544",
+      "new_sha256": "d991884c62d4816fbce6e34b7cde1a66781fae4448ba1e649439f3e2a5d4f384",
       "accepted_sha256": [
-        "54a6ca2648edcd94d211d1bef072ad8dd159c3791d3a0a153e217b00236f188f"
-      ]
-    },
-    {
-      "path": "messaging.js",
-      "new_sha256": "223d04273ebdee003fd23217d8488f8d56101667de896de1f5e8f3e32b3c2435",
-      "accepted_sha256": [
-        "605093da16079d2e7ff0bd3563a318cc242389c6c9a20a6ecd1f190445b6a5b2"
+        "98ec390b4d1ef19adecf97f338c1b607b0343076dc56012dc43287a08b2f2544"
       ]
     },
     {
       "path": "package-lock.json",
-      "new_sha256": "935e6023ecffec107cfa14320d34293f520c663516fa406899b927bb2e44a59d",
+      "new_sha256": "c5d312b9ace8e89b4fd5cee8a9c03ba9af0b97e418870884463a0470983c165e",
       "accepted_sha256": [
-        "490fd880804a1bfb7321f9b1b6d19e218cfc58363bc1f147fb82fd8bb8125dfe"
+        "935e6023ecffec107cfa14320d34293f520c663516fa406899b927bb2e44a59d"
       ]
     },
     {
       "path": "package.json",
-      "new_sha256": "b47156211bd25a9616642e4e875d99b259c636e2f65c368513a096fb07a7537e",
+      "new_sha256": "28cabc96f1d66e0f18924aefed18566e64ce92697962447c55d6e3eaeb5318a4",
       "accepted_sha256": [
-        "5a98a49c2469f68ba61e237596ee1fbdd8c0d89237ac14f520e91e64537876f3"
+        "b47156211bd25a9616642e4e875d99b259c636e2f65c368513a096fb07a7537e"
       ]
     },
     {
       "path": "professional-dashboard.js",
-      "new_sha256": "6313d718d3906e2e3a788f66d22409514423413945e2067f3fe08895a860c81e",
+      "new_sha256": "d0ae35be47acbb0aeb51d3056f1ee27b32f0f48c473c49b229695000185b954f",
       "accepted_sha256": [
-        "0f402778fa35e3cc6083374485068d4f61ad340ee89cc81298cd39389d1ed517"
-      ]
-    },
-    {
-      "path": "quotes.js",
-      "new_sha256": "4dba6235a43db875288993a05a16fbe031fd6dd2928b98457fb0a85b932b889e",
-      "accepted_sha256": [
-        "3ef7ee4506223e1db07962090f9ea6cdef89e0df4c4c8ddde507cc87933bfb63"
+        "6313d718d3906e2e3a788f66d22409514423413945e2067f3fe08895a860c81e"
       ]
     },
     {
       "path": "real-catalog.js",
-      "new_sha256": "81a8edbc34a19c56978f4178b64948b784a4d2d6b62b2a864adbb73e6a3cbeaa",
+      "new_sha256": "ced54150fc3cf25ea0e26943fc68896da7335c7bbb39833d9afa6713187ae1c2",
       "accepted_sha256": [
-        "c808f4cf139b243dd8d822d9f27982845bd108444004c81d244f5f30bab5b755"
+        "81a8edbc34a19c56978f4178b64948b784a4d2d6b62b2a864adbb73e6a3cbeaa"
       ]
     },
     {
-      "path": "request-files.js",
-      "new_sha256": "29486287e6e2910ced47b04169f5a38e1dbc9e267fa4bef41ca8c05a8043f273",
-      "accepted_sha256": [
-        "fa1b8ea11c81d739cef32d878e7a23f9410e8ef3ff9713dee6b501988170d0c3"
-      ]
-    },
-    {
-      "path": "requests.js",
-      "new_sha256": "0f105b5041c3c32499aa4525bdfdc932c3d1e4b734a4e8c270412066164eba91",
-      "accepted_sha256": [
-        "1543dd7bd5d06a6c56424381def3f3fdadd813927b64b171e4034b3c7bfa8963"
-      ]
-    },
-    {
-      "path": "scripts/measure-performance.cjs",
-      "new_sha256": "6c140d4ba5552d795bd6794419af3b76a7d405153dbf4f263ce4a8f335b9ea1b",
+      "path": "scripts/test-sql.cjs",
+      "new_sha256": "711f7b9e8bbdfb7494cc71dd483715d29b478781723bc8fcc1bdaf13444046a3",
       "accepted_sha256": []
     },
     {
-      "path": "tests/messaging.test.cjs",
-      "new_sha256": "e6bd2388602a93e53bf9e577007df3e779fe698867e6fa70d1bc6fc4d7a7a443",
-      "accepted_sha256": [
-        "bde2bd47658fbc802841b81896a9862cf776a8f615afe74146ca742a4502ef2e"
-      ]
-    },
-    {
-      "path": "tests/performance.test.cjs",
-      "new_sha256": "c6a487af118944d78b3deba5292487db7bbb05d21560722e97243b04ade7e8b2",
+      "path": "supabase/migrations/20261021174140_catalog_pagination_and_provider_metrics.sql",
+      "new_sha256": "a3384fc0ae16d20aabcd97d1902953ac9f10231f8ae705ae1efef6f031905073",
       "accepted_sha256": []
     },
     {
-      "path": "tests/service-cancellation.test.cjs",
-      "new_sha256": "2675fb3895017c0ea5760e3f77410ad26a702fc13e57bfe12d7a28f7cdde4b09",
+      "path": "tests/browser.test.cjs",
+      "new_sha256": "0541b5a1769324df049955233efd9a61249b0c6d24e60078ee1003c08dda7a46",
       "accepted_sha256": [
-        "ac506486e7f1bdb13c8640fc714a74c2e92652c4968512ba9267283e4787e9fe"
+        "4b6b5861b782ac078e413b4a083dd4167b16127bb8116e3037df82468f54b8c2"
       ]
     },
     {
-      "path": "upload-flow.js",
-      "new_sha256": "3b25f45b1ef2209773493376b19c5a500857cce3bc06f75d4e6f1c7735d55a96",
+      "path": "tests/catalog-page.test.cjs",
+      "new_sha256": "516205f0f7c9f131c1ae36946ffc8926f41b2a78beef77be3ed666d8c402874f",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/dom.test.cjs",
+      "new_sha256": "4e84ca10b3007471b7ceed05727d642f3922ec9f903912aeaf8095c27dcf1304",
       "accepted_sha256": [
-        "dc1e0d96ae9700e844d0185c6f49fb8337d904ebbe8a04a073cd5e414eb1a22b"
+        "2b7b3da4f7e23cec9632cc2e9f79f40903dd8f9ac6acf0f8739a9ee6a707ac13"
       ]
+    },
+    {
+      "path": "tests/provider-metrics.test.cjs",
+      "new_sha256": "f898149771f774974f64a1782bd663847d4d8987bf0b6660fdada6932dbfe7f3",
+      "accepted_sha256": []
+    },
+    {
+      "path": "tests/service-reviews.test.cjs",
+      "new_sha256": "f3c33b3d67cae8c535dfd71f4ada2aeac10380583a66db4364e04983dbf12639",
+      "accepted_sha256": [
+        "4fbeb959d05394005f5fe0d9dd531a2d72b5804b6b7cfd75a6668fd5ba79298b"
+      ]
+    },
+    {
+      "path": "tests/sql/catalog.test.cjs",
+      "new_sha256": "7f3026601017cf1af33476076b54611df007b18137c089539711fb0fb3e09cc4",
+      "accepted_sha256": []
     }
   ]
 }

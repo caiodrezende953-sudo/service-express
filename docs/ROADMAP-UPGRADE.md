@@ -1,21 +1,21 @@
 # Roteiro do upgrade — 45 itens
 
-A auditoria original propôs 15 itens de desempenho, 15 de interface e 15 de uso intuitivo. A entrega 0.5.0 cobre o primeiro bloco de bugs e proteção; a 0.6.0 implementa o bloco visual. A conferência visual em Chrome e celular continua pendente. A 0.7.0 traz a primeira entrega de desempenho no navegador. Itens parciais não são considerados concluídos. Pagamentos ficam por último.
+A auditoria original propôs 15 itens de desempenho, 15 de interface e 15 de uso intuitivo. A entrega 0.5.0 cobre o primeiro bloco de bugs e proteção; a 0.6.0 implementa o bloco visual. A conferência visual em Chrome e celular continua pendente. A 0.7.0 traz a primeira entrega de desempenho no navegador. A 0.8.0 acrescenta paginação, filtros, médias e indicadores no banco, com seis índices. Itens parciais não são considerados concluídos. Pagamentos ficam por último.
 
 | ID | Proposta | Situação |
 |---|---|---|
 | D01 | Carregar o catálogo detalhado quando necessário | Pendente — blocos seguintes |
 | D02 | Separar a demonstração do sistema real | Pendente — blocos seguintes |
-| D03 | Paginar a vitrine no servidor | Pendente — blocos seguintes |
+| D03 | Paginar a vitrine no servidor | Entregue: 12 ofertas por página, filtros e ordenação globais no servidor, totais e desempate por ID; offset limitado, sem snapshot entre páginas |
 | D04 | Buscar apenas os campos de cada tela | Parcial: colunas explícitas em pedidos, mensagens e propostas; revisar os demais módulos no bloco de banco |
 | D05 | Indexar a pesquisa de profissões | Entregue índice local de textos e posições, consulta compilada e reutilização dos resultados por pesquisa |
 | D06 | Encerrar eventos e observadores de telas fechadas | Parcial: buscas adiadas canceláveis; consolidação e desconexão dos observadores legados ainda pendentes |
 | D07 | Compartilhar o contexto de sessão e perfil | Parcial: contexto de ações e deduplicação inicial; migração de todos os módulos fica pendente |
 | D08 | Abrir conversas sem uma fila de consultas | Entregue no chat: contexto único, seções independentes em paralelo e orçamento/anexos sob demanda |
 | D09 | Agrupar a atualização de mensagens não lidas | Entregue: consultas simultâneas compartilham tentativa, pausa fora da página/rede e espera progressiva após falha |
-| D10 | Calcular os indicadores do prestador no banco | Pendente — blocos seguintes |
-| D11 | Indexar os caminhos mais usados | Pendente — blocos seguintes |
-| D12 | Evitar recalcular autenticação por linha na RLS | Entregue para a policy de propostas identificada na auditoria |
+| D10 | Calcular os indicadores do prestador no banco | Entregue: contagens, fases, soma de propostas aceitas e reputação em uma RPC exclusiva do prestador |
+| D11 | Indexar os caminhos mais usados | Entregue nos caminhos desta revisão: seis índices para ofertas, bairros, pedidos, propostas e notas; outros índices dependem de medição |
+| D12 | Evitar recalcular autenticação por linha na RLS | Entregue para a policy de propostas auditada; novas RPCs conferem a conta uma vez antes da consulta agregada |
 | D13 | Carregar o histórico de mensagens por partes | Pendente — blocos seguintes |
 | D14 | Publicar scripts e estilos com versão consistente | Parcial: recursos locais com versão uniforme; dependência externa e publicação verificável pendentes |
 | D15 | Reduzir o trabalho repetido nos uploads | Entregue: validação e hash reaproveitados para o mesmo objeto File em memória; autorização e recuperação mantidas |
@@ -51,3 +51,13 @@ A auditoria original propôs 15 itens de desempenho, 15 de interface e 15 de uso
 | U15 | Concluir o aceite de termos e privacidade | Pendente — blocos seguintes |
 
 Pendências de base: versionar e documentar toda a configuração externa/Edge Functions, testar restauração completa, consolidar os instaladores legados e validar os fluxos com contas reais e celular. Os testes locais não demonstram que essas verificações já ocorreram.
+
+Diretriz do próximo bloco de usabilidade: docs/CONVERSA-E-CONTRATACAO.md — pedido como centro da conversa e do combinado, benefícios reais para permanecer na plataforma e pagamentos por último.
+
+## Entregas finais após validar pagamentos — decisão de 21/10/2026
+
+- Comprovante de conclusão em PDF disponível no pedido para cliente e prestador, a partir do orçamento aceito e dos eventos confirmados pelo servidor.
+- Notificação e envio/acesso ao comprovante por e-mail para as duas partes, com controle de falhas e duplicação; integração de e-mail e limites de custo a definir.
+- Busca de pedidos e refinamento da consulta ao histórico. Campos, filtros e permissões serão definidos nesse bloco; cada participante acessa somente os pedidos autorizados.
+
+Essas entregas estão pendentes e ficam depois da confirmação do bloco de pagamentos. Não entram na implementação atual. O documento deve distinguir conclusão do serviço, pagamento e repasse; não incluir códigos secretos nem documentos pessoais completos e não se apresentar como nota fiscal, laudo ou garantia de qualidade.
