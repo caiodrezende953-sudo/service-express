@@ -61,3 +61,5 @@ Diretriz do próximo bloco de usabilidade: docs/CONVERSA-E-CONTRATACAO.md — pe
 - Busca de pedidos e refinamento da consulta ao histórico. Campos, filtros e permissões serão definidos nesse bloco; cada participante acessa somente os pedidos autorizados.
 
 Essas entregas estão pendentes e ficam depois da confirmação do bloco de pagamentos. Não entram na implementação atual. O documento deve distinguir conclusão do serviço, pagamento e repasse; não incluir códigos secretos nem documentos pessoais completos e não se apresentar como nota fiscal, laudo ou garantia de qualidade.
+
+Entrega 0.9.0: docs/CONVERSA-UNIFICADA.md. Abas por pedido, resumo fixo do aceite, ação contextual, rascunho de orçamento e confirmação de envio implementados; conferência real com duas contas, celular e leitor de tela pendente. Novas respostas na conversa aberta ainda dependem de atualização; notificações/tempo real e nova contratação não foram implementados neste bloco.

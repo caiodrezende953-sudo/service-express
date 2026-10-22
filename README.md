@@ -1,6 +1,6 @@
 # AJURA — piloto fechado
 
-Marketplace de serviços em Manaus, com site estático e Supabase para autenticação, banco, regras de acesso e arquivos privados. Versão 0.8.0 — paginação, filtros e indicadores no banco, sobre o commit 0e9899a. Veja docs/BANCO-PAGINADO.md. A migração foi aplicada diretamente no projeto AJURA; não execute SQL manualmente. Pagamentos permanecem por último.
+Marketplace de serviços em Manaus, com site estático e Supabase. Versão 0.9.0 — conversa, proposta e aceite no mesmo pedido, sobre o commit 152c39c. Leia docs/CONVERSA-UNIFICADA.md para instalar e conferir. Pagamentos continuam para depois dos blocos atuais.
 
 ## Abrir e validar
 

@@ -40,4 +40,4 @@ Há conversa vinculada ao pedido, rascunhos em memória da página, anexos priva
 
 Após definir a coleta e a privacidade, acompanhar a passagem de solicitação para primeira resposta, orçamento, aceite e conclusão; observar atrasos, falhas/duplicações e dificuldades relatadas. Tempo de resposta depende também da disponibilidade do profissional. Não atribuir abandono ao contato externo sem evidência.
 
-Esta diretriz será aplicada após instalar e conferir a entrega 0.8.0. Não altera o escopo da migração já aplicada nem antecipa pagamentos.
+Parte desta diretriz foi implementada na entrega 0.9.0: veja docs/CONVERSA-UNIFICADA.md para o escopo exato, testes e pendências. Validação com pessoas e aparelhos reais, atualização contínua das respostas e nova contratação continuam pendentes. Não antecipa pagamentos.
