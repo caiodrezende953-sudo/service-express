@@ -1,0 +1,54 @@
+/* Ajustes adicionais: estilos de computador permanecem como base. */
+.ajura-mobile-menu-toggle{display:none}
+@media(max-width:760px){
+ header{height:auto;min-height:76px;padding:14px 16px;gap:12px;align-items:center;flex-wrap:wrap}
+ header .brand{min-width:0;max-width:calc(100% - 86px)}
+ header .brand-symbol{flex-shrink:0}
+ header .brand small{display:none}
+ body.ajura-mobile-enhanced .ajura-mobile-menu-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:72px;min-height:44px;padding:10px 12px;margin-left:auto;border:1px solid var(--line,#ded6ec);border-radius:10px;background:var(--purple,#4926a8);color:#fff;font:inherit;font-weight:700}
+ body.ajura-mobile-enhanced header nav{display:none}
+ body.ajura-mobile-enhanced.ajura-mobile-menu-open header nav{display:flex;width:100%;flex-direction:column;align-items:stretch;gap:6px;padding:10px 0}
+ header nav button,header nav a{min-height:44px;white-space:normal;text-align:left;padding:10px 12px;font-size:15px}
+ main{padding-left:12px;padding-right:12px}
+ main>*,.real-catalog,.card,.card-body,.service,.ajura-pro-card,.ajura-pro-request,fieldset,label{min-width:0}
+ .real-catalog{padding:16px 12px}
+ .section-head{align-items:flex-start;flex-wrap:wrap}
+ .section-head h2{font-size:clamp(22px,6vw,30px);overflow-wrap:anywhere}
+ .section-head button{max-width:100%}
+ .filters,#realCatalog .filters,.formgrid{grid-template-columns:minmax(0,1fr)}
+ #realCatalog .filters .search{grid-column:auto}
+ input:not([type="checkbox"]):not([type="radio"]),select,textarea{font-size:16px;min-height:44px;max-width:100%;box-sizing:border-box}
+ input[type="file"]{width:100%;font-size:14px}
+ textarea{min-height:96px;resize:vertical}
+ button,.primary,.secondary,.link-button,summary{min-height:44px}
+ button,.primary,.secondary{white-space:normal;overflow-wrap:anywhere}
+ .check{min-height:44px;align-items:center}
+ .check input,input[type="checkbox"],input[type="radio"]{min-width:22px;min-height:22px;flex-shrink:0}
+ fieldset{max-width:100%;padding:12px;margin-left:0;margin-right:0}
+ legend{max-width:100%;overflow-wrap:anywhere}
+ .request-toolbar,.provider-service-actions,.ajura-pro-actions{gap:10px;flex-wrap:wrap}
+ .request-toolbar label{flex:1 1 100%;min-width:0}
+ .request-toolbar button,.ajura-pro-actions button{min-height:44px}
+ .ajura-pro-hero{padding:20px 14px}
+ .ajura-pro-hero h1{font-size:clamp(26px,8vw,38px);overflow-wrap:anywhere}
+ .ajura-pro-grid{grid-template-columns:minmax(0,1fr)}
+ .area-list{max-height:240px;overflow:auto;overscroll-behavior:contain}
+ dialog{box-sizing:border-box;width:calc(100vw - 16px);max-width:calc(100vw - 16px);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);margin:auto;padding:18px 14px;border-radius:14px;overflow:auto;overscroll-behavior:contain;scroll-padding-block:16px}
+ dialog .close{width:44px;height:44px;min-height:44px;font-size:26px}
+ dialog h2{overflow-wrap:anywhere}
+ dialog input,dialog select,dialog textarea{scroll-margin-block:24px}
+ .profile-data div,.profile-data dd,.service p,.request-description,.request-attachment span,.ajura-order-overview dd{overflow-wrap:anywhere;min-width:0}
+ .request-attachment{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+ .request-attachment span{flex:1 1 180px}
+ .ajura-chat{left:8px;right:8px;bottom:auto;top:calc(var(--ajura-vv-top,0px) + env(safe-area-inset-top,0px) + 8px);width:auto;height:calc(var(--ajura-vv-height,100dvh) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 16px);max-height:none;border-radius:14px}
+ .ajura-chat-head{gap:8px;flex-shrink:0;padding:8px 12px}
+ .ajura-chat-head h2{min-width:0;overflow-wrap:anywhere;font-size:17px}
+ .ajura-chat-head button{flex-shrink:0}
+ .ajura-chat-body{padding:12px;min-width:0;scroll-padding-bottom:24px}
+ .ajura-chat-actions button{flex:1 1 120px}
+ .ajura-chat-launch{right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 24px);min-height:48px}
+ footer{padding-bottom:88px;flex-wrap:wrap}
+ :focus-visible{outline:3px solid var(--purple,#4926a8);outline-offset:3px}
+ .ajura-chat-head :focus-visible{outline-color:#fff}
+}
+@media(max-width:360px){.ajura-pro-actions button,.request-toolbar>button{width:100%}.star-choice,.star-choice input{width:44px;height:44px}.rate{gap:4px}}

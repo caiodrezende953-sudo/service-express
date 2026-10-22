@@ -1,0 +1,33 @@
+/* Navegação por pedido: estilos limitados à caixa de mensagens da AJURA. */
+.ajura-chat .ajura-order-bar{flex:0 0 auto;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 14px;background:var(--purple-soft,#f0eafb);border-bottom:1px solid var(--line,#ded9e8)}
+.ajura-order-bar p{font-size:13px;line-height:1.5;margin:0;color:var(--ink,#242137);overflow-wrap:anywhere}
+.ajura-order-bar .primary{min-height:44px;max-width:170px;padding:9px 12px;font-size:13px}
+.ajura-chat .ajura-order-tabs{flex:0 0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:6px 8px;background:var(--surface,#fff);border-bottom:1px solid var(--line,#ded9e8)}
+.ajura-order-tabs [role=tab]{min-width:0;min-height:44px;padding:8px 3px;font:inherit;font-size:13px;font-weight:650;line-height:1.3;border:1px solid transparent;border-radius:8px;color:var(--purple,#4926a8);background:var(--surface,#fff);cursor:pointer;overflow-wrap:anywhere}
+.ajura-order-tabs [role=tab][aria-selected=true]{border-color:var(--purple,#4926a8);background:var(--purple,#4926a8);color:#fff}
+.ajura-order-workspace [hidden],.ajura-chat-composer [hidden]{display:none!important}
+.ajura-order-workspace [role=tabpanel]{min-width:0;outline-offset:-3px}
+.ajura-order-workspace [data-order-view=conversation]>details{margin:0}
+.ajura-order-workspace [data-order-view=conversation]>details>summary{font-size:13px}
+.ajura-order-workspace .request-quotes>h3{margin-top:0}
+.ajura-order-workspace .request-quotes .service{border-left:3px solid var(--orange,#ff5a32)}
+.ajura-order-workspace .request-quotes .service button{margin:4px 4px 4px 0}
+.ajura-order-workspace .request-quotes .auth-form{margin:12px 0;gap:14px}
+.ajura-order-workspace .ajura-chat-support{border:0;padding:0;margin-top:0}
+.ajura-order-workspace dd{white-space:pre-wrap}
+.ajura-chat .ajura-order-bar :focus-visible,.ajura-chat .ajura-order-tabs :focus-visible{outline:3px solid var(--purple,#4926a8);outline-offset:2px}
+.ajura-chat .ajura-order-tabs [aria-selected=true]:focus-visible{outline-color:var(--ink,#242137)}
+.ajura-chat-composer .ajura-channel-controls[hidden],.ajura-chat-composer[hidden]{display:none!important}
+@media(max-width:380px){.ajura-chat .ajura-order-bar{gap:6px;padding:8px 10px}.ajura-order-bar p{font-size:12px}.ajura-order-bar .primary{max-width:135px;font-size:12px}.ajura-order-tabs [role=tab]{font-size:12px}}
+@media(max-height:500px){.ajura-chat .ajura-order-bar{padding-block:4px}.ajura-order-bar p{font-size:12px}.ajura-chat .ajura-order-tabs{padding-block:2px}.ajura-chat-composer .field-counter{display:none}.ajura-chat-composer .ajura-composer-context{margin:0}.ajura-chat-composer textarea{min-height:44px;max-height:72px}}
+
+.ajura-chat-head h2{flex:1;min-width:0;font-size:16px;margin-inline:6px}
+.ajura-chat-head .ajura-chat-reload{font-size:13px;padding-inline:8px}
+.ajura-chat-head [data-back]{font-size:22px;flex:0 0 44px}
+/* Avisos de novas respostas ficam fora da rolagem e não cobrem o campo. */
+.ajura-thread-notice{flex:0 0 auto;padding:5px 12px;background:var(--surface,#fff);border-bottom:1px solid var(--line,#ded9e8);font-size:12px;color:var(--muted,#625b71)}
+.ajura-thread-notice p{margin:0;line-height:1.4;overflow-wrap:anywhere}
+.ajura-thread-notice>div{display:flex;gap:6px;flex-wrap:wrap}
+.ajura-thread-notice button{font:inherit;font-weight:650;min-height:44px;padding:6px 10px;background:var(--purple-soft,#f0eafb);color:var(--purple,#4926a8);border:1px solid var(--line,#ded9e8);border-radius:8px;cursor:pointer}
+.ajura-thread-notice [hidden]{display:none!important}
+@media(max-height:500px){.ajura-thread-notice{padding-block:2px}.ajura-thread-notice p{font-size:11px}.ajura-thread-notice:has(button:not([hidden])) p{display:none}}

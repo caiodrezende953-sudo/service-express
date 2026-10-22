@@ -1,0 +1,11 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+function setup(storage=new Map()){
+ let actor='a';const callbacks=[],window={sessionStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)}};
+ window.AJURA_AUTH={client:{auth:{getSession:async()=>({data:{session:{user:{id:actor}}}}),onAuthStateChange:fn=>callbacks.push(fn)}}};
+ const ctx={window};require('./helpers/safety.cjs')(ctx,window);
+ return {api:window.AJURA_SAFE_ACTIONS,storage,change(id,event='SIGNED_IN'){actor=id;callbacks.forEach(fn=>fn(event,id?{user:{id}}:null));}};
+}
+test('Chave repetida sobrevive ao módulo sem gravar mensagem ou documento',async()=>{const a=setup();await a.api.snapshot();const payload={document:'52998224725',body:'Meu texto privado'};const key=await a.api.requestKey('scope','a',payload);const b=setup(a.storage);await b.api.snapshot();assert.equal((await b.api.requestKey('scope','a',payload)).key,key.key);const saved=JSON.stringify([...a.storage]);assert(!saved.includes(payload.document));assert(!saved.includes(payload.body));assert.notEqual((await b.api.requestKey('scope','b',payload)).key,key.key);});
+test('Troca de conta invalida ação e limpa tentativas da conta anterior',async()=>{const s=setup(),token=await s.api.snapshot();await s.api.requestKey('scope','a',{body:'texto'});s.change('b');assert.equal(s.api.current(token),false);await assert.rejects(()=>s.api.guard(token),/sessão/);assert.equal(s.storage.size,0);});
+test('Renovação na mesma conta preserva a ação e tentativa privada fica só em memória',async()=>{const s=setup(),token=await s.api.snapshot();s.change('a','TOKEN_REFRESHED');assert(s.api.current(token));const key=await s.api.requestKey('profile','a',{name:'Pessoa'}, {persist:false});assert.equal(s.storage.size,0);assert.equal((await s.api.requestKey('profile','a',{name:'Pessoa'},{persist:false})).key,key.key);key.clear();assert.notEqual((await s.api.requestKey('profile','a',{name:'Pessoa'},{persist:false})).key,key.key);});
+test('Tela fechada impede envio mesmo com sessão válida',async()=>{const s=setup(),token=await s.api.snapshot();await assert.rejects(()=>s.api.guard(token,{isConnected:false}),/tela mudou/);});
